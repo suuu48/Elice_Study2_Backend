@@ -1,12 +1,11 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Review } from './review.entity';
 
-
 export type UserProfile = {
   user_id: string;
   user_name: string;
   user_nickname: string;
-  location_user : string;
+  location_user: string;
   user_img: string;
 };
 

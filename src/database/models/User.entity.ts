@@ -3,26 +3,26 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  user_id: string;
+  user_id!: string;
 
   @Column({ type: 'varchar' })
-  user_name: string;
+  user_name!: string;
 
   @Column({ type: 'varchar' })
-  user_password: string;
+  user_password!: string;
 
   @Column({ type: 'varchar' })
-  user_nickname: string;
+  user_nickname!: string;
 
   @Column({ type: 'varchar' })
-  verify: string;
+  verify!: string;
 
   @Column({ type: 'varchar' })
-  location_user: string;
+  location_user!: string;
 
-  @Column()
-  delete_flag: boolean;
+  @Column({ default: 0 })
+  delete_flag!: boolean;
 
-  @Column({ type: 'varchar' })
-  user_img: string;
+  @Column({ type: 'varchar' , nullable: true, default: null })
+  user_img!: string;
 }

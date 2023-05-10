@@ -8,8 +8,15 @@ import {
   insertDummyPets,
   insertDummyComments,
 } from './database/dummyDatas';
+import {
+  createPost,
+  findAllPost,
+  findPostById,
+  updatePost,
+  softDeletePost,
+} from './database/daos/post.repo';
 
-const port = Number(env.PORT);
+const port = Number(env.PORT || 3000);
 const app = express();
 
 interface test {
@@ -31,7 +38,7 @@ db.getConnection()
     console.log('✅ mysql2 로 DB 접속!');
 
     /*
-    DB dummyData 초기화가 꼭! 필요할때만 사용해야함
+    dummyData 초기화가 꼭! 필요할때만 사용해야함
     await insertDummyReviews();
     await insertDummyPosts();
     await insertDummyComments();
@@ -39,14 +46,9 @@ db.getConnection()
     */
 
     app.listen(port, () => {
-      console.log('PORT:', env.PORT);
+      console.log('DB_HOST:', env.DB_HOST);
+      console.log('DB_NAME:', env.DB_DBNAME);
       console.log(`Server is running on port ${port}`);
     });
   })
   .catch((err) => console.log('error!!!!!!!', err));
-
-// async function dummy() {
-//   const dummy = await db.query('SELECT * FROM comment');
-//   console.log(dummy[0]);
-// }
-// dummy();

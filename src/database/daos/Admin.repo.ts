@@ -4,8 +4,7 @@ import { db } from '../../config/dbconfig';
 
 // 회원 목록 전체 조회 >> Todo: verify도 조회할지 프론트와 상의하기
 export const findALlUser = async () => {
-  const getColumns =
-    'user_id, user_name, password, user_nickname, verify, location_user, delete_flag, user_img';
+  const getColumns = 'user_id, user_name, password, user_nickname, verify, location_user, delete_flag, user_img';
   const [users] = await db.query(`
     SELECT ${getColumns}
     FROM user

@@ -1,2 +1,2 @@
-export * from "./User.repo";
-export * from "./Admin.repo";
+export * from "./user.repo";
+export * from "./admin.repo";

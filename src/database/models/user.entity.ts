@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Review } from './review.entity';
+import { Pet } from './pet.entity';
 
 export type UserProfile = {
   user_id: string;
@@ -23,18 +24,21 @@ export class User {
   @Column({ type: 'varchar' })
   user_nickname!: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', default: 'user'  })
   verify!: string;
 
   @Column({ type: 'varchar' })
   location_user!: string;
 
-  @Column({ default: 0 })
+  @Column({ type: 'tinyint', width: 1, default: 0 })
   delete_flag!: boolean;
 
   @Column({ type: 'varchar', nullable: true, default: null })
   user_img!: string;
 
-  @OneToMany((type) => Review, (review) => review.user)
+  @OneToMany(() => Review, (review) => review.user)
   reviews!: Review[]; // 작성한 리뷰
+
+  @OneToMany(() => Pet, (pet) => pet.user)
+  pets!: Pet[]; // 작성한 리뷰
 }

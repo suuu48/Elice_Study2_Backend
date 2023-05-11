@@ -1,5 +1,16 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from './user.entity';
+export type ReviewProfile = {
+  review_id: string;
+  location_id: string;
+  location_name: string;
+  location_category: string;
+  user_id: string;
+  review_content: string;
+  delete_flag: boolean;
+  created_at: Date;
+};
+
 @Entity()
 export class Review {
   @PrimaryGeneratedColumn()
@@ -23,10 +34,13 @@ export class Review {
   @Column({ type: 'double', nullable: true, default: null })
   star_rating!: number;
 
+  @Column({ type: 'tinyint', width: 1, default: 0 })
+  delete_flag!: boolean;
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at!: Date;
 
-  @ManyToOne((type) => User)
+  @ManyToOne(() => User)
   @JoinColumn({ referencedColumnName: 'user_id' })
   user!: User;
 }

@@ -8,7 +8,7 @@ import { findPetById } from './pet.repo';
 
 // 관리자가 모든 유저정보 추출
 // 회원 목록 전체 조회 >> Todo: verify도 조회할지
-export const findALlUser = async (): Promise<User> => {
+export const findALlUser = async (): Promise<User[]> => {
   try {
     const [users]: any = await db.query(`
       SELECT *
@@ -22,7 +22,7 @@ export const findALlUser = async (): Promise<User> => {
 };
 
 // 관리자가 삭제할 유저 조회 ( delete_flag 가 1인 유저 전체 조회 )
-export const findDeleteUsers = async (): Promise<User> => {
+export const findDeleteUsers = async (): Promise<User[]> => {
   try {
     const [users]: any = await db.query(`
     SELECT *

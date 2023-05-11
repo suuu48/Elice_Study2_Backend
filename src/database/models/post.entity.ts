@@ -1,4 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import { User } from './user.entity';
+import { Comment } from './comment.entity';
 
 @Entity()
 export class Post {
@@ -20,12 +22,19 @@ export class Post {
   @Column({ length: 45, nullable: true, default: '이미지 없음' })
   post_img!: string;
 
-  @Column({ nullable: true })
-  comment_id!: number;
-
   @Column({ type: 'tinyint', width: 1, default: 0 })
   delete_flag!: number;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at!: string;
+
+  @ManyToOne((type) => User)
+  @JoinColumn({ referencedColumnName: 'user_id' })
+  user!: User;
+
+  @OneToMany((type) => Comment, (comment) => comment.post)
+  comments!: Comment[]; // 댓글
 }
+
+// @Column({ nullable: true })
+// comment_id!: number;

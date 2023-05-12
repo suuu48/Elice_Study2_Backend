@@ -26,3 +26,16 @@ export const dataSource = new DataSource({
   logging: false,
   synchronize: true,
 });
+
+export async function executeQuery(query: string, params: any[]): Promise<any> {
+  const connection = await db.getConnection();
+  try {
+    const [rows] = await connection.execute(query, params);
+    return rows;
+  } catch (error) {
+    console.log('쿼리 실행 에러: ', error);
+    throw error;
+  } finally {
+    connection.release();
+  }
+}

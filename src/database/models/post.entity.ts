@@ -13,20 +13,20 @@ export class Post {
   @Column({ length: 45, nullable: false })
   post_category!: string;
 
-  @Column({ length: 45, nullable: true, default: '제목 없음' })
+  @Column({ length: 45, nullable: true })
   post_title!: string;
 
-  @Column({ length: 45, nullable: true, default: '내용 없음' })
+  @Column({ length: 45, nullable: true })
   post_content!: string;
 
-  @Column({ length: 45, nullable: true, default: '이미지 없음' })
+  @Column({ length: 45, nullable: true })
   post_img!: string;
 
   @Column({ type: 'tinyint', width: 1, default: 0 })
-  delete_flag!: number;
+  delete_flag!: boolean;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  created_at!: string;
+  created_at!: Date;
 
   @ManyToOne((type) => User)
   @JoinColumn({ referencedColumnName: 'user_id' })

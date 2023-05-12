@@ -13,14 +13,14 @@ export class Comment {
   @Column({ length: 45, nullable: false })
   user_id!: string;
 
-  @Column({ length: 45, nullable: true, default: '내용 없음' })
+  @Column({ length: 45, nullable: true })
   comment_content!: string;
 
   @Column({ type: 'tinyint', width: 1, default: 0 })
-  delete_flag!: number;
+  delete_flag!: boolean;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  created_at!: string;
+  created_at!: Date;
 
   @ManyToOne((type) => User)
   @JoinColumn({ referencedColumnName: 'user_id' })

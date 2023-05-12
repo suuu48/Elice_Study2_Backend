@@ -27,6 +27,9 @@ export const dataSource = new DataSource({
   synchronize: true,
 });
 
+// query 오류처리
+// db.query에서 추가적인 오류 처리가 필요하다면, executeQuery 함수를 사용하는 것이 좋음 (그냥 남겨두겠습니다.)
+/*
 export async function executeQuery(query: string, params: any[]): Promise<any> {
   const connection = await db.getConnection();
   try {
@@ -39,3 +42,4 @@ export async function executeQuery(query: string, params: any[]): Promise<any> {
     connection.release();
   }
 }
+*/

@@ -78,7 +78,7 @@ export const updateDataTrans = (input: Record<string, string | number | boolean>
 };
 
 // 유저 정보 수정 >> Todo: 프론트와 상의 후 어떤 것을 수정 가능하게 할지 정하기!
-export const update = async (
+export const updateUser = async (
   userId: string,
   updateData: Record<string, string | number>
 ): Promise<User> => {
@@ -103,7 +103,7 @@ export const update = async (
 };
 
 // 유저 정보 소프트 delete
-export const softDelete = async (userId: string): Promise<User> => {
+export const softDeleteUser = async (userId: string): Promise<User> => {
   try {
     const [updateUser]: any = await db.query(
       `

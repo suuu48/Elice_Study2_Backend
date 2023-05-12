@@ -15,6 +15,13 @@ import {
   updatePost,
   softDeletePost,
 } from './database/daos/post.repo';
+import {
+  createComment,
+  findComments,
+  findCommentById,
+  updateComment,
+  softDeleteComment,
+} from './database/daos/comment.repo';
 
 const port = Number(env.PORT || 3000);
 const app = express();

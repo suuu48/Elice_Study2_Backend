@@ -10,7 +10,7 @@ import {
 } from './database/dummyDatas';
 import {
   createPost,
-  findAllPost,
+  findPosts,
   findPostById,
   updatePost,
   softDeletePost,

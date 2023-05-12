@@ -2,6 +2,13 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColum
 import { User } from './user.entity';
 import { Comment } from './comment.entity';
 
+export type PostProfile = {
+  user_id: string;
+  post_category: string;
+  post_title: string;
+  post_content: string;
+  // post_img: string;
+};
 @Entity()
 export class Post {
   @PrimaryGeneratedColumn()

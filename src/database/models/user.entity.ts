@@ -2,6 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Review } from './review.entity';
 import { Pet } from './pet.entity';
 import { Post } from './post.entity';
+import { Comment } from './comment.entity';
 
 export type UserProfile = {
   user_id: string;
@@ -45,4 +46,7 @@ export class User {
 
   @OneToMany(() => Post, (post) => post.user)
   posts!: Post[];
+
+  @OneToMany(() => Comment, (comment) => comment.user)
+  comments!: Comment[];
 }

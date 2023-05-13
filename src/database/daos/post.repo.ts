@@ -38,7 +38,7 @@ const createPost = async (inputData: createPostInput): Promise<Post> => {
     return createdPost!; // '!'로 명시적 선언: null일 가능성 없음 >> 위에 에러 서비스로 옮기면 지워도 됨
   } catch (error) {
     console.log(error);
-    throw new Error('[ 게시글 생성 실패 ]: 쿼리 실행 중 에러가 발생했습니다.'); // App Error
+    throw new Error('[ 쿼리 실행 에러 ]: 게시글 생성 실패'); // App Error
   }
 };
 
@@ -57,7 +57,7 @@ const findPosts = async (): Promise<Post[]> => {
     return postRows;
   } catch (error) {
     console.log(error);
-    throw new Error('[게시글 전체 조회 실패 ]: 쿼리 실행 중 에러가 발생했습니다.'); // App Error
+    throw new Error('[ 쿼리 실행 에러 ]: 게시글 전체 조회 실패.'); // App Error
   }
 };
 
@@ -77,7 +77,7 @@ const findPostById = async (post_id: number): Promise<Post> => {
     return post[0];
   } catch (error) {
     console.log(error);
-    throw new Error('[ 게시글 조회 실패 ]: 쿼리 실행 중 에러가 발생했습니다.'); // App Error
+    throw new Error('[ 쿼리 실행 에러 ]: 게시글 조회 실패'); // App Error
   }
 };
 
@@ -107,7 +107,7 @@ const updatePost = async (post_id: number, inputData: updatePostInput): Promise<
     return updatedPost!;
   } catch (error) {
     console.log(error);
-    throw new Error('[ 게시글 수정 실패 ]: 쿼리 실행 중 에러가 발생했습니다.'); // App Error
+    throw new Error('[ 쿼리 실행 에러 ]: 게시글 수정 실패'); // App Error
   }
 };
 
@@ -117,7 +117,8 @@ const softDeletePost = async (post_id: number): Promise<Post> => {
     const SQL = `
     UPDATE post
     SET delete_flag = 1
-    WHERE post_id = ?`;
+    WHERE post_id = ?
+    `;
 
     const [result, _] = await db.query(SQL, [post_id]);
 
@@ -132,7 +133,7 @@ const softDeletePost = async (post_id: number): Promise<Post> => {
     return softDeletedPost!;
   } catch (error) {
     console.log(error);
-    throw new Error('[ 게시글 삭제 실패 ]: 쿼리 실행 중 에러가 발생했습니다.'); // App Error
+    throw new Error('[ 게시글 수정 오류 ]: 게시글 삭제 실패'); // App Error
   }
 };
 

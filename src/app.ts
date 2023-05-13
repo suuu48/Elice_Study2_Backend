@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { env } from './config/envconfig';
 import { db } from './config/dbconfig';
+import postRouter from './routes/postRouter';
 import {
   // insertDummyUsers,
   insertDummyReviews,
@@ -59,3 +60,9 @@ db.getConnection()
     });
   })
   .catch((err) => console.log('error!!!!!!!', err));
+
+app.use('/post', postRouter);
+// app.use('/comment', -)
+// app.use('/user', -)
+// app.use('/pet', -)
+// app.use('/review', -)

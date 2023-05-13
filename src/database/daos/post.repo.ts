@@ -133,7 +133,7 @@ const softDeletePost = async (post_id: number): Promise<Post> => {
     return softDeletedPost!;
   } catch (error) {
     console.log(error);
-    throw new Error('[ 게시글 수정 오류 ]: 게시글 삭제 실패'); // App Error
+    throw new Error('[ 쿼리 실행 에러 ]: 게시글 삭제 실패'); // App Error
   }
 };
 

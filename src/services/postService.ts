@@ -1,32 +1,56 @@
-import { Request, Response } from 'express';
-import { createPost, findPosts } from '../database/daos/post.repo';
+import { createPost, findPosts, findPostById } from '../database/daos/post.repo';
+import { Post } from '../database/models/post.entity';
+import { AppError } from '../utils/errorHandler';
+import { createPostInput, updatePostInput } from '../database/daos/post.repo';
 
-const addPost = async (req: Request, res: Response) => {
+/* 게시글 생성 */
+const addPost = async (inputData: createPostInput) => {
   try {
-    const { user_id } = req.params;
-    const { post_category, post_title, post_content } = req.body;
+    const createdPostId = await createPost(inputData);
 
-    const postData = {
-      user_id,
-      post_category,
-      post_title,
-      post_content,
-    };
+    const foundPost = await findPostById(createdPostId);
+    // if (!foundPost) throw new Error('[ 게시글 등록 에러 ] 등록된 게시글이 없습니다.');
 
-    const post = await createPost(postData);
-    res.status(201).json(post);
-  } catch (error) {
-    throw new Error('[ 서버 에러 ]: 게시글 생성 실패'); // App Error
+    return foundPost;
+  } catch (error: any) {
+    if (error instanceof AppError) throw error;
+    else {
+      console.log(error);
+      throw new AppError(500, error.message || null);
+    }
   }
 };
 
-const getAllPosts = async (req: Request, res: Response) => {
+/* 전체 게시글 조회 */
+const getAllPosts = async (): Promise<Post[]> => {
   try {
-    const post = await findPosts();
-    res.status(201).json(post);
-  } catch (error) {
-    throw new Error('[ 서버 에러 ]: 게시글 전체 조회 실패'); // App Error
+    const foundPosts = await findPosts();
+
+    if (foundPosts === undefined)
+      throw new Error('[ 전체 게시글 조회 에러 ] 존재하는 게시글이 없습니다.');
+
+    return foundPosts;
+  } catch (error: any) {
+    if (error instanceof AppError) throw error;
+    else {
+      console.log(error);
+      throw new AppError(500, error.message);
+    }
   }
 };
 
-export { addPost, getAllPosts };
+/* post_id로 특정 게시글 조회 */
+const getPost = async (post_id: number): Promise<Post> => {
+  try {
+    const post = await findPostById(post_id);
+
+    if (post === undefined) throw new Error('[ 게시글 조회 에러 ] 게시글이 존재하지 않습니다.');
+
+    return post;
+  } catch (error: any) {
+    if (error instanceof AppError) throw error;
+    else throw new AppError(404, error.message);
+  }
+};
+
+export { addPost, getAllPosts, getPost };

@@ -1,22 +1,23 @@
 import { db } from '../../config/dbconfig';
 import { Post } from '../models/post.entity';
+import { AppError } from '../../utils/errorHandler';
 
 interface PostProfile {
   user_id: string;
   post_category: string;
   post_title: string;
   post_content: string;
-  // post_img: string;
+  post_img: string;
 }
 
-type createPostInput = PostProfile;
+export type createPostInput = PostProfile;
 
-type updatePostInput = Partial<Omit<PostProfile, 'user_id'>>;
+export type updatePostInput = Partial<Omit<PostProfile, 'user_id'>>;
 
 /* 게시글 생성 */
-const createPost = async (inputData: createPostInput): Promise<Post> => {
+const createPost = async (inputData: createPostInput): Promise<number> => {
   try {
-    const createColums = 'user_id, post_category, post_title, post_content';
+    const createColums = 'user_id, post_category, post_title, post_content, post_img';
     const createValues = Object.values(inputData)
       .map((value) => `'${value}'`)
       .join(', ');
@@ -29,16 +30,11 @@ const createPost = async (inputData: createPostInput): Promise<Post> => {
 
     const [result, _] = await db.query(SQL); // 두번째 인수는 undefined라서 _ 로 받음
 
-    if ((result as { affectedRows: number }).affectedRows === 0)
-      throw new Error('[ 게시글 생성 오류 ]: 생성된 게시글이 없습니다.'); // App Error >> 서비스로 옮길 에정
-
     const createdPostId = (result as { insertId: number }).insertId;
-    const createdPost = await findPostById(createdPostId);
-
-    return createdPost!; // '!'로 명시적 선언: null일 가능성 없음 >> 위에 에러 서비스로 옮기면 지워도 됨
+    return createdPostId;
   } catch (error) {
     console.log(error);
-    throw new Error('[ 쿼리 실행 에러 ]: 게시글 생성 실패'); // App Error
+    throw new AppError(500, '[ 쿼리 실행 에러 ] 게시글 등록 실패');
   }
 };
 
@@ -57,7 +53,7 @@ const findPosts = async (): Promise<Post[]> => {
     return postRows;
   } catch (error) {
     console.log(error);
-    throw new Error('[ 쿼리 실행 에러 ]: 게시글 전체 조회 실패.'); // App Error
+    throw new Error('[ 쿼리 실행 에러 ]: 게시글 전체 조회 실패.');
   }
 };
 
@@ -71,13 +67,11 @@ const findPostById = async (post_id: number): Promise<Post> => {
     `;
 
     const [post]: any = await db.query(SQL, [post_id]);
-    if (!Array.isArray(post) || post.length === 0)
-      throw new Error('[ 게시글 조회 오류 ]: 게시글이 존재하지 않습니다.'); // App Error >> 서비스로 옮길 에정
 
     return post[0];
   } catch (error) {
     console.log(error);
-    throw new Error('[ 쿼리 실행 에러 ]: 게시글 조회 실패'); // App Error
+    throw new AppError(500, '[ 쿼리 실행 에러 ] 게시글 조회 실패');
   }
 };
 

@@ -1,28 +1,8 @@
 import express, { Request, Response } from 'express';
 import { env } from './config/envconfig';
 import { db } from './config/dbconfig';
+import { errorHandlerMiddleware } from './utils/errorHandler';
 import postRouter from './routes/postRouter';
-import {
-  // insertDummyUsers,
-  insertDummyReviews,
-  insertDummyPosts,
-  insertDummyPets,
-  insertDummyComments,
-} from './database/dummyDatas';
-import {
-  createPost,
-  findPosts,
-  findPostById,
-  updatePost,
-  softDeletePost,
-} from './database/daos/post.repo';
-import {
-  createComment,
-  findComments,
-  findCommentById,
-  updateComment,
-  softDeleteComment,
-} from './database/daos/comment.repo';
 
 const port = Number(env.PORT || 3000);
 const app = express();
@@ -61,8 +41,10 @@ db.getConnection()
   })
   .catch((err) => console.log('error!!!!!!!', err));
 
+app.use(express.json());
 app.use('/post', postRouter);
 // app.use('/comment', -)
 // app.use('/user', -)
 // app.use('/pet', -)
 // app.use('/review', -)
+app.use(errorHandlerMiddleware);

@@ -6,7 +6,7 @@ export type UserProfile = {
   user_id: string;
   user_name: string;
   user_nickname: string;
-  location_user: string;
+  user_location: string;
   user_img: string;
 };
 
@@ -28,7 +28,7 @@ export class User {
   verify!: string;
 
   @Column({ type: 'varchar' })
-  location_user!: string;
+  user_location!: string;
 
   @Column({ type: 'tinyint', width: 1, default: 0 })
   delete_flag!: boolean;

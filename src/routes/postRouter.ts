@@ -1,11 +1,12 @@
 import { Router } from 'express';
 import {
-  addPostHandler,
-  getCategoriesHandler,
   getAllPostsHandler,
+  getCategoriesHandler,
   getAllPostsByLocationHandler,
   getPostHandler,
+  addPostHandler,
   editPostHandler,
+  removePostHandler,
 } from '../controllers/postController';
 
 const router = Router();
@@ -28,7 +29,7 @@ router.post('/:user_id', addPostHandler);
 /* post_id로 특정 게시글 수정 */
 router.patch('/:post_id', editPostHandler);
 
-// /* 게시글 삭제 */
-// router.delete('/:post_id', addPostHandler);
+/* 게시글 삭제 */
+router.delete('/:post_id', removePostHandler);
 
 export default router;

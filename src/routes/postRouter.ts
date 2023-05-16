@@ -5,6 +5,7 @@ import {
   getAllPostsHandler,
   getAllPostsByLocationHandler,
   getPostHandler,
+  editPostHandler,
 } from '../controllers/postController';
 
 const router = Router();
@@ -23,5 +24,11 @@ router.get('/:post_id', getPostHandler);
 
 /* 게시글 생성 */
 router.post('/:user_id', addPostHandler);
+
+/* post_id로 특정 게시글 수정 */
+router.patch('/:post_id', editPostHandler);
+
+// /* 게시글 삭제 */
+// router.delete('/:post_id', addPostHandler);
 
 export default router;

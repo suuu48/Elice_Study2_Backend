@@ -7,6 +7,7 @@ import {
   getAllPostsByLocation,
   getPost,
   addPost,
+  editPost,
 } from '../services/postService';
 
 /* 게시글 목록 조회 */
@@ -55,10 +56,10 @@ const getAllPostsByLocationHandler = async (req: Request, res: Response, next: N
 /* post_id로 게시글 조회 */
 const getPostHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const post_id = parseInt(req.params.post_id);
-    if (!post_id) throw new Error('[ 요청 에러 ] post_id가 필요합니다.');
+    const { post_id } = req.params;
+    if (!parseInt(post_id)) throw new Error('[ 요청 에러 ] post_id가 필요합니다.');
 
-    const foundpost = await getPost(post_id);
+    const foundpost = await getPost(parseInt(post_id));
 
     res.status(200).json({ message: '게시글 조회 성공', data: foundpost });
   } catch (error: any) {
@@ -95,10 +96,39 @@ const addPostHandler = async (req: Request, res: Response, next: NextFunction) =
   }
 };
 
+/* post_id로 특정 게시글 수정 */
+const editPostHandler = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { post_id } = req.params;
+    const { post_category, post_title, post_content, post_img } = req.body;
+
+    if (!post_id || !post_category || !post_title || !post_content || !post_img)
+      throw new Error('[ 요청 에러 ] 모든 필드를 입력해야 합니다.');
+
+    const postData: updatePostInput = {
+      post_category,
+      post_title,
+      post_content,
+      post_img,
+    };
+
+    const updatedPost = await editPost(parseInt(post_id), postData);
+
+    res.status(201).json({ message: '게시글 수정 성공', data: updatedPost });
+  } catch (error: any) {
+    if (error instanceof AppError) next(error);
+    else {
+      console.log(error);
+      next(new AppError(500, error.message));
+    }
+  }
+};
+
 export {
   getAllPostsHandler,
   getCategoriesHandler,
   getAllPostsByLocationHandler,
   getPostHandler,
   addPostHandler,
+  editPostHandler,
 };

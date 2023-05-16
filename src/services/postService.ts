@@ -1,7 +1,7 @@
-import { createPost, findPosts, findPostById } from '../database/daos/post.repo';
 import { Post } from '../database/models/post.entity';
 import { AppError } from '../utils/errorHandler';
-import { createPostInput, updatePostInput } from '../database/daos/post.repo';
+import { createPostInput, updatePostInput } from '../database/models/post.entity';
+import { createPost, findPosts, findPostById } from '../database/daos/post.repo';
 
 /* 게시글 생성 */
 const addPost = async (inputData: createPostInput) => {

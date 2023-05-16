@@ -1,14 +1,18 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { User } from './user.entity';
 import { Comment } from './comment.entity';
-
-export type PostProfile = {
+interface PostProfile {
   user_id: string;
   post_category: string;
   post_title: string;
   post_content: string;
-  // post_img: string;
-};
+  post_img: string;
+}
+
+export type createPostInput = PostProfile;
+
+export type updatePostInput = Partial<Omit<PostProfile, 'user_id'>>;
+
 @Entity()
 export class Post {
   @PrimaryGeneratedColumn()
@@ -42,6 +46,3 @@ export class Post {
   @OneToMany((type) => Comment, (comment) => comment.post)
   comments!: Comment[]; // 댓글
 }
-
-// @Column({ nullable: true })
-// comment_id!: number;

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { addPost, getAllPosts, getPost } from '../services/postService';
 import { AppError } from '../utils/errorHandler';
-import { createPostInput, updatePostInput } from '../database/daos/post.repo';
+import { createPostInput, updatePostInput } from '../database/models/post.entity';
+import { addPost, getAllPosts, getPost } from '../services/postService';
 
 const addPostHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {

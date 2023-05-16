@@ -1,18 +1,7 @@
 import { db } from '../../config/dbconfig';
 import { Post } from '../models/post.entity';
 import { AppError } from '../../utils/errorHandler';
-
-interface PostProfile {
-  user_id: string;
-  post_category: string;
-  post_title: string;
-  post_content: string;
-  post_img: string;
-}
-
-export type createPostInput = PostProfile;
-
-export type updatePostInput = Partial<Omit<PostProfile, 'user_id'>>;
+import { createPostInput, updatePostInput } from '../models/post.entity';
 
 /* 게시글 생성 */
 const createPost = async (inputData: createPostInput): Promise<number> => {

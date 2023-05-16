@@ -8,6 +8,8 @@ import {
   findPostById,
   createPost,
   updatePost,
+  deletePost,
+  isPostIdValid,
 } from '../database/daos/post.repo';
 
 /* 게시글 목록 조회 */
@@ -73,7 +75,7 @@ const getPost = async (post_id: number): Promise<Post> => {
     const foundPost = await findPostById(post_id);
 
     if (foundPost === undefined)
-      throw new Error('[ 게시글 조회 에러 ] 게시글이 존재하지 않습니다.');
+      throw new Error('[ 게시글 조회 에러 ] 게시글이 삭제되었거나, 존재하지 않습니다.');
 
     return foundPost;
   } catch (error: any) {
@@ -109,8 +111,9 @@ const editPost = async (post_id: number, inputData: updatePostInput) => {
 
     const foundUpdatedPost = await findPostById(updatedPostId);
 
-    if (foundUpdatedPost === undefined)
-      throw new Error('[ 게시글 등록 에러 ] 수정된 게시글이 존재하지 않습니다.');
+    console.log(foundUpdatedPost);
+    if (foundUpdatedPost.post_id === null)
+      throw new Error('[ 게시글 수정 에러 ] 수정하실 게시글이 이미 삭제되어 존재하지 않습니다.');
 
     return foundUpdatedPost;
   } catch (error: any) {
@@ -122,4 +125,32 @@ const editPost = async (post_id: number, inputData: updatePostInput) => {
   }
 };
 
-export { getAllPosts, getCategories, getAllPostsByLocation, getPost, addPost, editPost };
+/* 게시글 삭제 */
+const removePost = async (post_id: number) => {
+  try {
+    const isValid = await isPostIdValid(post_id);
+
+    if (isValid === false)
+      throw new AppError(400, '[ 게시글 삭제 에러 ] 이미 삭제된 게시글 입니다.');
+
+    const foundDeletedPostId = await deletePost(post_id);
+
+    return foundDeletedPostId;
+  } catch (error: any) {
+    if (error instanceof AppError) throw error;
+    else {
+      console.log(error);
+      throw new AppError(400, error.message);
+    }
+  }
+};
+
+export {
+  getAllPosts,
+  getCategories,
+  getAllPostsByLocation,
+  getPost,
+  addPost,
+  editPost,
+  removePost,
+};

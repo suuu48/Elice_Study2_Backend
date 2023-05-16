@@ -113,7 +113,7 @@ const createPost = async (inputData: createPostInput): Promise<number> => {
     VALUES (${createValues})
     `;
 
-    const [result, _] = await db.query(SQL); // 두번째 인수는 undefined라서 _ 로 받음
+    const [result, _] = await db.query(SQL);
 
     const createdPostId = (result as { insertId: number }).insertId;
     return createdPostId;
@@ -167,6 +167,7 @@ const deletePost = async (post_id: number): Promise<number> => {
   }
 };
 
+/* post_id 유효성 검사 */
 const isPostIdValid = async (post_id: number): Promise<boolean> => {
   const SQL = `
     SELECT COUNT(*) AS count

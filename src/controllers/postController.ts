@@ -1,8 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppError } from '../utils/errorHandler';
 import { createPostInput, updatePostInput } from '../database/models/post.entity';
-import { addPost, getAllPosts, getPost } from '../services/postService';
+import {
+  addPost,
+  getCategories,
+  getAllPosts,
+  getAllPostsByLocation,
+  getPost,
+} from '../services/postService';
 
+/* 게시글 생성 */
 const addPostHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { user_id } = req.params;
@@ -30,18 +37,50 @@ const addPostHandler = async (req: Request, res: Response, next: NextFunction) =
   }
 };
 
-/*******  동네별로 조회해야함  *******/
-const getAllPostsHandler = async (req: Request, res: Response, next: NextFunction) => {
+/* 게시글 카테고리 조회 */
+const getCategoriesHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const foundPosts = await getAllPosts();
+    const foundCategories = await getCategories();
 
-    res.status(200).json({ message: '전체 게시글 조회 성공', data: foundPosts });
+    const foundCategoryList = foundCategories.map((category: any) => category.post_category);
+
+    res.status(200).json({ message: '카테고리 조회 성공', data: foundCategoryList });
   } catch (error: any) {
     if (error instanceof AppError) next(error);
     else next(new AppError(500, error.message || null));
   }
 };
 
+/* 게시글 목록 조회 */
+const getAllPostsHandler = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const foundPosts = await getAllPosts();
+
+    res.status(200).json({ message: '게시글 목록 조회 성공', data: foundPosts });
+  } catch (error: any) {
+    if (error instanceof AppError) next(error);
+    else next(new AppError(500, error.message || null));
+  }
+};
+
+/* 카테고리별 게시글 목록 조회 */
+const getAllPostsByLocationHandler = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { post_category } = req.params; // Fix : 나중에 jwt로 받기
+    const { user_location } = req.body;
+
+    if (!user_location) throw new Error('[ 요청 에러 ] 모든 필드를 입력해야 합니다.');
+
+    const foundPosts = await getAllPostsByLocation(user_location, post_category);
+
+    res.status(200).json({ message: '카테고리별 게시글 목록 조회 성공', data: foundPosts });
+  } catch (error: any) {
+    if (error instanceof AppError) next(error);
+    else next(new AppError(500, error.message));
+  }
+};
+
+/* post_id로 게시글 조회 */
 const getPostHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const post_id = parseInt(req.params.post_id);
@@ -56,4 +95,10 @@ const getPostHandler = async (req: Request, res: Response, next: NextFunction) =
   }
 };
 
-export { addPostHandler, getAllPostsHandler, getPostHandler };
+export {
+  addPostHandler,
+  getCategoriesHandler,
+  getAllPostsHandler,
+  getAllPostsByLocationHandler,
+  getPostHandler,
+};

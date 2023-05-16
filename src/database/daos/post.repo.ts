@@ -71,14 +71,14 @@ const findPostsByLocation = async (
 const findPostById = async (post_id: number): Promise<Post> => {
   try {
     const selectColums =
-      'post_id, user_img, user_nickname, post_title, post_content, COUNT(comment.post_id) AS comment_count';
+      'post.post_id, user.user_img, user.user_nickname, post.post_title, post.post_content, COUNT(comment.post_id) AS comment_count';
 
     const SQL = `
     SELECT ${selectColums}
     FROM post 
     JOIN user ON user.user_id = post.user_id
     LEFT JOIN comment ON comment.post_id = post.post_id
-    WHERE post_id = ?
+    WHERE post.post_id = ?
     `;
 
     // const selectColums2 = 'comment_id, user_nickname, comment_content, created_at' // comment 에서 작성 예정

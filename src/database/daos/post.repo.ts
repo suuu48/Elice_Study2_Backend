@@ -71,7 +71,7 @@ const findPostsByLocation = async (
 const findPostById = async (post_id: number): Promise<Post> => {
   try {
     const selectColums =
-      'post.post_id, user.user_img, user.user_nickname, post.post_title, post.post_content, COUNT(comment.post_id) AS comment_count';
+      'post.post_id, user.user_img, user.user_nickname, post.post_category, post.post_title, post.post_content, post.post_img, COUNT(comment.post_id) AS comment_count, post.created_at';
 
     const SQL = `
     SELECT ${selectColums}
@@ -124,7 +124,7 @@ const createPost = async (inputData: createPostInput): Promise<number> => {
 };
 
 /* post_id로 특정 게시글 수정 */
-const updatePost = async (post_id: number, inputData: updatePostInput): Promise<Post> => {
+const updatePost = async (post_id: number, inputData: updatePostInput): Promise<number> => {
   try {
     const updateColums = Object.entries(inputData)
       .map(([key, value]) => `${key}='${value}'`)
@@ -138,18 +138,15 @@ const updatePost = async (post_id: number, inputData: updatePostInput): Promise<
 
     const [result, _] = await db.query(SQL, [post_id]);
 
-    const info = (result as { info: string }).info.split(' ');
-    if ((result as { affectedRows: number }).affectedRows === 0)
-      throw new Error('[ 게시글 수정 오류 ]: 수정된 게시글이 없습니다. '); // App Error >> 서비스로 옮길 에정
+    const changedCount = (result as { info: string }).info.split(' ');
 
-    if (Number(info[5]) === 0)
-      throw new Error('[ 게시글 수정 오류 ]: 수정하신 내용이 기존과 동일합니다.'); // App Error >> 서비스로 옮길 에정
+    if (Number(changedCount[5]) === 0)
+      throw new AppError(500, '[ 게시글 수정 오류 ]: 수정하신 내용이 기존과 동일합니다.');
 
-    const updatedPost = await findPostById(post_id);
-    return updatedPost!;
+    return post_id;
   } catch (error) {
     console.log(error);
-    throw new Error('[ 쿼리 실행 에러 ]: 게시글 수정 실패'); // App Error
+    throw new AppError(500, '[ 쿼리 실행 에러 ] 게시글 수정 실패');
   }
 };
 

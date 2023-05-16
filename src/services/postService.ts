@@ -72,10 +72,12 @@ const getAllPostsByLocation = async (
 /* post_id로 게시글 조회 */
 const getPost = async (post_id: number): Promise<Post> => {
   try {
-    const foundPost = await findPostById(post_id);
+    const isValid = await isPostIdValid(post_id);
 
-    if (foundPost === undefined)
-      throw new Error('[ 게시글 조회 에러 ] 게시글이 삭제되었거나, 존재하지 않습니다.');
+    if (isValid === false)
+      throw new Error('[ 게시글 조회 에러 ] 관리자에 의해 이미 삭제된 게시글 입니다.');
+
+    const foundPost = await findPostById(post_id);
 
     return foundPost;
   } catch (error: any) {
@@ -91,15 +93,12 @@ const addPost = async (inputData: createPostInput) => {
 
     const foundCreatedPost = await findPostById(createdPostId);
 
-    if (foundCreatedPost === undefined)
-      throw new Error('[ 게시글 등록 에러 ] 등록된 게시글이 존재하지 않습니다.');
-
     return foundCreatedPost;
   } catch (error: any) {
     if (error instanceof AppError) throw error;
     else {
       console.log(error);
-      throw new AppError(400, error.message);
+      throw new AppError(400, error.message || null);
     }
   }
 };
@@ -107,13 +106,14 @@ const addPost = async (inputData: createPostInput) => {
 /* post_id로 특정 게시글 수정 */
 const editPost = async (post_id: number, inputData: updatePostInput) => {
   try {
+    const isValid = await isPostIdValid(post_id);
+
+    if (isValid === false)
+      throw new Error('[ 게시글 수정 에러 ] 관리자에 의해 이미 삭제된 게시글 입니다.');
+
     const updatedPostId = await updatePost(post_id, inputData);
 
     const foundUpdatedPost = await findPostById(updatedPostId);
-
-    console.log(foundUpdatedPost);
-    if (foundUpdatedPost.post_id === null)
-      throw new Error('[ 게시글 수정 에러 ] 수정하실 게시글이 이미 삭제되어 존재하지 않습니다.');
 
     return foundUpdatedPost;
   } catch (error: any) {
@@ -131,7 +131,7 @@ const removePost = async (post_id: number) => {
     const isValid = await isPostIdValid(post_id);
 
     if (isValid === false)
-      throw new AppError(400, '[ 게시글 삭제 에러 ] 이미 삭제된 게시글 입니다.');
+      throw new Error('[ 게시글 삭제 에러 ] 관리자에 의해 이미 삭제된 게시글 입니다.');
 
     const foundDeletedPostId = await deletePost(post_id);
 

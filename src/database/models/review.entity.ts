@@ -31,9 +31,6 @@ export class Review {
   @Column({ type: 'double', nullable: true, default: null })
   star_rating!: number;
 
-  @Column({ type: 'tinyint', width: 1, default: 0 })
-  delete_flag!: boolean;
-
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at!: Date;
 

@@ -8,6 +8,7 @@ import {
   getPost,
   addPost,
   editPost,
+  removePost,
 } from '../services/postService';
 
 /* 게시글 목록 조회 */
@@ -39,10 +40,10 @@ const getCategoriesHandler = async (req: Request, res: Response, next: NextFunct
 /* 카테고리별 게시글 목록 조회 */
 const getAllPostsByLocationHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { post_category } = req.params; // Fix : 나중에 jwt로 받기
-    const { user_location } = req.body;
+    const { post_category } = req.params;
+    const { user_location } = req.body; // Fix : 나중에 jwt로 받기
 
-    if (!user_location) throw new Error('[ 요청 에러 ] 모든 필드를 입력해야 합니다.');
+    if (!post_category) throw new Error('[ 요청 에러 ] post_category가 필요합니다.');
 
     const foundPosts = await getAllPostsByLocation(user_location, post_category);
 
@@ -124,6 +125,25 @@ const editPostHandler = async (req: Request, res: Response, next: NextFunction) 
   }
 };
 
+/* 게시글 삭제 */
+const removePostHandler = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { post_id } = req.params;
+
+    if (!post_id) throw new Error('[ 요청 에러 ] post_id가 필요합니다.');
+
+    const deletedPost = await removePost(parseInt(post_id));
+
+    res.status(201).json({ message: '게시글 삭제 성공', data: { post_id: deletedPost } });
+  } catch (error: any) {
+    if (error instanceof AppError) next(error);
+    else {
+      console.log(error);
+      next(new AppError(500, error.message));
+    }
+  }
+};
+
 export {
   getAllPostsHandler,
   getCategoriesHandler,
@@ -131,4 +151,5 @@ export {
   getPostHandler,
   addPostHandler,
   editPostHandler,
+  removePostHandler,
 };

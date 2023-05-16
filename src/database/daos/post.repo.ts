@@ -3,27 +3,22 @@ import { Post } from '../models/post.entity';
 import { AppError } from '../../utils/errorHandler';
 import { createPostInput, updatePostInput } from '../models/post.entity';
 
-/* 게시글 생성 */
-const createPost = async (inputData: createPostInput): Promise<number> => {
+/* 게시글 목록 조회 */
+const findPosts = async (): Promise<Post[]> => {
   try {
-    const createColums = 'user_id, post_category, post_title, post_content, post_img';
-    const createValues = Object.values(inputData)
-      .map((value) => `'${value}'`)
-      .join(', ');
-
     const SQL = `
-    INSERT INTO
-    post (${createColums}) 
-    VALUES (${createValues})
+    SELECT * 
+    FROM post
     `;
 
-    const [result, _] = await db.query(SQL); // 두번째 인수는 undefined라서 _ 로 받음
+    const [postRows]: any = await db.query(SQL);
+    // if (!Array.isArray(postRows) || postRows.length === 0)
+    //   throw new Error('[ 전체 게시글 조회 오류 ]: 게시글 목록이 존재하지 않습니다.');
 
-    const createdPostId = (result as { insertId: number }).insertId;
-    return createdPostId;
+    return postRows;
   } catch (error) {
     console.log(error);
-    throw new AppError(500, '[ 쿼리 실행 에러 ] 게시글 등록 실패');
+    throw new Error('[ 쿼리 실행 에러 ]: 게시글 목록 조회 실패.');
   }
 };
 
@@ -42,25 +37,6 @@ const findCategories = async (): Promise<string[]> => {
   } catch (error) {
     console.log(error);
     throw new AppError(500, '[ 쿼리 실행 에러 ]: 카테고리 조회 실패.');
-  }
-};
-
-/* 게시글 목록 조회 */
-const findPosts = async (): Promise<Post[]> => {
-  try {
-    const SQL = `
-    SELECT * 
-    FROM post
-    `;
-
-    const [postRows]: any = await db.query(SQL);
-    // if (!Array.isArray(postRows) || postRows.length === 0)
-    //   throw new Error('[ 전체 게시글 조회 오류 ]: 게시글 목록이 존재하지 않습니다.');
-
-    return postRows;
-  } catch (error) {
-    console.log(error);
-    throw new Error('[ 쿼리 실행 에러 ]: 게시글 목록 조회 실패.');
   }
 };
 
@@ -123,6 +99,30 @@ const findPostById = async (post_id: number): Promise<Post> => {
   }
 };
 
+/* 게시글 생성 */
+const createPost = async (inputData: createPostInput): Promise<number> => {
+  try {
+    const createColums = 'user_id, post_category, post_title, post_content, post_img';
+    const createValues = Object.values(inputData)
+      .map((value) => `'${value}'`)
+      .join(', ');
+
+    const SQL = `
+    INSERT INTO
+    post (${createColums}) 
+    VALUES (${createValues})
+    `;
+
+    const [result, _] = await db.query(SQL); // 두번째 인수는 undefined라서 _ 로 받음
+
+    const createdPostId = (result as { insertId: number }).insertId;
+    return createdPostId;
+  } catch (error) {
+    console.log(error);
+    throw new AppError(500, '[ 쿼리 실행 에러 ] 게시글 등록 실패');
+  }
+};
+
 /* post_id로 특정 게시글 수정 */
 const updatePost = async (post_id: number, inputData: updatePostInput): Promise<Post> => {
   try {
@@ -180,11 +180,11 @@ const softDeletePost = async (post_id: number): Promise<Post> => {
 };
 
 export {
-  createPost,
-  findCategories,
   findPosts,
+  findCategories,
   findPostsByLocation,
   findPostById,
+  createPost,
   updatePost,
   softDeletePost,
 };

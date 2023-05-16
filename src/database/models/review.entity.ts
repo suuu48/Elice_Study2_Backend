@@ -23,9 +23,6 @@ export class Review {
   location_name!: string;
 
   @Column({ type: 'varchar' })
-  location_category!: string;
-
-  @Column({ type: 'varchar' })
   user_id!: string;
 
   @Column({ type: 'varchar', nullable: true, default: null })

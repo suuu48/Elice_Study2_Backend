@@ -36,6 +36,9 @@ export class User {
   @Column({ type: 'varchar', nullable: true, default: null })
   user_img!: string;
 
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  deleted_at!: Date;
+
   @OneToMany(() => Review, (review) => review.user)
   reviews!: Review[]; // 작성한 리뷰
 

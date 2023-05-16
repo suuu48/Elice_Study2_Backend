@@ -141,7 +141,7 @@ const updatePost = async (post_id: number, inputData: updatePostInput): Promise<
     const changedCount = (result as { info: string }).info.split(' ');
 
     if (Number(changedCount[5]) === 0)
-      throw new AppError(500, '[ 게시글 수정 오류 ]: 수정하신 내용이 기존과 동일합니다.');
+      throw new AppError(500, '[ 데이터베이스 에러 ]: 수정하신 내용이 기존과 동일합니다.');
 
     return post_id;
   } catch (error) {
@@ -151,29 +151,34 @@ const updatePost = async (post_id: number, inputData: updatePostInput): Promise<
 };
 
 /* 게시글 삭제 */
-const softDeletePost = async (post_id: number): Promise<Post> => {
+const deletePost = async (post_id: number): Promise<number> => {
   try {
     const SQL = `
-    UPDATE post
-    SET delete_flag = 1
+    DELETE FROM post
     WHERE post_id = ?
     `;
 
-    const [result, _] = await db.query(SQL, [post_id]);
+    await db.query(SQL, [post_id]);
 
-    const info = (result as { info: string }).info.split(' ');
-
-    if ((result as { affectedRows: number }).affectedRows === 0)
-      throw new Error('[ 게시글 삭제 오류 ]: 삭제된 게시글이 없습니다.'); // App Error >> 서비스로 옮길 에정
-
-    if (Number(info[5]) === 0) throw new Error('[ 게시글 삭제 오류 ]: 이미 삭제된 게시글입니다.'); // App Error >> 서비스로 옮길 에정
-
-    const softDeletedPost = await findPostById(post_id);
-    return softDeletedPost!;
+    return post_id;
   } catch (error) {
     console.log(error);
-    throw new Error('[ 쿼리 실행 에러 ]: 게시글 삭제 실패'); // App Error
+    throw new AppError(500, '[ 쿼리 실행 에러 ]: 게시글 삭제 실패');
   }
+};
+
+const isPostIdValid = async (post_id: number): Promise<boolean> => {
+  const SQL = `
+    SELECT COUNT(*) AS count
+    FROM post
+    WHERE post_id = ?
+  `;
+
+  const [countRows]: any = await db.query(SQL, [post_id]);
+
+  const count = countRows[0].count;
+
+  return count > 0;
 };
 
 export {
@@ -183,5 +188,6 @@ export {
   findPostById,
   createPost,
   updatePost,
-  softDeletePost,
+  deletePost,
+  isPostIdValid,
 };

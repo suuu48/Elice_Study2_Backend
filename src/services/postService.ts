@@ -7,6 +7,7 @@ import {
   findPostsByLocation,
   findPostById,
   createPost,
+  updatePost,
 } from '../database/daos/post.repo';
 
 /* 게시글 목록 조회 */
@@ -86,17 +87,39 @@ const addPost = async (inputData: createPostInput) => {
   try {
     const createdPostId = await createPost(inputData);
 
-    const foundPost = await findPostById(createdPostId);
-    // if (!foundPost) throw new Error('[ 게시글 등록 에러 ] 등록된 게시글이 없습니다.');
+    const foundCreatedPost = await findPostById(createdPostId);
 
-    return foundPost;
+    if (foundCreatedPost === undefined)
+      throw new Error('[ 게시글 등록 에러 ] 등록된 게시글이 존재하지 않습니다.');
+
+    return foundCreatedPost;
   } catch (error: any) {
     if (error instanceof AppError) throw error;
     else {
       console.log(error);
-      throw new AppError(400, error.message || null);
+      throw new AppError(400, error.message);
     }
   }
 };
 
-export { getAllPosts, getCategories, getAllPostsByLocation, getPost, addPost };
+/* post_id로 특정 게시글 수정 */
+const editPost = async (post_id: number, inputData: updatePostInput) => {
+  try {
+    const updatedPostId = await updatePost(post_id, inputData);
+
+    const foundUpdatedPost = await findPostById(updatedPostId);
+
+    if (foundUpdatedPost === undefined)
+      throw new Error('[ 게시글 등록 에러 ] 수정된 게시글이 존재하지 않습니다.');
+
+    return foundUpdatedPost;
+  } catch (error: any) {
+    if (error instanceof AppError) throw error;
+    else {
+      console.log(error);
+      throw new AppError(400, error.message);
+    }
+  }
+};
+
+export { getAllPosts, getCategories, getAllPostsByLocation, getPost, addPost, editPost };

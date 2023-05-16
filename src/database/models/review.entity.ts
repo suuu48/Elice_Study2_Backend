@@ -1,15 +1,14 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from './user.entity';
-export type ReviewProfile = {
-  review_id: string;
+export type createReviewInput  = {
   location_id: string;
   location_name: string;
-  location_category: string;
   user_id: string;
   review_content: string;
-  delete_flag: boolean;
-  created_at: Date;
+  star_rating: number;
+  review_img: string;
 };
+export type updateReviewInput = Partial<Omit<createReviewInput, 'user_id'>>;
 
 @Entity()
 export class Review {
@@ -28,11 +27,14 @@ export class Review {
   @Column({ type: 'varchar', nullable: true, default: null })
   review_content!: string;
 
-  @Column({ type: 'double', nullable: true, default: null })
+  @Column({ type: 'int', nullable: true, default: null })
   star_rating!: number;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at!: Date;
+
+  @Column({  type: 'varchar', length: 100, default: null })
+  review_img!: string;
 
   @ManyToOne(() => User)
   @JoinColumn({ referencedColumnName: 'user_id' })

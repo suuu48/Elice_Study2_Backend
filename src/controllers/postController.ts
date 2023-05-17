@@ -4,6 +4,7 @@ import { createPostInput, updatePostInput } from '../database/models/post.entity
 import {
   getAllPosts,
   getCategories,
+  getSearchedPostsByKeyword,
   getAllPostsByLocation,
   getPost,
   addPost,
@@ -34,6 +35,27 @@ const getCategoriesHandler = async (req: Request, res: Response, next: NextFunct
   } catch (error: any) {
     if (error instanceof AppError) next(error);
     else next(new AppError(500, error.message || null));
+  }
+};
+
+/* 검색 키워드별 게시글 목록 조회 */
+const getSearchedPostsByKeywordHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const keyword = req.query.keyword as string;
+    const { user_location } = req.body; // Fix : 나중에 jwt로 받기
+
+    if (!keyword) throw new Error('[ 요청 에러 ] keyword가 필요합니다.');
+
+    const foundPosts = await getSearchedPostsByKeyword(user_location, keyword);
+
+    res.status(200).json({ message: '검색 키워드별 게시글 목록 조회 성공', data: foundPosts });
+  } catch (error: any) {
+    if (error instanceof AppError) next(error);
+    else next(new AppError(500, error.message));
   }
 };
 
@@ -147,6 +169,7 @@ const removePostHandler = async (req: Request, res: Response, next: NextFunction
 export {
   getAllPostsHandler,
   getCategoriesHandler,
+  getSearchedPostsByKeywordHandler,
   getAllPostsByLocationHandler,
   getPostHandler,
   addPostHandler,

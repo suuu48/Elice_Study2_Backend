@@ -99,18 +99,15 @@ const updateComment = async (
 const deleteComment = async (comment_id: number): Promise<number> => {
   try {
     const SQL = `
-    UPDATE comment
-    SET delete_flag = 1
+    DELETE FROM comment
     WHERE comment_id = ?`;
 
     await db.query(SQL, [comment_id]);
 
-    // const softDeletedComment = await findCommentById(comment_id);
-    // return softDeletedComment!;
     return comment_id;
   } catch (error) {
     console.log(error);
-    throw new Error('[ 댓글 삭제 실패 ]: 쿼리 실행 중 에러가 발생했습니다.'); // App Error
+    throw new AppError(500, '[ 쿼리 실행 에러 ] 댓글 삭제 실패'); // App Error
   }
 };
 

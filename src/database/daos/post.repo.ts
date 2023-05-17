@@ -16,7 +16,7 @@ const findPosts = async (): Promise<Post[]> => {
     return postRows;
   } catch (error) {
     console.log(error);
-    throw new Error('[ 쿼리 실행 에러 ]: 게시글 목록 조회 실패');
+    throw new Error('[ 쿼리 실행 에러 ] 게시글 목록 조회 실패');
   }
 };
 
@@ -34,7 +34,7 @@ const findCategories = async (): Promise<string[]> => {
     return categoryRows;
   } catch (error) {
     console.log(error);
-    throw new AppError(500, '[ 쿼리 실행 에러 ]: 카테고리 조회 실패');
+    throw new AppError(500, '[ 쿼리 실행 에러 ] 카테고리 조회 실패');
   }
 };
 
@@ -61,7 +61,7 @@ const findPostsByLocation = async (
     return postRows;
   } catch (error) {
     console.log(error);
-    throw new AppError(500, '[ 쿼리 실행 에러 ]: 카테고리별 게시글 목록 조회 실패');
+    throw new AppError(500, '[ 쿼리 실행 에러 ] 카테고리별 게시글 목록 조회 실패');
   }
 };
 
@@ -131,7 +131,7 @@ const updatePost = async (post_id: number, inputData: updatePostInput): Promise<
     const changedCount = (result as { info: string }).info.split(' ');
 
     if (Number(changedCount[5]) === 0)
-      throw new AppError(500, '[ 데이터베이스 에러 ]: 수정하신 내용이 기존과 동일합니다.');
+      throw new AppError(500, '[ 데이터베이스 에러 ] 수정하신 내용이 기존과 동일합니다.');
 
     return post_id;
   } catch (error) {
@@ -153,7 +153,7 @@ const deletePost = async (post_id: number): Promise<number> => {
     return post_id;
   } catch (error) {
     console.log(error);
-    throw new AppError(500, '[ 쿼리 실행 에러 ]: 게시글 삭제 실패');
+    throw new AppError(500, '[ 쿼리 실행 에러 ] 게시글 삭제 실패');
   }
 };
 

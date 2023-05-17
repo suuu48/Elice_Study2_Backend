@@ -17,7 +17,7 @@ const findCommentById = async (comment_id: number): Promise<Comment> => {
     return comment[0];
   } catch (error) {
     console.log(error);
-    throw new AppError(500, '[ 쿼리 실행 에러 ] 댓글 조회 실패');
+    throw new AppError(500, '[ DB 에러 ] 댓글 조회 실패');
   }
 };
 
@@ -39,7 +39,7 @@ const findCommentsByPost = async (post_id: number): Promise<Comment[]> => {
     return commentRows;
   } catch (error) {
     console.log(error);
-    throw new AppError(500, '[ 쿼리 실행 에러 ] 게시글별 댓글 목록 조회 실패');
+    throw new AppError(500, '[ DB 에러 ] 게시글별 댓글 목록 조회 실패');
   }
 };
 
@@ -64,7 +64,7 @@ const createComment = async (inputData: createCommentInput): Promise<number> => 
     return createdCommentId;
   } catch (error) {
     console.log(error);
-    throw new AppError(500, '[ 쿼리 실행 에러 ] 댓글 등록 실패');
+    throw new AppError(500, '[ DB 에러 ] 댓글 등록 실패');
   }
 };
 
@@ -91,7 +91,7 @@ const updateComment = async (
     return comment_id;
   } catch (error) {
     console.log(error);
-    throw new Error('[ 댓글 수정 실패 ]: 쿼리 실행 중 에러가 발생했습니다.'); // App Error
+    throw new AppError(500, '[ DB 에러 ] 댓글 수정 실패'); // App Error
   }
 };
 
@@ -107,7 +107,7 @@ const deleteComment = async (comment_id: number): Promise<number> => {
     return comment_id;
   } catch (error) {
     console.log(error);
-    throw new AppError(500, '[ 쿼리 실행 에러 ] 댓글 삭제 실패'); // App Error
+    throw new AppError(500, '[ DB 에러 ] 댓글 삭제 실패'); // App Error
   }
 };
 

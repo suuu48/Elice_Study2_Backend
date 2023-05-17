@@ -111,4 +111,26 @@ const deleteComment = async (comment_id: number): Promise<number> => {
   }
 };
 
-export { findCommentById, findCommentsByPost, createComment, updateComment, deleteComment };
+/* comment_id 유효성 검사 */
+const isCommentIdValid = async (comment_id: number): Promise<boolean> => {
+  const SQL = `
+    SELECT COUNT(*) AS count
+    FROM comment
+    WHERE comment_id = ?
+  `;
+
+  const [countRows]: any = await db.query(SQL, [comment_id]);
+
+  const count = countRows[0].count;
+
+  return count > 0;
+};
+
+export {
+  findCommentById,
+  findCommentsByPost,
+  createComment,
+  updateComment,
+  deleteComment,
+  isCommentIdValid,
+};

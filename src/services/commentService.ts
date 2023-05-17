@@ -1,6 +1,11 @@
 import { AppError } from '../utils/errorHandler';
 import { createCommentInput, updateCommentInput } from '../database/models/comment.entity';
-import { findCommentById, createComment, deleteComment } from '../database/daos/comment.repo';
+import {
+  findCommentById,
+  createComment,
+  deleteComment,
+  isCommentIdValid,
+} from '../database/daos/comment.repo';
 
 /* 댓글 등록 */
 const addComment = async (inputData: createCommentInput) => {
@@ -22,6 +27,11 @@ const addComment = async (inputData: createCommentInput) => {
 /* 댓글 삭제 */
 const removeComment = async (comment_id: number) => {
   try {
+    const isValid = await isCommentIdValid(comment_id);
+
+    if (isValid === false)
+      throw new Error('[ 댓글 삭제 에러 ] 관리자에 의해 이미 삭제된 댓글 입니다.');
+
     const foundDeletedCommentId = await deleteComment(comment_id);
 
     return foundDeletedCommentId;

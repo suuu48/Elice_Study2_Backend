@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppError } from '../utils/errorHandler';
 import { createCommentInput, updateCommentInput } from '../database/models/comment.entity';
-import { addComment } from '../services/commentService';
+import { addComment, removeComment } from '../services/commentService';
 
 /* 댓글 등록 */
 const addCommentHandler = async (req: Request, res: Response, next: NextFunction) => {
@@ -30,4 +30,23 @@ const addCommentHandler = async (req: Request, res: Response, next: NextFunction
   }
 };
 
-export { addCommentHandler };
+/* 댓글 삭제 */
+const removeCommentHandler = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { comment_id } = req.params;
+
+    if (!comment_id) throw new Error('[ 요청 에러 ] comment_id가 필요합니다.');
+
+    const deletedComment = await removeComment(parseInt(comment_id));
+
+    res.status(200).json({ message: '댓글 삭제 성공', data: { comment_id: deletedComment } });
+  } catch (error: any) {
+    if (error instanceof AppError) next(error);
+    else {
+      console.log(error);
+      next(new AppError(500, error.message));
+    }
+  }
+};
+
+export { addCommentHandler, removeCommentHandler };

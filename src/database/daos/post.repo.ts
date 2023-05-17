@@ -12,8 +12,6 @@ const findPosts = async (): Promise<Post[]> => {
     `;
 
     const [postRows]: any = await db.query(SQL);
-    // if (!Array.isArray(postRows) || postRows.length === 0)
-    //   throw new Error('[ 전체 게시글 조회 오류 ]: 게시글 목록이 존재하지 않습니다.');
 
     return postRows;
   } catch (error) {
@@ -80,15 +78,6 @@ const findPostById = async (post_id: number): Promise<Post> => {
     LEFT JOIN comment ON comment.post_id = post.post_id
     WHERE post.post_id = ?
     `;
-
-    // const selectColums2 = 'comment_id, user_nickname, comment_content, created_at' // comment 에서 작성 예정
-
-    // const SQL2 = `
-    // SELECT ${selectColums}
-    // FROM comment
-    // JOIN user ON user.user_id = comment.user_id
-    // WHERE post_id = ?
-    // `;
 
     const [post]: any = await db.query(SQL, [post_id]);
 

@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 
 class AppError extends Error {
   statusCode: number;
@@ -10,7 +10,7 @@ class AppError extends Error {
   }
 }
 
-const errorHandlerMiddleware = (err: AppError, req: Request, res: Response) => {
+const errorHandlerMiddleware = (err: AppError, req: Request, res: Response, next: NextFunction) => {
   const { statusCode, message } = err;
   res.status(statusCode || 500).json({
     status: 'error',

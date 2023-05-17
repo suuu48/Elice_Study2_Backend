@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import { env } from './config/envconfig';
 import { db } from './config/dbconfig';
 import { errorHandlerMiddleware } from './utils/errorHandler';
-import postRouter from './routes/postRouter';
+import { postRouter, commentRouter } from './routes/index';
 
 const port = Number(env.PORT || 3000);
 const app = express();
@@ -43,7 +43,7 @@ db.getConnection()
 
 app.use(express.json());
 app.use('/post', postRouter);
-// app.use('/comment', -)
+app.use('/comment', commentRouter);
 // app.use('/user', -)
 // app.use('/pet', -)
 // app.use('/review', -)

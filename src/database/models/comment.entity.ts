@@ -1,7 +1,16 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Timestamp, JoinColumn } from 'typeorm';
 import { User } from './user.entity';
 import { Post } from './post.entity';
 
+interface CommentProfile {
+  post_id: number;
+  user_id: string;
+  comment_content: string;
+}
+
+export type createCommentInput = CommentProfile;
+
+export type updateCommentInput = Partial<Pick<CommentProfile, 'comment_content'>>;
 @Entity()
 export class Comment {
   @PrimaryGeneratedColumn()
@@ -13,14 +22,11 @@ export class Comment {
   @Column({ length: 45, nullable: false })
   user_id!: string;
 
-  @Column({ length: 45, nullable: true })
+  @Column({ length: 100, nullable: false })
   comment_content!: string;
 
-  @Column({ type: 'tinyint', width: 1, default: 0 })
-  delete_flag!: boolean;
-
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  created_at!: Date;
+  created_at!: Timestamp;
 
   @ManyToOne((type) => User)
   @JoinColumn({ referencedColumnName: 'user_id' })

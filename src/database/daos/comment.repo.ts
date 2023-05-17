@@ -3,20 +3,21 @@ import { Comment } from '../models/comment.entity';
 import { AppError } from '../../utils/errorHandler';
 import { createCommentInput, updateCommentInput } from '../models/comment.entity';
 
-/* 전체 댓글 조회 */
-const findComments = async (): Promise<Comment[]> => {
+/* 댓글 조회 */
+const findCommentById = async (comment_id: number): Promise<Comment> => {
   try {
     const SQL = `
     SELECT * 
     FROM comment
+    WHERE comment_id = ?
     `;
 
-    const [commentRows]: any = await db.query(SQL);
+    const [comment]: any = await db.query(SQL, [comment_id]);
 
-    return commentRows;
+    return comment[0];
   } catch (error) {
     console.log(error);
-    throw new Error('[게시글 전체 조회 실패 ]: 쿼리 실행 중 에러가 발생했습니다.'); // App Error
+    throw new AppError(500, '[ 쿼리 실행 에러 ] 댓글 조회 실패');
   }
 };
 
@@ -38,11 +39,11 @@ const findCommentsByPost = async (post_id: number): Promise<Comment[]> => {
     return commentRows;
   } catch (error) {
     console.log(error);
-    throw new AppError(500, '[ 쿼리 실행 에러 ]: 게시글별 댓글 목록 조회 실패'); // App Error
+    throw new AppError(500, '[ 쿼리 실행 에러 ] 게시글별 댓글 목록 조회 실패');
   }
 };
 
-/* 댓글 생성 */
+/* 댓글 등록 */
 const createComment = async (inputData: createCommentInput): Promise<number> => {
   try {
     const createColums = 'post_id, user_id, comment_content';
@@ -59,13 +60,11 @@ const createComment = async (inputData: createCommentInput): Promise<number> => 
     const [result, _] = await db.query(SQL);
 
     const createdCommentId = (result as { insertId: number }).insertId;
-    // const createdComment = await findCommentById(createdCommentId);
 
-    // return createdComment!;
     return createdCommentId;
   } catch (error) {
     console.log(error);
-    throw new Error('[ 댓글 생성 실패 ]: 쿼리 실행 중 에러가 발생했습니다.'); // App Error
+    throw new AppError(500, '[ 쿼리 실행 에러 ] 댓글 등록 실패');
   }
 };
 
@@ -115,4 +114,4 @@ const deleteComment = async (comment_id: number): Promise<number> => {
   }
 };
 
-export { findComments, findCommentsByPost, createComment, updateComment, deleteComment };
+export { findCommentById, findCommentsByPost, createComment, updateComment, deleteComment };

@@ -1,11 +1,11 @@
 import {
   Entity,
-  Column,
   PrimaryGeneratedColumn,
+  Column,
   ManyToOne,
   OneToMany,
-  JoinColumn,
   Timestamp,
+  JoinColumn,
 } from 'typeorm';
 import { User } from './user.entity';
 import { Comment } from './comment.entity';
@@ -41,9 +41,6 @@ export class Post {
 
   @Column({ length: 100, nullable: true, default: null })
   post_img!: string;
-
-  @Column({ type: 'tinyint', width: 1, default: 0 })
-  delete_flag!: boolean;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at!: Timestamp;

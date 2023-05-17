@@ -18,3 +18,5 @@ const addComment = async (inputData: createCommentInput) => {
     }
   }
 };
+
+export { addComment };

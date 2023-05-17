@@ -1,6 +1,7 @@
 import { Post } from '../database/models/post.entity';
 import { AppError } from '../utils/errorHandler';
 import { createPostInput, updatePostInput } from '../database/models/post.entity';
+import { findCommentsByPost } from '../database/daos/comment.repo';
 import {
   findPosts,
   findCategories,
@@ -69,7 +70,7 @@ const getAllPostsByLocation = async (
   }
 };
 
-/* post_id로 게시글 조회 */
+/* 게시글 및 게시글별 댓글 목록 조회 */
 const getPost = async (post_id: number): Promise<Post> => {
   try {
     const isValid = await isPostIdValid(post_id);
@@ -79,6 +80,10 @@ const getPost = async (post_id: number): Promise<Post> => {
 
     const foundPost = await findPostById(post_id);
 
+    const foundComments = await findCommentsByPost(post_id);
+
+    foundPost.comments = foundComments; // 댓글 없으면 빈 배열 할당됨
+
     return foundPost;
   } catch (error: any) {
     if (error instanceof AppError) throw error;
@@ -86,7 +91,7 @@ const getPost = async (post_id: number): Promise<Post> => {
   }
 };
 
-/* 게시글 생성 */
+/* 게시글 등록 */
 const addPost = async (inputData: createPostInput) => {
   try {
     const createdPostId = await createPost(inputData);
@@ -103,7 +108,7 @@ const addPost = async (inputData: createPostInput) => {
   }
 };
 
-/* post_id로 특정 게시글 수정 */
+/* 게시글 수정 */
 const editPost = async (post_id: number, inputData: updatePostInput) => {
   try {
     const isValid = await isPostIdValid(post_id);
@@ -120,7 +125,7 @@ const editPost = async (post_id: number, inputData: updatePostInput) => {
     if (error instanceof AppError) throw error;
     else {
       console.log(error);
-      throw new AppError(400, error.message);
+      throw new AppError(404, error.message);
     }
   }
 };
@@ -140,7 +145,7 @@ const removePost = async (post_id: number) => {
     if (error instanceof AppError) throw error;
     else {
       console.log(error);
-      throw new AppError(400, error.message);
+      throw new AppError(404, error.message);
     }
   }
 };

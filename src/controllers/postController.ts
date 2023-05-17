@@ -54,7 +54,7 @@ const getAllPostsByLocationHandler = async (req: Request, res: Response, next: N
   }
 };
 
-/* post_id로 게시글 조회 */
+/* 게시글 및 게시글별 댓글 목록 조회 */
 const getPostHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { post_id } = req.params;
@@ -69,7 +69,7 @@ const getPostHandler = async (req: Request, res: Response, next: NextFunction) =
   }
 };
 
-/* 게시글 생성 */
+/* 게시글 등록 */
 const addPostHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { user_id } = req.params;
@@ -97,7 +97,7 @@ const addPostHandler = async (req: Request, res: Response, next: NextFunction) =
   }
 };
 
-/* post_id로 특정 게시글 수정 */
+/* 게시글 수정 */
 const editPostHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { post_id } = req.params;

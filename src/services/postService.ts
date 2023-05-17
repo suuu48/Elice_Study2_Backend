@@ -5,6 +5,7 @@ import { findCommentsByPost } from '../database/daos/comment.repo';
 import {
   findPosts,
   findCategories,
+  findPostsByKeyword,
   findPostsByLocation,
   findPostById,
   createPost,
@@ -40,6 +41,27 @@ const getCategories = async (): Promise<string[]> => {
       throw new Error('[ 카테고리 조회 에러 ] 존재하는 카테고리가 없습니다.');
 
     return foundCategories;
+  } catch (error: any) {
+    if (error instanceof AppError) throw error;
+    else {
+      console.log(error);
+      throw new AppError(404, error.message);
+    }
+  }
+};
+
+/* 검색 키워드별 게시글 목록 조회 */
+const getSearchedPostsByKeyword = async (
+  user_location: string,
+  keyword: string
+): Promise<Post[]> => {
+  try {
+    const foundPosts = await findPostsByKeyword(user_location, keyword);
+
+    if (foundPosts.length === 0)
+      throw new Error('[ 검색 키워드별 게시글 목록 조회 에러 ] 존재하는 게시글이 없습니다.');
+
+    return foundPosts;
   } catch (error: any) {
     if (error instanceof AppError) throw error;
     else {
@@ -153,6 +175,7 @@ const removePost = async (post_id: number) => {
 export {
   getAllPosts,
   getCategories,
+  getSearchedPostsByKeyword,
   getAllPostsByLocation,
   getPost,
   addPost,

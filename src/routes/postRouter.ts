@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
   getAllPostsHandler,
   getCategoriesHandler,
+  getSearchedPostsByKeywordHandler,
   getAllPostsByLocationHandler,
   getPostHandler,
   addPostHandler,
@@ -16,6 +17,9 @@ const router = Router();
 
 /* 게시글 카테고리 조회 */
 router.get('/categories', getCategoriesHandler);
+
+/* 검색 키워드별 게시글 목록 조회 */
+router.get('/search', getSearchedPostsByKeywordHandler);
 
 /* 카테고리별 게시글 목록 조회 */
 router.get('/category/:post_category', getAllPostsByLocationHandler);

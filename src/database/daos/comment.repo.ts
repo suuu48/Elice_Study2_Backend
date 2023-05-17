@@ -1,41 +1,7 @@
 import { db } from '../../config/dbconfig';
 import { Comment } from '../models/comment.entity';
-
-interface CommentProfile {
-  post_id: number;
-  user_id: string;
-  comment_content: string;
-}
-
-type createCommentInput = CommentProfile;
-
-type updateCommentInput = Partial<Pick<CommentProfile, 'comment_content'>>;
-
-/* 댓글 생성 */
-const createComment = async (inputData: createCommentInput): Promise<Comment> => {
-  try {
-    const createColums = 'post_id, user_id, comment_content';
-    const createValues = Object.values(inputData)
-      .map((value) => `'${value}'`)
-      .join(', ');
-
-    const SQL = `
-    INSERT INTO
-    comment (${createColums}) 
-    VALUES (${createValues})
-    `;
-
-    const [result, _] = await db.query(SQL);
-
-    const createdCommentId = (result as { insertId: number }).insertId;
-    const createdComment = await findCommentById(createdCommentId);
-
-    return createdComment!;
-  } catch (error) {
-    console.log(error);
-    throw new Error('[ 댓글 생성 실패 ]: 쿼리 실행 중 에러가 발생했습니다.'); // App Error
-  }
-};
+import { AppError } from '../../utils/errorHandler';
+import { createCommentInput, updateCommentInput } from '../models/comment.entity';
 
 /* 전체 댓글 조회 */
 const findComments = async (): Promise<Comment[]> => {
@@ -72,6 +38,32 @@ const findCommentById = async (comment_id: number): Promise<Comment> => {
   }
 };
 
+/* 댓글 생성 */
+const createComment = async (inputData: createCommentInput): Promise<Comment> => {
+  try {
+    const createColums = 'post_id, user_id, comment_content';
+    const createValues = Object.values(inputData)
+      .map((value) => `'${value}'`)
+      .join(', ');
+
+    const SQL = `
+    INSERT INTO
+    comment (${createColums}) 
+    VALUES (${createValues})
+    `;
+
+    const [result, _] = await db.query(SQL);
+
+    const createdCommentId = (result as { insertId: number }).insertId;
+    const createdComment = await findCommentById(createdCommentId);
+
+    return createdComment!;
+  } catch (error) {
+    console.log(error);
+    throw new Error('[ 댓글 생성 실패 ]: 쿼리 실행 중 에러가 발생했습니다.'); // App Error
+  }
+};
+
 /* comment_id로 특정 댓글 수정 */
 const updateComment = async (
   comment_id: number,
@@ -99,7 +91,7 @@ const updateComment = async (
 };
 
 /* 게시글 삭제 */
-const softDeleteComment = async (comment_id: number): Promise<Comment> => {
+const deleteComment = async (comment_id: number): Promise<Comment> => {
   try {
     const SQL = `
     UPDATE comment
@@ -116,4 +108,4 @@ const softDeleteComment = async (comment_id: number): Promise<Comment> => {
   }
 };
 
-export { createComment, findComments, findCommentById, updateComment, softDeleteComment };
+export { findComments, findCommentById, createComment, updateComment, deleteComment };

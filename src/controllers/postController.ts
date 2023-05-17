@@ -19,8 +19,13 @@ const getAllPostsHandler = async (req: Request, res: Response, next: NextFunctio
 
     res.status(200).json({ message: '게시글 목록 조회 성공', data: foundPosts });
   } catch (error: any) {
-    if (error instanceof AppError) next(error);
-    else next(new AppError(500, error.message || null));
+    if (error instanceof AppError) {
+      if (error.statusCode === 404) console.log(error);
+      next(error);
+    } else {
+      console.log(error);
+      throw new AppError(500, '[ HTTP 요청 에러 ] 게시글 목록 조회 실패');
+    }
   }
 };
 
@@ -35,12 +40,17 @@ const getCategoriesHandler = async (req: Request, res: Response, next: NextFunct
       .status(200)
       .json({ message: '카테고리 조회 성공', data: { categories: foundCategoryList } });
   } catch (error: any) {
-    if (error instanceof AppError) next(error);
-    else next(new AppError(500, error.message || null));
+    if (error instanceof AppError) {
+      if (error.statusCode === 404) console.log(error);
+      next(error);
+    } else {
+      console.log(error);
+      throw new AppError(500, '[ HTTP 요청 에러 ] 카테고리 조회 실패');
+    }
   }
 };
 
-/* 검색 키워드별 게시글 목록 조회 */
+/* 키워드별 게시글 목록 조회 */
 const getSearchedPostsByKeywordHandler = async (
   req: Request,
   res: Response,
@@ -50,14 +60,21 @@ const getSearchedPostsByKeywordHandler = async (
     const keyword = req.query.keyword as string;
     const { user_location } = req.body; // Fix : 나중에 jwt로 받기
 
-    if (!keyword) throw new Error('[ 요청 에러 ] keyword가 필요합니다.');
+    if (!keyword) throw new AppError(400, 'keyword를 입력해주세요.');
+
+    if (!user_location) throw new AppError(400, 'user_location를 입력해주세요.');
 
     const foundPosts = await getSearchedPostsByKeyword(user_location, keyword);
 
-    res.status(200).json({ message: '검색 키워드별 게시글 목록 조회 성공', data: foundPosts });
+    res.status(200).json({ message: '키워드별 게시글 목록 조회 성공', data: foundPosts });
   } catch (error: any) {
-    if (error instanceof AppError) next(error);
-    else next(new AppError(500, error.message));
+    if (error instanceof AppError) {
+      if (error.statusCode === 404 || error.statusCode === 400) console.log(error);
+      next(error);
+    } else {
+      console.log(error);
+      throw new AppError(500, '[ HTTP 요청 에러 ] 키워드별 게시글 목록 조회 실패');
+    }
   }
 };
 
@@ -67,14 +84,21 @@ const getAllPostsByLocationHandler = async (req: Request, res: Response, next: N
     const { post_category } = req.params;
     const { user_location } = req.body; // Fix : 나중에 jwt로 받기
 
-    if (!post_category) throw new Error('[ 요청 에러 ] post_category가 필요합니다.');
+    if (!post_category) throw new AppError(400, 'post_category를 입력해주세요.');
+
+    if (!user_location) throw new AppError(400, 'user_location를 입력해주세요.');
 
     const foundPosts = await getAllPostsByLocation(user_location, post_category);
 
     res.status(200).json({ message: '카테고리별 게시글 목록 조회 성공', data: foundPosts });
   } catch (error: any) {
-    if (error instanceof AppError) next(error);
-    else next(new AppError(500, error.message));
+    if (error instanceof AppError) {
+      if (error.statusCode === 404 || error.statusCode === 400) console.log(error);
+      next(error);
+    } else {
+      console.log(error);
+      throw new AppError(500, '[ HTTP 요청 에러 ] 카테고리별 게시글 목록 조회 실패');
+    }
   }
 };
 
@@ -82,14 +106,20 @@ const getAllPostsByLocationHandler = async (req: Request, res: Response, next: N
 const getPostHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { post_id } = req.params;
-    if (!parseInt(post_id)) throw new Error('[ 요청 에러 ] post_id가 필요합니다.');
+
+    if (isNaN(Number(post_id))) throw new AppError(400, '유효한 post_id를 입력해주세요.');
 
     const foundpost = await getPost(parseInt(post_id));
 
     res.status(200).json({ message: '게시글 조회 성공', data: foundpost });
   } catch (error: any) {
-    if (error instanceof AppError) next(error);
-    else next(new AppError(500, error.message));
+    if (error instanceof AppError) {
+      if (error.statusCode === 404 || error.statusCode === 400) console.log(error);
+      next(error);
+    } else {
+      console.log(error);
+      throw new AppError(500, '[ HTTP 요청 에러 ] 게시글 조회 실패');
+    }
   }
 };
 
@@ -99,8 +129,10 @@ const addPostHandler = async (req: Request, res: Response, next: NextFunction) =
     const { user_id } = req.params;
     const { post_category, post_title, post_content, post_img } = req.body;
 
-    if (!user_id || !post_category || !post_title || !post_content || !post_img)
-      throw new Error('[ 요청 에러 ] 모든 필드를 입력해야 합니다.');
+    if (!user_id) throw new AppError(400, 'user_id를 입력해주세요.');
+
+    if (!post_category || !post_title || !post_content || !post_img)
+      throw new AppError(400, '요청 body에 모든 정보를 입력해주세요.');
 
     const postData: createPostInput = {
       user_id,
@@ -111,12 +143,15 @@ const addPostHandler = async (req: Request, res: Response, next: NextFunction) =
     };
 
     const createdPost = await addPost(postData);
+
     res.status(201).json({ message: '게시글 등록 성공', data: createdPost });
   } catch (error: any) {
-    if (error instanceof AppError) next(error);
-    else {
+    if (error instanceof AppError) {
+      if (error.statusCode === 400) console.log(error);
+      next(error);
+    } else {
       console.log(error);
-      next(new AppError(500, error.message));
+      throw new AppError(500, '[ HTTP 요청 에러 ] 게시글 등록 실패');
     }
   }
 };
@@ -127,8 +162,10 @@ const editPostHandler = async (req: Request, res: Response, next: NextFunction) 
     const { post_id } = req.params;
     const { post_category, post_title, post_content, post_img } = req.body;
 
-    if (!post_id || !post_category || !post_title || !post_content || !post_img)
-      throw new Error('[ 요청 에러 ] 모든 필드를 입력해야 합니다.');
+    if (isNaN(Number(post_id))) throw new AppError(400, '유효한 post_id를 입력해주세요.');
+
+    if (!post_category || !post_title || !post_content || !post_img)
+      throw new AppError(400, '요청 body에 모든 정보를 입력해주세요.');
 
     const postData: updatePostInput = {
       post_category,
@@ -141,10 +178,12 @@ const editPostHandler = async (req: Request, res: Response, next: NextFunction) 
 
     res.status(200).json({ message: '게시글 수정 성공', data: updatedPost });
   } catch (error: any) {
-    if (error instanceof AppError) next(error);
-    else {
+    if (error instanceof AppError) {
+      if (error.statusCode === 404 || error.statusCode === 400) console.log(error);
+      next(error);
+    } else {
       console.log(error);
-      next(new AppError(500, error.message));
+      throw new AppError(500, '[ HTTP 요청 에러 ] 게시글 수정 실패');
     }
   }
 };
@@ -154,16 +193,18 @@ const removePostHandler = async (req: Request, res: Response, next: NextFunction
   try {
     const { post_id } = req.params;
 
-    if (!post_id) throw new Error('[ 요청 에러 ] post_id가 필요합니다.');
+    if (isNaN(Number(post_id))) throw new AppError(400, '유효한 post_id를 입력해주세요.');
 
     const deletedPost = await removePost(parseInt(post_id));
 
     res.status(200).json({ message: '게시글 삭제 성공', data: { post_id: deletedPost } });
   } catch (error: any) {
-    if (error instanceof AppError) next(error);
-    else {
+    if (error instanceof AppError) {
+      if (error.statusCode === 404 || error.statusCode === 400) console.log(error);
+      next(error);
+    } else {
       console.log(error);
-      next(new AppError(500, error.message));
+      throw new AppError(500, '[ HTTP 요청 에러 ] 게시글 삭제 실패');
     }
   }
 };

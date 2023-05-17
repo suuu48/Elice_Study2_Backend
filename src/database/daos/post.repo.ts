@@ -16,7 +16,7 @@ const findPosts = async (): Promise<Post[]> => {
     return postRows;
   } catch (error) {
     console.log(error);
-    throw new Error('[ 쿼리 실행 에러 ] 게시글 목록 조회 실패');
+    throw new AppError(500, '[ DB 에러 ] 게시글 목록 조회 실패');
   }
 };
 
@@ -34,11 +34,11 @@ const findCategories = async (): Promise<string[]> => {
     return categoryRows;
   } catch (error) {
     console.log(error);
-    throw new AppError(500, '[ 쿼리 실행 에러 ] 카테고리 조회 실패');
+    throw new AppError(500, '[ DB 에러 ] 카테고리 조회 실패');
   }
 };
 
-/* 검색 키워드별 게시글 목록 조회 */
+/* 키워드별 게시글 목록 조회 */
 const findPostsByKeyword = async (user_location: string, keyword: string): Promise<Post[]> => {
   try {
     const selectColums =
@@ -61,7 +61,7 @@ const findPostsByKeyword = async (user_location: string, keyword: string): Promi
     return postRows;
   } catch (error) {
     console.log(error);
-    throw new AppError(500, '[ 쿼리 실행 에러 ] 게시글 검색 실패');
+    throw new AppError(500, '[ DB 에러 ] 키워드별 게시글 목록 조회 실패');
   }
 };
 
@@ -80,7 +80,7 @@ const findPostsByLocation = async (
       JOIN user ON user.user_id = post.user_id
       LEFT JOIN comment ON comment.post_id = post.post_id
       WHERE user.user_location = ? AND post.post_category = ?
-      GROUP BY post.post_id, user.user_nickname
+      GROUP BY post.post_id
     `;
 
     const [postRows]: any = await db.query(SQL, [user_location, post_category]);
@@ -88,7 +88,7 @@ const findPostsByLocation = async (
     return postRows;
   } catch (error) {
     console.log(error);
-    throw new AppError(500, '[ 쿼리 실행 에러 ] 카테고리별 게시글 목록 조회 실패');
+    throw new AppError(500, '[ DB 에러 ] 카테고리별 게시글 목록 조회 실패');
   }
 };
 
@@ -111,7 +111,7 @@ const findPostById = async (post_id: number): Promise<Post> => {
     return post[0];
   } catch (error) {
     console.log(error);
-    throw new AppError(500, '[ 쿼리 실행 에러 ] 게시글 조회 실패');
+    throw new AppError(500, '[ DB 에러 ] 게시글 조회 실패');
   }
 };
 
@@ -136,7 +136,7 @@ const createPost = async (inputData: createPostInput): Promise<number> => {
     return createdPostId;
   } catch (error) {
     console.log(error);
-    throw new AppError(500, '[ 쿼리 실행 에러 ] 게시글 등록 실패');
+    throw new AppError(500, '[ DB 에러 ] 게시글 등록 실패');
   }
 };
 
@@ -155,15 +155,15 @@ const updatePost = async (post_id: number, inputData: updatePostInput): Promise<
 
     const [result, _] = await db.query(SQL, [post_id]);
 
-    const changedCount = (result as { info: string }).info.split(' ');
+    // const changedCount = (result as { info: string }).info.split(' ');
 
-    if (Number(changedCount[5]) === 0)
-      throw new AppError(500, '[ 데이터베이스 에러 ] 수정하신 내용이 기존과 동일합니다.');
+    // if (Number(changedCount[5]) === 0)
+    //   throw new AppError(500, '수정하신 내용이 기존과 동일합니다.'); // Fix : 서비스에서 처리
 
     return post_id;
   } catch (error) {
     console.log(error);
-    throw new AppError(500, '[ 쿼리 실행 에러 ] 게시글 수정 실패');
+    throw new AppError(500, '[ DB 에러 ] 게시글 수정 실패');
   }
 };
 
@@ -180,7 +180,7 @@ const deletePost = async (post_id: number): Promise<number> => {
     return post_id;
   } catch (error) {
     console.log(error);
-    throw new AppError(500, '[ 쿼리 실행 에러 ] 게시글 삭제 실패');
+    throw new AppError(500, '[ DB 에러 ] 게시글 삭제 실패');
   }
 };
 

@@ -13,12 +13,12 @@ import {
 const router = Router();
 
 /* 게시글 목록 조회 */
-// router.get('/', getAllPostsHandler);
+router.get('/', getAllPostsHandler);
 
 /* 게시글 카테고리 조회 */
 router.get('/categories', getCategoriesHandler);
 
-/* 검색 키워드별 게시글 목록 조회 */
+/* 키워드별 게시글 목록 조회 */
 router.get('/search', getSearchedPostsByKeywordHandler);
 
 /* 카테고리별 게시글 목록 조회 */

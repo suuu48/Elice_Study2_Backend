@@ -65,7 +65,7 @@ const findPostsByLocation = async (
   }
 };
 
-/* post_id로 게시글 조회 */
+/* 게시글 조회 */
 const findPostById = async (post_id: number): Promise<Post> => {
   try {
     const selectColums =
@@ -88,7 +88,7 @@ const findPostById = async (post_id: number): Promise<Post> => {
   }
 };
 
-/* 게시글 생성 */
+/* 게시글 등록 */
 const createPost = async (inputData: createPostInput): Promise<number> => {
   try {
     const createColums = 'user_id, post_category, post_title, post_content, post_img';
@@ -112,7 +112,7 @@ const createPost = async (inputData: createPostInput): Promise<number> => {
   }
 };
 
-/* post_id로 특정 게시글 수정 */
+/* 게시글 수정 */
 const updatePost = async (post_id: number, inputData: updatePostInput): Promise<number> => {
   try {
     const updateColums = Object.entries(inputData)

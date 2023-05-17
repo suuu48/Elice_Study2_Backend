@@ -6,7 +6,8 @@ import { addComment } from '../services/commentService';
 /* 댓글 등록 */
 const addCommentHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { post_id, user_id, comment_content } = req.body;
+    const { user_id } = req.params;
+    const { post_id, comment_content } = req.body;
 
     if (!post_id || !user_id || !comment_content)
       throw new Error('[ 요청 에러 ] 모든 필드를 입력해야 합니다.');

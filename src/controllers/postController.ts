@@ -31,7 +31,9 @@ const getCategoriesHandler = async (req: Request, res: Response, next: NextFunct
 
     const foundCategoryList = foundCategories.map((category: any) => category.post_category);
 
-    res.status(200).json({ message: '카테고리 조회 성공', data: foundCategoryList });
+    res
+      .status(200)
+      .json({ message: '카테고리 조회 성공', data: { categories: foundCategoryList } });
   } catch (error: any) {
     if (error instanceof AppError) next(error);
     else next(new AppError(500, error.message || null));
@@ -137,7 +139,7 @@ const editPostHandler = async (req: Request, res: Response, next: NextFunction) 
 
     const updatedPost = await editPost(parseInt(post_id), postData);
 
-    res.status(201).json({ message: '게시글 수정 성공', data: updatedPost });
+    res.status(200).json({ message: '게시글 수정 성공', data: updatedPost });
   } catch (error: any) {
     if (error instanceof AppError) next(error);
     else {
@@ -156,7 +158,7 @@ const removePostHandler = async (req: Request, res: Response, next: NextFunction
 
     const deletedPost = await removePost(parseInt(post_id));
 
-    res.status(201).json({ message: '게시글 삭제 성공', data: { post_id: deletedPost } });
+    res.status(200).json({ message: '게시글 삭제 성공', data: { post_id: deletedPost } });
   } catch (error: any) {
     if (error instanceof AppError) next(error);
     else {

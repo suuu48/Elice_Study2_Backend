@@ -38,6 +38,33 @@ const findCategories = async (): Promise<string[]> => {
   }
 };
 
+/* 검색 키워드별 게시글 목록 조회 */
+const findPostsByKeyword = async (user_location: string, keyword: string): Promise<Post[]> => {
+  try {
+    const selectColums =
+      'post.post_id, post.user_id, user.user_nickname, post.post_title, post.post_img, COUNT(comment.post_id) AS comment_count, post.created_at';
+
+    const SQL = `
+      SELECT ${selectColums}
+      FROM post
+      JOIN user ON user.user_id = post.user_id
+      LEFT JOIN comment ON comment.post_id = post.post_id
+      WHERE user.user_location = ? AND (post.post_title LIKE '%${keyword}%' OR post.post_content LIKE '%${keyword}%')
+      GROUP BY post.post_id
+      `;
+
+    const [postRows]: any = await db.query(SQL, [user_location]);
+
+    // const posts: Post[] = postRows; // @@@@@@@@@@@@@@@@@@@@@@ Fix : 타입 이렇게 추가하기
+    // return posts
+
+    return postRows;
+  } catch (error) {
+    console.log(error);
+    throw new AppError(500, '[ 쿼리 실행 에러 ] 게시글 검색 실패');
+  }
+};
+
 /* 카테고리별 게시글 목록 조회 */
 const findPostsByLocation = async (
   user_location: string,
@@ -175,6 +202,7 @@ const isPostIdValid = async (post_id: number): Promise<boolean> => {
 export {
   findPosts,
   findCategories,
+  findPostsByKeyword,
   findPostsByLocation,
   findPostById,
   createPost,

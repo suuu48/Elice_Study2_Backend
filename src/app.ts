@@ -2,7 +2,8 @@ import express, { Request, Response } from 'express';
 import { env } from './config/envconfig';
 import { db } from './config/dbconfig';
 import { errorHandlerMiddleware } from './utils/errorHandler';
-import { postRouter, commentRouter } from './routes/index';
+import { v1Router, postRouter, commentRouter } from './routes';
+// import { postRouter, commentRouter } from './routes/index';
 
 const port = Number(env.PORT || 3000);
 const app = express();
@@ -47,4 +48,5 @@ app.use('/comment', commentRouter);
 // app.use('/user', -)
 // app.use('/pet', -)
 // app.use('/review', -)
+app.use('/api/v1', v1Router);
 app.use(errorHandlerMiddleware);

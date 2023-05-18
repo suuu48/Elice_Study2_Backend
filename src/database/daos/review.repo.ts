@@ -7,8 +7,19 @@ export const findReviewById = async (reviewId: number): Promise<Review> => {
   try {
     const [review]: any = await db.query(
       `
-      SELECT *
-      FROM review
+      SELECT 
+          r.review_id,
+          r.location_id,
+          r.location_name,
+          r.review_content,
+          r.star_rating,
+          r.created_at,
+          r.review_img,
+          u.user_nickname,
+          u.user_img
+      FROM review r 
+      JOIN user u
+      On r.user_id = u.user_id
       WHERE review_id = ?`,
       [reviewId]
     );
@@ -27,9 +38,20 @@ export const findReviewByLocation = async (
   try {
     const [reviews]: any = await db.query(
       `
-      SELECT *
-      FROM review
-      WHERE location_id = ?`,
+          SELECT
+              r.review_id,
+              r.location_id,
+              r.location_name,
+              r.review_content,
+              r.star_rating,
+              r.created_at,
+              r.review_img,
+              u.user_nickname,
+              u.user_img
+          FROM review r
+            JOIN user u
+            On r.user_id = u.user_id
+        WHERE location_id = ?`,
       [locationId]
     );
 
@@ -91,7 +113,7 @@ export const updateReview = async (
 };
 
 // 리뷰 정보 delete
-export const deleteReview = async (reviewId: number): Promise<Review> => {
+export const deleteReview = async (reviewId: number): Promise<number> => {
   try {
     const [deleteReview]: any = await db.query(
       `
@@ -101,7 +123,7 @@ export const deleteReview = async (reviewId: number): Promise<Review> => {
       [reviewId]
     );
 
-    return deleteReview;
+    return reviewId;
   } catch (error) {
     console.log(error);
     return Promise.reject(error); // App Error

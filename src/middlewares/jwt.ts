@@ -1,5 +1,4 @@
 import { env } from '../config/envconfig';
-// import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '../config/envconfig';
 import { Request, RequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
 export const isAccessTokenValid: RequestHandler = (req, res, next) => {
@@ -14,18 +13,19 @@ export const isAccessTokenValid: RequestHandler = (req, res, next) => {
   const userToken = req.headers['authorization'].split(' ')[1];
   // 해당 token 이 정상적인 token인지 확인
   try {
-    const secretKey = env.JWT_SECRET_KEY || 'secret';
+    const secretKey = env.JWT_SECRET_KEY || "secret";
+    // const accessTokenSecret = env.ACCESS_TOKEN_SECRET || 'default-access-token-secret';
+    // const refreshTokenSecret = env.REFRESH_TOKEN_SECRET || 'default-refresh-token-secret';
     const jwtDecoded = jwt.verify(userToken, secretKey);
 
-    //  req.body = { ...req.body, jwtDecoded };
-    // if (req.body.jwtDecoded.type === 'RT') throw new Error('is not access token');
+    req.body = { ...req.body, jwtDecoded };
     console.log(req.body);
     next();
-  } catch (error) {
+  } catch (error:any) {
     // jwt.verify 함수가 에러를 발생시키는 경우는 토큰이 정상적으로 decode 안되었을 경우임.
     // 403 코드로 JSON 형태로 프론트에 전달함.
     console.log(error);
-    /*
+
     switch (error.message) {
       case 'invalid signature':
         const notAllow = new Error('404, 우리가 서명한 토큰이 아닙니다.');
@@ -42,8 +42,6 @@ export const isAccessTokenValid: RequestHandler = (req, res, next) => {
       default:
         next(new Error('400, 토큰 검증 도중 오류가 발생했습니다.'));
     }
-
-     */
   }
 
 };

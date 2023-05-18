@@ -11,7 +11,7 @@ export const findOneByNickname = async (nickName: string): Promise<UserProfile> 
     WHERE user_nickname = ?`,
       [nickName]
     );
-    return row;
+    return row[0];
   } catch (error) {
     console.log(error);
     throw error;
@@ -28,7 +28,7 @@ export const findInfo = async (userId: string): Promise<User> => {
     WHERE user_id = ?`,
       [userId]
     );
-    return row;
+    return row[0];
   } catch (error) {
     console.log(error);
     throw error;
@@ -38,7 +38,7 @@ export const findInfo = async (userId: string): Promise<User> => {
 // userId 입력시 password,verify,delete_flag 제외한 user 정보 추출
 export const findOne = async (userId: string): Promise<UserProfile> => {
   try {
-    const getColumns = 'user_id, user_name, user_nickname, location_user, user_img';
+    const getColumns = 'user_id, user_name, user_nickname, user_location, user_img';
     const [row]: any = await db.query(
       `
     SELECT ${getColumns}
@@ -46,7 +46,7 @@ export const findOne = async (userId: string): Promise<UserProfile> => {
     WHERE user_id = ?`,
       [userId]
     );
-    return row;
+    return row[0];
   } catch (error) {
     console.log(error);
     throw error;
@@ -95,14 +95,14 @@ export const createUser = async (inputData: createUserInput): Promise<User> => {
 };
 
 // update의 경우 key값과 value값을 매칭 시켜줌
-export const updateDataTrans = (input: Record<string, string | number | boolean>) => {
+export const updateDataTrans = (input: Record<string, string | number | boolean | Date>) => {
   const data = Object.entries(input).reduce(
     (a, [key, value]) => {
       a[0].push(`${key} = ?`);
       a[1].push(value);
       return a;
     },
-    [[], []] as [string[], Array<string | number | boolean>]
+    [[], []] as [string[], Array<string | number | boolean  | Date>]
   );
   return data;
 };

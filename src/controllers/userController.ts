@@ -3,6 +3,8 @@ import * as userService from '../services/user.service';
 import * as User from '../database/models';
 import bcrypt from 'bcrypt';
 import * as userRepo from '../database/daos/user.repo';
+import { createUser } from '../services/user.service';
+import { AppError } from '../utils/errorHandler';
 
 // 유저 추가
 export const addUserHandler = async (req: Request, res: Response, next: NextFunction) => {
@@ -19,14 +21,16 @@ export const addUserHandler = async (req: Request, res: Response, next: NextFunc
     )
       throw new Error('[ 요청 에러 ] 사진을 제외한 모든 필드를 입력해야 합니다.');
 
-    const checkId = await userRepo.findOne(user_id);
-    if (checkId) {
+    const isCheckId = await userRepo.findOne(user_id);
+    console.log(isCheckId);
+
+    if (isCheckId) {
       throw Error('이 아이디는 현재 사용중입니다. 다른 아이디를 입력해 주세요.');
     }
 
     // 닉네임 중복체크
-    const checkNickname = await userRepo.findOneByNickname(user_nickname);
-    if (checkNickname) {
+    const isCheckNickname = await userRepo.findOneByNickname(user_nickname);
+    if (isCheckNickname) {
       throw Error('이 닉네임은 현재 사용중입니다. 다른 닉네임을 입력해 주세요.');
     }
 
@@ -40,14 +44,16 @@ export const addUserHandler = async (req: Request, res: Response, next: NextFunc
       user_img,
     };
 
-    const createdPost = await userService.register(userData);
-    res.status(201).json({ message: '리뷰 등록 성공', data: createdPost });
+    const createdUser = await userService.createUser(userData);
+    res.status(201).json({ message: '유저 등록 성공', data: createdUser });
   } catch (error: any) {
-    //if (error instanceof AppError) next(error);
-    //else {
-    console.log(error);
-    // next(new AppError(500, error.message));
-    // }
+    if (error instanceof AppError) {
+      if (error.statusCode === 400) console.log(error);
+      next(error);
+    } else {
+      console.log(error);
+      throw new AppError(500, '[ HTTP 요청 에러 ] 유저 등록 실패');
+    }
   }
 };
 
@@ -81,11 +87,13 @@ export const logIn = async (req: Request, res: Response, next: NextFunction) => 
       },
     });
   } catch (error: any) {
-    //if (error instanceof AppError) next(error);
-    //else {
-    console.log(error);
-    // next(new AppError(500, error.message));
-    // }
+    if (error instanceof AppError) {
+      if (error.statusCode === 400) console.log(error);
+      next(error);
+    } else {
+      console.log(error);
+      throw new AppError(500, '[ HTTP 요청 에러 ] 유저 로그인 실패');
+    }
   }
 };
 
@@ -98,13 +106,15 @@ export const getUserInfo = async (req: Request, res: Response, next: NextFunctio
 
     const userInfo = await userService.getUser(userId);
 
-    res.status(201).json({ message: '유저 로그인 성공', data: userInfo });
+    res.status(201).json({ message: '유저 정보 조회 성공', data: userInfo });
   } catch (error: any) {
-    //if (error instanceof AppError) next(error);
-    //else {
-    console.log(error);
-    // next(new AppError(500, error.message));
-    // }
+    if (error instanceof AppError) {
+      if (error.statusCode === 400) console.log(error);
+      next(error);
+    } else {
+      console.log(error);
+      throw new AppError(500, '[ HTTP 요청 에러 ] 유저 정보 조회 실패');
+    }
   }
 };
 
@@ -131,11 +141,13 @@ export const updateUserHandler = async (req: Request, res: Response, next: NextF
 
     res.status(201).json({ message: '유저 수정 성공', data: userInfo });
   } catch (error: any) {
-    //if (error instanceof AppError) next(error);
-    //else {
-    console.log(error);
-    // next(new AppError(500, error.message));
-    // }
+    if (error instanceof AppError) {
+      if (error.statusCode === 400) console.log(error);
+      next(error);
+    } else {
+      console.log(error);
+      throw new AppError(500, '[ HTTP 요청 에러 ] 유저 수정 실패');
+    }
   }
 };
 
@@ -149,8 +161,12 @@ export const softDeleteUserHandler = async (req: Request, res: Response, next: N
 
     res.status(200).json({ message: '유저 소프트 삭제 성공', data: user });
   } catch (error: any) {
-    console.log(error);
-    // if (error instanceof AppError) next(error);
-    // else next(new AppError(500, error.message));
+    if (error instanceof AppError) {
+      if (error.statusCode === 400) console.log(error);
+      next(error);
+    } else {
+      console.log(error);
+      throw new AppError(500, '[ HTTP 요청 에러 ] 유저 소프트 삭제 실패');
+    }
   }
 };

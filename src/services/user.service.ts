@@ -4,8 +4,7 @@ import { createUserInput, updateUserInput, User, UserProfile } from '../database
 import { env } from '../config/envconfig';
 
 // 회원가임
-export const register = async (inputData: createUserInput) => {
-  // Todo : register >> createUser로 변경
+export const createUser = async (inputData: createUserInput) => {
   try {
     const newUser = await userRepo.createUser(inputData);
 
@@ -25,13 +24,14 @@ export const register = async (inputData: createUserInput) => {
 // 로그인
 export const getUserToken = async (
   userId: string
-): Promise<{ user: User; accessToken: string; refreshToken: string }> => {
+): Promise<{ userInfo: UserProfile; accessToken: string; refreshToken: string }> => {
   try {
     const user = await userRepo.findInfo(userId);
-    // 로그인 성공 -> JWT 웹 토큰 생성
-    // const secretKey = env.JWT_SECRET_KEY || 'secret-key';
-    const accessTokenSecret = env.ACCESS_TOKEN_SECRET || 'default-access-token-secret';
-    const refreshTokenSecret = env.REFRESH_TOKEN_SECRET || 'default-refresh-token-secret';
+
+    // 로그인 시작 -> JWT 웹 토큰 생성
+    const secretKey = env.JWT_SECRET_KEY || 'secret-key';
+    // const accessTokenSecret = env.ACCESS_TOKEN_SECRET || 'default-access-token-secret';
+    // const refreshTokenSecret = env.REFRESH_TOKEN_SECRET || 'default-refresh-token-secret';
 
     const payload = {
       userId: user.user_id,
@@ -40,15 +40,15 @@ export const getUserToken = async (
       location: user.user_location,
     };
 
-    const accessToken = jwt.sign(payload, accessTokenSecret, {
+    const accessToken = jwt.sign(payload, secretKey, {
       expiresIn: env.ACCESS_TOKEN_EXPIRES_IN,
     });
 
-    const refreshToken = jwt.sign(payload, refreshTokenSecret, {
+    const refreshToken = jwt.sign(payload, secretKey, {
       expiresIn: env.REFRESH_TOKEN_EXPIRES_IN,
     });
-
-    return { user, accessToken, refreshToken };
+    const userInfo = await userRepo.findOne(userId);
+    return { userInfo, accessToken, refreshToken };
   } catch (error) {
     console.error(error);
     throw new Error('[JWT 토큰 에러] 토큰 발급에 실패했습니다.');
@@ -74,14 +74,15 @@ export const getUser = async (userId: string): Promise<UserProfile> => {
 export const updateUserInfo = async (
   userId: string,
   updateData: updateUserInput
-): Promise<User> => {
+): Promise<UserProfile> => {
   try {
     const foundUser = await userRepo.findOne(userId);
     if (!foundUser) console.log('존재하지 않는 아이디 입니다.');
     //return next(new AppError(400, '존재하지 않는 아이디입니다.'));
 
     const updateUser = await userRepo.updateUser(userId, updateData);
-    return updateUser;
+    const user = await userRepo.findOne(updateUser.user_id);
+    return user;
   } catch (error) {
     console.error(error);
     throw new Error('[유저 수정 에러] 유저 정보 수정에 실패했습니다.');

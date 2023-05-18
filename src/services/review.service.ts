@@ -1,6 +1,7 @@
 import { Review } from '../database/models/review.entity';
 import { createReviewInput, updateReviewInput } from '../database/models';
 import * as reviewRepo from '../database/daos/review.repo';
+import { AppError } from '../utils/errorHandler';
 
 // 리뷰 등록
 export const addReview = async (inputData: createReviewInput) => {
@@ -12,11 +13,10 @@ export const addReview = async (inputData: createReviewInput) => {
 
     return newReview;
   } catch (error: any) {
-    //if (error instanceof AppError) throw error;
-    // else {
-    console.log(error);
-    // throw new AppError(500, error.message || null);
-    // }
+    if (error instanceof AppError) throw error;
+    else {
+     throw new AppError(500, error.message || null);
+    }
   }
 };
 
@@ -29,10 +29,10 @@ export const getReview = async (review_id: number): Promise<Review> => {
 
     return review;
   } catch (error: any) {
-    console.log(error);
-    throw new Error('리뷰 조회에 실패했습니다.'); // Todo: if..else 문으로 변경하기
-    // if (error instanceof AppError) throw error;
-    // else throw new AppError(404, error.message);
+    if (error instanceof AppError) throw error;
+    else {
+      throw new AppError(500, error.message || null);
+    }
   }
 };
 
@@ -45,10 +45,10 @@ export const getALlReview = async (location_id: string): Promise<Review[]> => {
 
     return reviews;
   } catch (error: any) {
-    console.log(error);
-    throw new Error('리뷰 조회에 실패했습니다.'); // Todo: if..else 문으로 변경하기
-    // if (error instanceof AppError) throw error;
-    // else throw new AppError(404, error.message);
+    if (error instanceof AppError) throw error;
+    else {
+      throw new AppError(500, error.message || null);
+    }
   }
 };
 
@@ -65,26 +65,26 @@ export const updateReview = async (
     const updateReview = await reviewRepo.updateReview(review_id, updateData);
     return updateReview;
   } catch (error: any) {
-    console.log(error);
-    throw new Error('[리뷰 수정 에러] 리뷰 수정에 실패했습니다.'); // Todo: if..else 문으로 변경하기
-    // if (error instanceof AppError) throw error;
-    // else throw new AppError(404, error.message);
+    if (error instanceof AppError) throw error;
+    else {
+      throw new AppError(500, error.message || null);
+    }
   }
 };
 
 // 리뷰 삭제
-export const deleteReview = async (review_id: number): Promise<Review> => {
+export const deleteReview = async (review_id: number): Promise<number> => {
   try {
     const review = await reviewRepo.findReviewById(review_id);
 
     if (review === undefined) throw new Error('[ 리뷰 삭제 에러 ] 리뷰가 존재하지 않습니다.');
 
-    const deleteReview = await reviewRepo.deleteReview(review_id);
-    return deleteReview;
+    const reviewId = await reviewRepo.deleteReview(review_id);
+    return reviewId;
   } catch (error: any) {
-    console.log(error);
-    throw new Error('리뷰 삭제에 실패했습니다.'); // Todo: if..else 문으로 변경하기
-    // if (error instanceof AppError) throw error;
-    // else throw new AppError(404, error.message);
+    if (error instanceof AppError) throw error;
+    else {
+      throw new AppError(500, error.message || null);
+    }
   }
 };

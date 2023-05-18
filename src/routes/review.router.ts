@@ -1,9 +1,5 @@
-import express, { Request, Response, NextFunction } from "express";
-import * as reviewService from "../services/review.service";
-import * as user from '../services/user.service';
+import express from "express";
 import * as reviewController from '../controllers/reviewController';
-import { getAllReviewsHandler } from '../controllers/reviewController';
-import { addReview, getALlReview } from '../services/review.service';
 
 export const reviewRoute = express();
 

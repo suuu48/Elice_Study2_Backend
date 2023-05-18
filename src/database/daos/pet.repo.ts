@@ -1,6 +1,24 @@
 import { dataSource, db } from '../../config/dbconfig';
-import { Pet, User } from '../models';
+import { createPetInput, Pet, updatePetInput } from '../models';
 import { updateDataTrans } from './user.repo';
+
+// petId 입력시 Pet 복수 조회
+export const findPets = async (user_id: string): Promise<Pet[]> => {
+  try {
+    const [pets]: any = await db.query(
+      `
+      SELECT *
+      FROM pet
+      WHERE user_id = ?`,
+      [user_id]
+    );
+
+    return pets;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
 
 // petId 입력시 Pet 전체 조회
 export const findPetById = async (petId: number): Promise<Pet> => {
@@ -22,7 +40,7 @@ export const findPetById = async (petId: number): Promise<Pet> => {
 
 // Pet 추가
 export const createPet = async (
-  inputData: Record<string, string | number | boolean>
+  inputData: createPetInput
 ): Promise<Pet> => {
   try {
     const newColumns = 'pet_name, user_id';
@@ -50,41 +68,39 @@ export const createPet = async (
 // Pet 정보 수정
 export const updatePet = async (
   petId: number,
-  updateData: Record<string, string | number>
-): Promise<Pet> => {
+  updateData: updatePetInput): Promise<Pet> => {
   try {
     const [keys, values] = updateDataTrans(updateData);
     const [update] = await db.query(
       `
-          UPDATE review
+          UPDATE pet
           SET ${keys.join(', ')}
-          WHERE review_id = ?
+          WHERE pet_id = ?
       `,
       [...values, petId]
     );
 
-    const updatePet = await findPetById(petId);
-    return updatePet!;
+    const pet = await findPetById(petId);
+    return pet!;
   } catch (error) {
     console.log(error);
     return Promise.reject(error); // App Error
   }
 };
 
-// Pet 정보 소프트 delete
-export const softDeletePet = async (petId: number): Promise<Pet> => {
+// Pet delete
+export const deletePet = async (petId: number): Promise<number> => {
   try {
     const [deletePet] = await db.query(
       `
-          Update pet
-          SET delete_flag ='1'
+          DELETE FROM
+              pet
           WHERE pet_id = ?`,
       [petId]
     );
 
-    const softDeletePet = await findPetById(petId);
 
-    return softDeletePet!;
+    return petId;
   } catch (error) {
     console.log(error);
     return Promise.reject(error); // App Error

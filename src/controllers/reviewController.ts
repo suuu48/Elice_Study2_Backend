@@ -1,10 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import * as reviewService from '../services/review.service';
 // import { AppError } from '../utils/errorHandler';
-import * as reviewRepo from '../database/daos/review.repo';
 import * as Review from '../database/models';
-import { deleteReview, updateReview } from '../services/review.service';
-import { updateReviewInput } from '../database/models';
+
 // 리뷰 추가
 export const addReviewHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {

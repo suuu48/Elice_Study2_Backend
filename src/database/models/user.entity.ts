@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { Review } from './review.entity';
+import { createReviewInput, Review } from './review.entity';
 import { Pet } from './pet.entity';
 
 export type UserProfile = {
@@ -9,6 +9,17 @@ export type UserProfile = {
   user_location: string;
   user_img: string;
 };
+
+export type createUserInput = {
+  user_id: string;
+  user_name: string;
+  user_password: string;
+  user_nickname: string;
+  user_location: string;
+  user_img: string;
+};
+
+export type updateUserInput = Partial<Omit<createUserInput, 'user_id'>>;
 
 @Entity()
 export class User {
@@ -24,7 +35,7 @@ export class User {
   @Column({ type: 'varchar' })
   user_nickname!: string;
 
-  @Column({ type: 'varchar', default: 'user'  })
+  @Column({ type: 'varchar', default: 'user' })
   verify!: string;
 
   @Column({ type: 'varchar' })

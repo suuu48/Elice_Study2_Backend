@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import * as reviewService from '../services/review.service';
-// import { AppError } from '../utils/errorHandler';
+import { AppError } from '../utils/errorHandler';
 import * as Review from '../database/models';
 
 // 리뷰 추가
@@ -28,14 +28,14 @@ export const addReviewHandler = async (req: Request, res: Response, next: NextFu
       review_img,
     };
 
-    const createdPost = await reviewService.addReview(reviewData);
-    res.status(201).json({ message: '리뷰 등록 성공', data: createdPost });
+    const createdReview = await reviewService.addReview(reviewData);
+    res.status(201).json({ message: '리뷰 등록 성공', data: createdReview });
   } catch (error: any) {
-    //if (error instanceof AppError) next(error);
-    //else {
+    if (error instanceof AppError) next(error);
+    else {
     console.log(error);
-    // next(new AppError(500, error.message));
-    // }
+    next(new AppError(500, error.message));
+     }
   }
 };
 
@@ -50,8 +50,8 @@ export const getReviewHandler = async (req: Request, res: Response, next: NextFu
     res.status(200).json({ message: '리뷰 상세 조회 성공', data: review });
   } catch (error: any) {
     console.log(error);
-    // if (error instanceof AppError) next(error);
-    // else next(new AppError(500, error.message));
+    if (error instanceof AppError) next(error);
+    else next(new AppError(500, error.message));
   }
 };
 
@@ -64,8 +64,8 @@ export const getAllReviewsHandler = async (req: Request, res: Response, next: Ne
     res.status(200).json({ message: '장소에 따른 전체 리뷰 조회 성공', data: reviews });
   } catch (error: any) {
     console.log(error);
-    //if (error instanceof AppError) next(error);
-    //else next(new AppError(500, error.message || null));
+    if (error instanceof AppError) next(error);
+    else next(new AppError(500, error.message || null));
   }
 };
 
@@ -91,8 +91,8 @@ export const updateReviewHandler = async (req: Request, res: Response, next: Nex
     res.status(200).json({ message: '리뷰 수정 성공', data: updateReview });
   } catch (error: any) {
     console.log(error);
-    // if (error instanceof AppError) next(error);
-    // else next(new AppError(500, error.message));
+    if (error instanceof AppError) next(error);
+    else next(new AppError(500, error.message));
   }
 };
 
@@ -107,7 +107,7 @@ export const deleteReviewHandler = async (req: Request, res: Response, next: Nex
     res.status(200).json({ message: '리뷰 삭제 성공', data: review });
   } catch (error: any) {
     console.log(error);
-    // if (error instanceof AppError) next(error);
-    // else next(new AppError(500, error.message));
+    if (error instanceof AppError) next(error);
+    else next(new AppError(500, error.message));
   }
 };

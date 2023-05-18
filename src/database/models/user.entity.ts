@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { Review } from './review.entity';
+import { createReviewInput, Review } from './review.entity';
 import { Pet } from './pet.entity';
 import { Post } from './post.entity';
 import { Comment } from './comment.entity';
@@ -8,9 +8,20 @@ export type UserProfile = {
   user_id: string;
   user_name: string;
   user_nickname: string;
-  location_user: string;
+  user_location: string;
   user_img: string;
 };
+
+export type createUserInput = {
+  user_id: string;
+  user_name: string;
+  user_password: string;
+  user_nickname: string;
+  user_location: string;
+  user_img: string;
+};
+
+export type updateUserInput = Partial<Omit<createUserInput, 'user_id'>>;
 
 @Entity()
 export class User {
@@ -30,13 +41,16 @@ export class User {
   verify!: string;
 
   @Column({ type: 'varchar' })
-  location_user!: string;
+  user_location!: string;
 
   @Column({ type: 'tinyint', width: 1, default: 0 })
   delete_flag!: boolean;
 
   @Column({ type: 'varchar', nullable: true, default: null })
   user_img!: string;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  deleted_at!: Date;
 
   @OneToMany(() => Review, (review) => review.user)
   reviews!: Review[]; // 작성한 리뷰

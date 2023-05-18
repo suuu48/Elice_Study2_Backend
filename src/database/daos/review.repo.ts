@@ -1,8 +1,8 @@
 import { dataSource, db } from '../../config/dbconfig';
-import { Review, User } from '../models';
+import { createReviewInput, Review,  updateReviewInput, User } from '../models';
 import { updateDataTrans } from './user.repo';
 
-//  reviewId 입력시 리뷰 전체 조회
+//  reviewId 입력시 리뷰 상세 조회
 export const findReviewById = async (reviewId: number): Promise<Review> => {
   try {
     const [review]: any = await db.query(
@@ -20,18 +20,17 @@ export const findReviewById = async (reviewId: number): Promise<Review> => {
   }
 };
 
-// location_id 입력시 리뷰 전체 조회 >> Todo: 리뷰 조회할때 location_id로 검색할건지, location_name으로 검색할건지
+// location_id 입력시 리뷰 전체 조회
 export const findReviewByLocation = async (
-  locationId: string,
-  locationName: string
-): Promise<Review> => {
+  locationId: string
+): Promise<Review[]> => {
   try {
     const [reviews]: any = await db.query(
       `
       SELECT *
       FROM review
-      WHERE location_id = ? And location_name =?`,
-      [locationId, locationName]
+      WHERE location_id = ?`,
+      [locationId]
     );
 
     return reviews;
@@ -41,13 +40,12 @@ export const findReviewByLocation = async (
   }
 };
 
-// 리뷰 추가 >> Todo: satr_rating default값 뭐로 할지
+// 리뷰 추가
 export const createReview = async (
-  inputData: Record<string, string | number | boolean>
-): Promise<Review> => {
+  inputData: createReviewInput): Promise<Review> => {
   try {
     const newColumns =
-      'location_id, location_name, location_category, user_id, review_content, star_rating';
+      'location_id, location_name, user_id, review_content, star_rating, review_img';
     const newValues = Object.values(inputData)
       .map((value) => (typeof value === 'string' ? `'${value}'` : value))
       .join(', ');
@@ -72,8 +70,7 @@ export const createReview = async (
 // 리뷰 정보 수정
 export const updateReview = async (
   reviewId: number,
-  updateData: Record<string, string | number>
-): Promise<Review> => {
+  updateData: updateReviewInput): Promise<Review> => {
   try {
     const [keys, values] = updateDataTrans(updateData);
     const [update] = await db.query(
@@ -93,20 +90,18 @@ export const updateReview = async (
   }
 };
 
-// 리뷰 정보 소프트 delete
-export const softDeleteReview = async (reviewId: number): Promise<Review> => {
+// 리뷰 정보 delete
+export const deleteReview = async (reviewId: number): Promise<Review> => {
   try {
-    const [deleteReview] = await db.query(
+    const [deleteReview]: any = await db.query(
       `
-          Update review
-          SET delete_flag ='1'
-          WHERE review_id = ?`,
+          DELETE FROM
+              review
+          WHERE review_id = ? `,
       [reviewId]
     );
 
-    const softDeleteReview = await findReviewById(reviewId);
-
-    return softDeleteReview!;
+    return deleteReview;
   } catch (error) {
     console.log(error);
     return Promise.reject(error); // App Error

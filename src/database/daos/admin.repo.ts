@@ -1,10 +1,6 @@
 import { db } from '../../config/dbconfig';
-import { Review, User, Pet } from '../models';
+import { User } from '../models';
 import { findAllInfo } from './user.repo';
-import { findReviewById } from './review.repo';
-import { findPetById } from './pet.repo';
-
-// Todo: 관리자가 유저정보를 수정할 수 있도록 할것인지 프론트와 상의하기
 
 // 관리자가 모든 유저정보 추출
 // 회원 목록 전체 조회 >> Todo: verify도 조회할지
@@ -53,7 +49,7 @@ export const deleteUserByAdmin = async (userId: string): Promise<User> => {
   }
 };
 
-// 관자자에 의해 유저 계정 복구
+// 관자자에 의해 유저 계정 복구 >> Todo : 유저계정 복구 시 delete_flag만 0으로 할건지 아니면 deleted_at도 초기화 시킬건지
 export const restoreUser = async (userId: string): Promise<User> => {
   try {
     const [updateUser] = await db.query(
@@ -66,82 +62,6 @@ export const restoreUser = async (userId: string): Promise<User> => {
 
     const restoreUser = await findAllInfo(userId);
     return restoreUser!;
-  } catch (error) {
-    console.log(error);
-    return Promise.reject(error); // App Error
-  }
-};
-
-// 리뷰 정보 hard delete
-export const deleteReviewByAdmin = async (reviewId: number): Promise<Review> => {
-  try {
-    const [deleteReview]: any = await db.query(
-      `
-          DELETE FROM
-            review
-          WHERE review_id = ? AND delete_flag = '1'`,
-      [reviewId]
-    );
-
-    return deleteReview; // Todo:정보가 hard Delete이므로 어떤 값을 반환할지 결정
-  } catch (error) {
-    console.log(error);
-    return Promise.reject(error); // App Error
-  }
-};
-
-// 관자자에 의해 리뷰 복구
-export const restoreReview = async (reviewId: number): Promise<Review> => {
-  try {
-    const [updateReview] = await db.query(
-      `
-          Update review
-          SET delete_flag ='0'
-          WHERE review_id = ?`,
-      [reviewId]
-    );
-    // const info = (updateReview as { info: string }).info.split(' ');
-    const restoreReview = await findReviewById(reviewId);
-
-    return restoreReview!;
-  } catch (error) {
-    console.log(error);
-    return Promise.reject(error); // App Error
-  }
-};
-
-// Pet 정보 hard delete
-export const deletePetByAdmin = async (petId: number): Promise<Pet> => {
-  try {
-    const [deletePet]: any = await db.query(
-      `
-          DELETE FROM
-            pet
-          WHERE pet_id = ? AND delete_flag = '1'`,
-      [petId]
-    );
-
-    return deletePet; // Todo:정보가 hard Delete이므로 어떤 값을 반환할지 결정
-  } catch (error) {
-    console.log(error);
-    return Promise.reject(error); // App Error
-  }
-};
-
-// 관자자에 의해 Pet 복구
-export const restorePet = async (petId: number): Promise<Pet> => {
-  try {
-    const [updatePet] = await db.query(
-      `
-          Update pet
-          SET delete_flag ='0'
-          WHERE pet_id = ?`,
-      [petId]
-    );
-
-    const restorePet = await findPetById(petId);
-
-    return restorePet!;
   } catch (error) {
     console.log(error);
     return Promise.reject(error); // App Error

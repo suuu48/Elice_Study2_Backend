@@ -1,18 +1,16 @@
-import express, { Request, Response, NextFunction } from 'express';
 import { Review } from '../database/models/review.entity';
 import { createReviewInput, updateReviewInput } from '../database/models';
-import * as reveiwRepo from '../database/daos/review.repo';
-import { deleteReviewHandler, getReviewHandler } from '../controllers';
+import * as reviewRepo from '../database/daos/review.repo';
 
 // 리뷰 등록
 export const addReview = async (inputData: createReviewInput) => {
   try {
-    const createdReview = await reveiwRepo.createReview(inputData);
+    const createdReview = await reviewRepo.createReview(inputData);
 
-    const newreview = await reveiwRepo.findReviewById(createdReview.review_id);
-    if (!newreview) throw new Error('[ 게시글 등록 에러 ] 등록된 게시글이 없습니다.');
+    const newReview = await reviewRepo.findReviewById(createdReview.review_id);
+    if (!newReview) throw new Error('[ 게시글 등록 에러 ] 등록된 게시글이 없습니다.');
 
-    return newreview;
+    return newReview;
   } catch (error: any) {
     //if (error instanceof AppError) throw error;
     // else {
@@ -25,7 +23,7 @@ export const addReview = async (inputData: createReviewInput) => {
 // review_id 특정 리뷰 조회
 export const getReview = async (review_id: number): Promise<Review> => {
   try {
-    const review = await reveiwRepo.findReviewById(review_id);
+    const review = await reviewRepo.findReviewById(review_id);
 
     if (review === undefined) throw new Error('[ 리뷰 조회 에러 ] 리뷰가 존재하지 않습니다.');
 
@@ -41,7 +39,7 @@ export const getReview = async (review_id: number): Promise<Review> => {
 // location_id에 따른 전체 리뷰 조회
 export const getALlReview = async (location_id: string): Promise<Review[]> => {
   try {
-    const reviews = await reveiwRepo.findReviewByLocation(location_id);
+    const reviews = await reviewRepo.findReviewByLocation(location_id);
 
     if (reviews === undefined) throw new Error('[ 리뷰 조회 에러 ] 리뷰가 존재하지 않습니다.');
 
@@ -60,15 +58,15 @@ export const updateReview = async (
   updateData: updateReviewInput
 ): Promise<Review> => {
   try {
-    const review = await reveiwRepo.findReviewById(review_id);
+    const review = await reviewRepo.findReviewById(review_id);
 
     if (review === undefined) throw new Error('[ 리뷰 수정 에러 ] 리뷰가 존재하지 않습니다.');
 
-    const updateReview = await reveiwRepo.updateReview(review_id, updateData);
+    const updateReview = await reviewRepo.updateReview(review_id, updateData);
     return updateReview;
   } catch (error: any) {
     console.log(error);
-    throw new Error('리뷰 수정에 실패했습니다.'); // Todo: if..else 문으로 변경하기
+    throw new Error('[리뷰 수정 에러] 리뷰 수정에 실패했습니다.'); // Todo: if..else 문으로 변경하기
     // if (error instanceof AppError) throw error;
     // else throw new AppError(404, error.message);
   }
@@ -77,12 +75,12 @@ export const updateReview = async (
 // 리뷰 삭제
 export const deleteReview = async (review_id: number): Promise<Review> => {
   try {
-    const review = await reveiwRepo.findReviewById(review_id);
+    const review = await reviewRepo.findReviewById(review_id);
 
     if (review === undefined) throw new Error('[ 리뷰 삭제 에러 ] 리뷰가 존재하지 않습니다.');
 
-    const updateReview = await reveiwRepo.deleteReview(review_id);
-    return updateReview;
+    const deleteReview = await reviewRepo.deleteReview(review_id);
+    return deleteReview;
   } catch (error: any) {
     console.log(error);
     throw new Error('리뷰 삭제에 실패했습니다.'); // Todo: if..else 문으로 변경하기

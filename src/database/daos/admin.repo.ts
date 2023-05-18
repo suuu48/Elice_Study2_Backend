@@ -31,7 +31,7 @@ export const findDeleteUsers = async (): Promise<User[]> => {
   }
 };
 // 유저 정보 hard delete
-export const deleteUserByAdmin = async (userId: string): Promise<User> => {
+export const deleteUserByAdmin = async (userId: string): Promise<string> => {
   try {
     const [deleteUser]: any = await db.query(
       `
@@ -41,21 +41,20 @@ export const deleteUserByAdmin = async (userId: string): Promise<User> => {
       [userId]
     );
 
-    // const hardDeleteUser = await findAllInfo(userId); // Todo:정보가 hard Delete이므로 어떤 값을 반환할지 결정
-    return deleteUser;
+    return userId;
   } catch (error) {
     console.log(error);
     throw error;
   }
 };
 
-// 관자자에 의해 유저 계정 복구 >> Todo : 유저계정 복구 시 delete_flag만 0으로 할건지 아니면 deleted_at도 초기화 시킬건지
+// 관자자에 의해 유저 계정 복구
 export const restoreUser = async (userId: string): Promise<User> => {
   try {
     const [updateUser] = await db.query(
       `
           Update user
-          SET delete_flag ='0'
+          SET delete_flag ='0', deleted_at = null
           WHERE user_id = ?`,
       [userId]
     );

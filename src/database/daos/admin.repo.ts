@@ -1,8 +1,6 @@
 import { db } from '../../config/dbconfig';
-import { Review, User, Pet } from '../models';
+import { User } from '../models';
 import { findAllInfo } from './user.repo';
-import { findReviewById } from './review.repo';
-import { findPetById } from './pet.repo';
 
 // 관리자가 모든 유저정보 추출
 // 회원 목록 전체 조회 >> Todo: verify도 조회할지
@@ -51,7 +49,7 @@ export const deleteUserByAdmin = async (userId: string): Promise<User> => {
   }
 };
 
-// 관자자에 의해 유저 계정 복구
+// 관자자에 의해 유저 계정 복구 >> Todo : 유저계정 복구 시 delete_flag만 0으로 할건지 아니면 deleted_at도 초기화 시킬건지
 export const restoreUser = async (userId: string): Promise<User> => {
   try {
     const [updateUser] = await db.query(
@@ -69,4 +67,3 @@ export const restoreUser = async (userId: string): Promise<User> => {
     return Promise.reject(error); // App Error
   }
 };
-

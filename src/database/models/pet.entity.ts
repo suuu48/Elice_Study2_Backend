@@ -10,8 +10,8 @@ export type createPetInput = {
   pet_img: string;
   user_id: string;
 };
-
-export type updatePetInput = Partial<Omit<createPetInput, 'user_id'>>;
+export type updatePetInput = createPetInput
+// export type updatePetInput = Partial<Omit<createPetInput, 'user_id'>>;
 @Entity()
 export class Pet {
   @PrimaryGeneratedColumn()

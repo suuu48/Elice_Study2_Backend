@@ -31,7 +31,7 @@ export const findPetById = async (petId: number): Promise<Pet> => {
       [petId]
     );
 
-    return pet;
+    return pet[0];
   } catch (error) {
     console.log(error);
     throw error;
@@ -43,7 +43,7 @@ export const createPet = async (
   inputData: createPetInput
 ): Promise<Pet> => {
   try {
-    const newColumns = 'pet_name, user_id';
+    const newColumns = 'user_id,pet_name,pet_gender,pet_species,pet_birth, pet_info,pet_img';
     const newValues = Object.values(inputData)
       .map((value) => (typeof value === 'string' ? `'${value}'` : value))
       .join(', ');

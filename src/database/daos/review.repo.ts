@@ -24,7 +24,7 @@ export const findReviewById = async (reviewId: number): Promise<Review> => {
       [reviewId]
     );
 
-    return review;
+    return review[0];
   } catch (error) {
     console.log(error);
     throw error;

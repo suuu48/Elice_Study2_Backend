@@ -23,7 +23,7 @@ export const findDeleteUsers = async (): Promise<User[]> => {
     const [users]: any = await db.query(`
     SELECT *
     FROM user
-    WHERE delete_falg = '1'`);
+    WHERE delete_flag = '1'`);
     return users;
   } catch (error) {
     console.log(error);

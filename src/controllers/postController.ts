@@ -24,7 +24,7 @@ const getAllPostsHandler = async (req: Request, res: Response, next: NextFunctio
       next(error);
     } else {
       console.log(error);
-      throw new AppError(500, '[ HTTP 요청 에러 ] 게시글 목록 조회 실패');
+      next(new AppError(500, '[ HTTP 요청 에러 ] 게시글 목록 조회 실패'));
     }
   }
 };

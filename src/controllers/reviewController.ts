@@ -6,7 +6,7 @@ import * as Review from '../database/models';
 // 리뷰 추가
 export const addReviewHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { user_id } = req.params;
+    const { user_id } = req.body;
     const { location_id, location_name, review_content, star_rating, review_img } = req.body;
 
     if (
@@ -20,9 +20,9 @@ export const addReviewHandler = async (req: Request, res: Response, next: NextFu
       throw new Error('[ 요청 에러 ] 모든 필드를 입력해야 합니다.');
 
     const reviewData: Review.createReviewInput = {
-      user_id,
       location_id,
       location_name,
+      user_id,
       review_content,
       star_rating,
       review_img,

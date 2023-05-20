@@ -5,16 +5,16 @@ export const petRoute = express();
 
 
 // pet 전체 조회
-petRoute.get("/:userId", petController.getAllPetHandler );
+petRoute.get("/", petController.getAllPetHandler );
 
 // pet 상세 조회
-petRoute.get("/:petId", petController.getPetHandler );
+petRoute.get("/:pet_id", petController.getPetHandler );
 
 // pet 등록
-petRoute.post("/:userId", petController.addPetHandler );
+petRoute.post("/:user_id", petController.addPetHandler );
 
 // pet 수정
-petRoute.post("/:petId", petController.updatePetHandler );
+petRoute.post("/up/:pet_id", petController.updatePetHandler );
 
 // pet 삭제
-petRoute.delete("/:petId", petController.deletePetHandler );
+petRoute.delete("/:pet_id", petController.deletePetHandler );

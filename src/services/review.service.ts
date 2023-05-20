@@ -4,7 +4,7 @@ import * as reviewRepo from '../database/daos/review.repo';
 import { AppError } from '../utils/errorHandler';
 
 // 리뷰 등록
-export const addReview = async (inputData: createReviewInput) => {
+export const addReview = async (inputData: createReviewInput):Promise<Review>=> {
   try {
     const createdReview = await reviewRepo.createReview(inputData);
 

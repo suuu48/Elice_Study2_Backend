@@ -45,7 +45,7 @@ export const addPetHandler = async (req: Request, res: Response, next: NextFunct
 // pet 상세 조회
 export const getPetHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const pet_id = parseInt(req.params.pet_id);
+    const pet_id = parseInt(req.params.petId);
     if (!pet_id) throw new Error('[ 요청 에러 ] pet_id가 필요합니다.');
 
     const pet = await petService.getPet(pet_id);
@@ -61,7 +61,8 @@ export const getPetHandler = async (req: Request, res: Response, next: NextFunct
 // pet 전체 조회
 export const getAllPetHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { user_id } = req.params;
+
+    const {user_id}  = req.body;
     const pets = await petService.getALlPet(user_id);
 
     res.status(200).json({ message: '전체 pets 조회 성공', data: pets });
@@ -76,11 +77,12 @@ export const getAllPetHandler = async (req: Request, res: Response, next: NextFu
 export const updatePetHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const pet_id = parseInt(req.params.pet_id);
+    const {user_id}  = req.body;
     if (!pet_id) throw new Error('[ 요청 에러 ] pet_id가 필요합니다.');
 
     const { pet_name, pet_gender, pet_species, pet_birth, pet_info, pet_img } = req.body;
 
-    if (!pet_name || !pet_gender || !pet_species || !pet_birth || !pet_info || !pet_img )
+    if ( !user_id ||!pet_name || !pet_gender || !pet_species || !pet_birth || !pet_info || !pet_img )
       throw new Error('[ 요청 에러 ] 변경된 값이 없습니다!');
 
     const updatePetData: Pet.updatePetInput = {
@@ -90,8 +92,8 @@ export const updatePetHandler = async (req: Request, res: Response, next: NextFu
       pet_birth,
       pet_info,
       pet_img,
+      user_id,
     };
-
     const pet = await petService.updatePet(pet_id, updatePetData);
 
     res.status(200).json({ message: 'pet 수정 성공', data: pet });

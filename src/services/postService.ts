@@ -3,6 +3,7 @@ import { AppError } from '../utils/errorHandler';
 import { createPostInput, updatePostInput } from '../database/models/post.entity';
 import * as commentRepo from '../database/daos/comment.repo';
 import * as postRepo from '../database/daos/post.repo';
+import fs from 'fs';
 
 /* 게시글 목록 조회 */
 const getAllPosts = async (): Promise<Post[]> => {
@@ -137,6 +138,8 @@ const editPost = async (post_id: number, inputData: updatePostInput) => {
 
     if (isValid === false) throw new AppError(404, '관리자에 의해 이미 삭제된 게시글 입니다.');
 
+    editImage(post_id, inputData);
+
     const updatedPostId = await postRepo.updatePost(post_id, inputData);
 
     const foundUpdatedPost = await postRepo.findPostById(updatedPostId);
@@ -160,9 +163,11 @@ const removePost = async (post_id: number) => {
 
     if (isValid === false) throw new AppError(404, '관리자에 의해 이미 삭제된 게시글 입니다.');
 
-    const foundDeletedPostId = await postRepo.deletePost(post_id);
+    removeImage(post_id);
 
-    return foundDeletedPostId;
+    const deletedPostId = await postRepo.deletePost(post_id);
+
+    return deletedPostId;
   } catch (error: any) {
     if (error instanceof AppError) {
       if (error.statusCode === 500) console.log(error);
@@ -172,6 +177,40 @@ const removePost = async (post_id: number) => {
       throw new AppError(500, '[ 서버 에러 ] 게시글 삭제 실패');
     }
   }
+};
+
+/* 게시글 이미지 로컬 수정 */
+const editImage = async (post_id: number, inputData: updatePostInput) => {
+  const foundPost = await postRepo.findPostById(post_id);
+
+  if (foundPost.post_img && foundPost.post_img !== inputData.post_img) {
+    const imgFileName = foundPost.post_img.split('/')[6];
+
+    const filePath = `/Users/지원/Desktop/peeps_back-end/public/${imgFileName}`;
+    // const filePath = `서버 실행하는 로컬의 public 파일 절대경로`;
+    // const filePath = `클라우드 인스턴스 로컬의 public 파일 절대경로`;
+
+    fs.unlink(filePath, (error) => {
+      if (error) throw new AppError(400, '게시글 이미지 수정 중 오류가 발생했습니다.');
+    });
+  } else return;
+};
+
+/* 게시글 이미지 로컬 삭제 */
+const removeImage = async (post_id: number) => {
+  const foundPost = await postRepo.findPostById(post_id);
+
+  if (foundPost.post_img) {
+    const imgFileName = foundPost.post_img.split('/')[6];
+
+    const filePath = `/Users/지원/Desktop/peeps_back-end/public/${imgFileName}`;
+    // const filePath = `서버 실행하는 로컬의 public 파일 절대경로`;
+    // const filePath = `클라우드 인스턴스 로컬의 public 파일 절대경로`;
+
+    fs.unlink(filePath, (error) => {
+      if (error) throw new AppError(400, '게시글 이미지 삭제 중 오류가 발생했습니다.');
+    });
+  } else return;
 };
 
 export {

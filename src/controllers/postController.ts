@@ -45,7 +45,7 @@ const getCategoriesHandler = async (req: Request, res: Response, next: NextFunct
       next(error);
     } else {
       console.log(error);
-      throw new AppError(500, '[ HTTP 요청 에러 ] 카테고리 조회 실패');
+      next(new AppError(500, '[ HTTP 요청 에러 ] 카테고리 조회 실패'));
     }
   }
 };
@@ -73,7 +73,7 @@ const getSearchedPostsByKeywordHandler = async (
       next(error);
     } else {
       console.log(error);
-      throw new AppError(500, '[ HTTP 요청 에러 ] 키워드별 게시글 목록 조회 실패');
+      next(new AppError(500, '[ HTTP 요청 에러 ] 키워드별 게시글 목록 조회 실패'));
     }
   }
 };
@@ -97,7 +97,7 @@ const getAllPostsByLocationHandler = async (req: Request, res: Response, next: N
       next(error);
     } else {
       console.log(error);
-      throw new AppError(500, '[ HTTP 요청 에러 ] 카테고리별 게시글 목록 조회 실패');
+      next(new AppError(500, '[ HTTP 요청 에러 ] 카테고리별 게시글 목록 조회 실패'));
     }
   }
 };
@@ -118,7 +118,7 @@ const getPostHandler = async (req: Request, res: Response, next: NextFunction) =
       next(error);
     } else {
       console.log(error);
-      throw new AppError(500, '[ HTTP 요청 에러 ] 게시글 조회 실패');
+      next(new AppError(500, '[ HTTP 요청 에러 ] 게시글 조회 실패'));
     }
   }
 };
@@ -151,7 +151,7 @@ const addPostHandler = async (req: Request, res: Response, next: NextFunction) =
       next(error);
     } else {
       console.log(error);
-      throw new AppError(500, '[ HTTP 요청 에러 ] 게시글 등록 실패');
+      next(new AppError(500, '[ HTTP 요청 에러 ] 게시글 등록 실패'));
     }
   }
 };
@@ -183,7 +183,7 @@ const editPostHandler = async (req: Request, res: Response, next: NextFunction) 
       next(error);
     } else {
       console.log(error);
-      throw new AppError(500, '[ HTTP 요청 에러 ] 게시글 수정 실패');
+      next(new AppError(500, '[ HTTP 요청 에러 ] 게시글 수정 실패'));
     }
   }
 };
@@ -204,7 +204,7 @@ const removePostHandler = async (req: Request, res: Response, next: NextFunction
       next(error);
     } else {
       console.log(error);
-      throw new AppError(500, '[ HTTP 요청 에러 ] 게시글 삭제 실패');
+      next(new AppError(500, '[ HTTP 요청 에러 ] 게시글 삭제 실패'));
     }
   }
 };

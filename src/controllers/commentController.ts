@@ -31,7 +31,7 @@ const addCommentHandler = async (req: Request, res: Response, next: NextFunction
       next(error);
     } else {
       console.log(error);
-      throw new AppError(500, '[ HTTP 요청 에러 ] 댓글 등록 실패');
+      next(new AppError(500, '[ HTTP 요청 에러 ] 댓글 등록 실패'));
     }
   }
 };
@@ -52,7 +52,7 @@ const removeCommentHandler = async (req: Request, res: Response, next: NextFunct
       next(error);
     } else {
       console.log(error);
-      throw new AppError(500, '[ HTTP 요청 에러 ] 댓글 삭제 실패');
+      next(new AppError(500, '[ HTTP 요청 에러 ] 댓글 삭제 실패'));
     }
   }
 };

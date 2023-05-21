@@ -19,7 +19,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 const processImage = (req: Request, res: Response, next: NextFunction) => {
-  upload.single('imageFile')(req, res, (error) => {
+  upload.single('post_img')(req, res, (error) => {
     try {
       next();
     } catch (error) {

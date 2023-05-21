@@ -1,23 +1,13 @@
 import { Post } from '../database/models/post.entity';
 import { AppError } from '../utils/errorHandler';
 import { createPostInput, updatePostInput } from '../database/models/post.entity';
-import { findCommentsByPost } from '../database/daos/comment.repo';
-import {
-  findPosts,
-  findCategories,
-  findPostsByKeyword,
-  findPostsByLocation,
-  findPostById,
-  createPost,
-  updatePost,
-  deletePost,
-  isPostIdValid,
-} from '../database/daos/post.repo';
+import * as commentRepo from '../database/daos/comment.repo';
+import * as postRepo from '../database/daos/post.repo';
 
 /* 게시글 목록 조회 */
 const getAllPosts = async (): Promise<Post[]> => {
   try {
-    const foundPosts = await findPosts();
+    const foundPosts = await postRepo.findPosts();
 
     if (foundPosts.length === 0) throw new AppError(404, '존재하는 게시글이 없습니다.');
 
@@ -36,7 +26,7 @@ const getAllPosts = async (): Promise<Post[]> => {
 /* 게시글 카테고리 조회 */
 const getCategories = async (): Promise<string[]> => {
   try {
-    const foundCategories = await findCategories();
+    const foundCategories = await postRepo.findCategories();
 
     if (foundCategories.length === 0) throw new AppError(404, '존재하는 카테고리가 없습니다.');
 
@@ -58,7 +48,7 @@ const getSearchedPostsByKeyword = async (
   keyword: string
 ): Promise<Post[]> => {
   try {
-    const foundPosts = await findPostsByKeyword(user_location, keyword);
+    const foundPosts = await postRepo.findPostsByKeyword(user_location, keyword);
 
     if (foundPosts.length === 0) throw new AppError(404, '존재하는 게시글이 없습니다.');
 
@@ -80,7 +70,7 @@ const getAllPostsByLocation = async (
   post_category: string
 ): Promise<Post[]> => {
   try {
-    const foundPosts = await findPostsByLocation(user_location, post_category);
+    const foundPosts = await postRepo.findPostsByLocation(user_location, post_category);
 
     if (foundPosts.length === 0) throw new AppError(404, '존재하는 게시글이 없습니다.');
 
@@ -99,13 +89,13 @@ const getAllPostsByLocation = async (
 /* 게시글 및 게시글별 댓글 목록 조회 */
 const getPost = async (post_id: number): Promise<Post> => {
   try {
-    const isValid = await isPostIdValid(post_id);
+    const isValid = await postRepo.isPostIdValid(post_id);
 
     if (isValid === false) throw new AppError(404, '관리자에 의해 이미 삭제된 게시글 입니다.');
 
-    const foundPost = await findPostById(post_id);
+    const foundPost = await postRepo.findPostById(post_id);
 
-    const foundComments = await findCommentsByPost(post_id);
+    const foundComments = await commentRepo.findCommentsByPost(post_id);
 
     foundPost.comments = foundComments; // 댓글 없으면 빈 배열 할당됨
 
@@ -124,9 +114,9 @@ const getPost = async (post_id: number): Promise<Post> => {
 /* 게시글 등록 */
 const addPost = async (inputData: createPostInput) => {
   try {
-    const createdPostId = await createPost(inputData);
+    const createdPostId = await postRepo.createPost(inputData);
 
-    const foundCreatedPost = await findPostById(createdPostId);
+    const foundCreatedPost = await postRepo.findPostById(createdPostId);
 
     return foundCreatedPost;
   } catch (error: any) {
@@ -143,13 +133,13 @@ const addPost = async (inputData: createPostInput) => {
 /* 게시글 수정 */
 const editPost = async (post_id: number, inputData: updatePostInput) => {
   try {
-    const isValid = await isPostIdValid(post_id);
+    const isValid = await postRepo.isPostIdValid(post_id);
 
     if (isValid === false) throw new AppError(404, '관리자에 의해 이미 삭제된 게시글 입니다.');
 
-    const updatedPostId = await updatePost(post_id, inputData);
+    const updatedPostId = await postRepo.updatePost(post_id, inputData);
 
-    const foundUpdatedPost = await findPostById(updatedPostId);
+    const foundUpdatedPost = await postRepo.findPostById(updatedPostId);
 
     return foundUpdatedPost;
   } catch (error: any) {
@@ -166,11 +156,11 @@ const editPost = async (post_id: number, inputData: updatePostInput) => {
 /* 게시글 삭제 */
 const removePost = async (post_id: number) => {
   try {
-    const isValid = await isPostIdValid(post_id);
+    const isValid = await postRepo.isPostIdValid(post_id);
 
     if (isValid === false) throw new AppError(404, '관리자에 의해 이미 삭제된 게시글 입니다.');
 
-    const foundDeletedPostId = await deletePost(post_id);
+    const foundDeletedPostId = await postRepo.deletePost(post_id);
 
     return foundDeletedPostId;
   } catch (error: any) {

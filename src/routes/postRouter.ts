@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import processImage from '../middlewares/multer';
 import * as postController from '../controllers/postController';
 
 const postRouter = Router();
@@ -19,10 +20,10 @@ postRouter.get('/category/:post_category', postController.getAllPostsByLocationH
 postRouter.get('/:post_id', postController.getPostHandler);
 
 /* 게시글 등록 */
-postRouter.post('/:user_id', postController.addPostHandler);
+postRouter.post('/:user_id', processImage, postController.addPostHandler);
 
 /* 게시글 수정 */
-postRouter.patch('/:post_id', postController.editPostHandler);
+postRouter.patch('/:post_id', processImage, postController.editPostHandler);
 
 /* 게시글 삭제 */
 postRouter.delete('/:post_id', postController.removePostHandler);

@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { addCommentHandler, removeCommentHandler } from '../controllers/commentController';
+import * as commentController from '../controllers/commentController';
 
-const router = Router();
+const commentRouter = Router();
 
 /* 댓글 등록 */
-router.post('/:user_id', addCommentHandler);
+commentRouter.post('/:user_id', commentController.addCommentHandler);
 
 /* 댓글 삭제 */
-router.delete('/:comment_id', removeCommentHandler);
+commentRouter.delete('/:comment_id', commentController.removeCommentHandler);
 
-export default router;
+export default commentRouter;

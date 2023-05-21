@@ -1,39 +1,30 @@
 import { Router } from 'express';
-import {
-  getAllPostsHandler,
-  getCategoriesHandler,
-  getSearchedPostsByKeywordHandler,
-  getAllPostsByLocationHandler,
-  getPostHandler,
-  addPostHandler,
-  editPostHandler,
-  removePostHandler,
-} from '../controllers/postController';
+import * as postController from '../controllers/postController';
 
-const router = Router();
+const postRouter = Router();
 
 /* 게시글 목록 조회 */
-router.get('/', getAllPostsHandler);
+postRouter.get('/', postController.getAllPostsHandler);
 
 /* 게시글 카테고리 조회 */
-router.get('/categories', getCategoriesHandler);
+postRouter.get('/categories', postController.getCategoriesHandler);
 
 /* 키워드별 게시글 목록 조회 */
-router.get('/search', getSearchedPostsByKeywordHandler);
+postRouter.get('/search', postController.getSearchedPostsByKeywordHandler);
 
 /* 카테고리별 게시글 목록 조회 */
-router.get('/category/:post_category', getAllPostsByLocationHandler);
+postRouter.get('/category/:post_category', postController.getAllPostsByLocationHandler);
 
 /* 게시글 및 게시글별 댓글 목록 조회 */
-router.get('/:post_id', getPostHandler);
+postRouter.get('/:post_id', postController.getPostHandler);
 
 /* 게시글 등록 */
-router.post('/:user_id', addPostHandler);
+postRouter.post('/:user_id', postController.addPostHandler);
 
 /* 게시글 수정 */
-router.patch('/:post_id', editPostHandler);
+postRouter.patch('/:post_id', postController.editPostHandler);
 
 /* 게시글 삭제 */
-router.delete('/:post_id', removePostHandler);
+postRouter.delete('/:post_id', postController.removePostHandler);
 
-export default router;
+export default postRouter;

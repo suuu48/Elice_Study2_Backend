@@ -118,11 +118,12 @@ const getPostHandler = async (req: Request, res: Response, next: NextFunction) =
 const addPostHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { user_id } = req.params;
-    const { post_category, post_title, post_content, post_img } = req.body;
+    const { post_category, post_title, post_content } = req.body;
+    const imgFileRoot = `http://localhost:3000/api/v1/static/${req.file?.filename}`;
 
     if (!user_id) throw new AppError(400, 'user_id를 입력해주세요.');
 
-    if (!post_category || !post_title || !post_content || !post_img)
+    if (!post_category || !post_title || !post_content)
       throw new AppError(400, '요청 body에 모든 정보를 입력해주세요.');
 
     const postData: createPostInput = {
@@ -130,7 +131,7 @@ const addPostHandler = async (req: Request, res: Response, next: NextFunction) =
       post_category,
       post_title,
       post_content,
-      post_img,
+      post_img: imgFileRoot,
     };
 
     const createdPost = await postService.addPost(postData);
@@ -151,18 +152,19 @@ const addPostHandler = async (req: Request, res: Response, next: NextFunction) =
 const editPostHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { post_id } = req.params;
-    const { post_category, post_title, post_content, post_img } = req.body;
+    const { post_category, post_title, post_content } = req.body;
+    const imgFileRoot = `http://localhost:3000/api/v1/static/${req.file?.filename}`;
 
     if (isNaN(Number(post_id))) throw new AppError(400, '유효한 post_id를 입력해주세요.');
 
-    if (!post_category || !post_title || !post_content || !post_img)
-      throw new AppError(400, '요청 body에 모든 정보를 입력해주세요.');
+    // if (!post_category || !post_title || !post_content)
+    //   throw new AppError(400, '요청 body에 모든 정보를 입력해주세요.');
 
     const postData: updatePostInput = {
       post_category,
       post_title,
       post_content,
-      post_img,
+      post_img: imgFileRoot,
     };
 
     const updatedPost = await postService.editPost(parseInt(post_id), postData);

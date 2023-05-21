@@ -144,6 +144,7 @@ const createPost = async (inputData: createPostInput): Promise<number> => {
 const updatePost = async (post_id: number, inputData: updatePostInput): Promise<number> => {
   try {
     const updateColums = Object.entries(inputData)
+      .filter(([_, value]) => value !== undefined)
       .map(([key, value]) => `${key}='${value}'`)
       .join(', ');
 

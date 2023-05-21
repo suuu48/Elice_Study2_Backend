@@ -1,21 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppError } from '../utils/errorHandler';
 import { createPostInput, updatePostInput } from '../database/models/post.entity';
-import {
-  getAllPosts,
-  getCategories,
-  getSearchedPostsByKeyword,
-  getAllPostsByLocation,
-  getPost,
-  addPost,
-  editPost,
-  removePost,
-} from '../services/postService';
+import * as postService from '../services/postService';
 
 /* 게시글 목록 조회 */
 const getAllPostsHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const foundPosts = await getAllPosts();
+    const foundPosts = await postService.getAllPosts();
 
     res.status(200).json({ message: '게시글 목록 조회 성공', data: foundPosts });
   } catch (error: any) {
@@ -32,7 +23,7 @@ const getAllPostsHandler = async (req: Request, res: Response, next: NextFunctio
 /* 게시글 카테고리 조회 */
 const getCategoriesHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const foundCategories = await getCategories();
+    const foundCategories = await postService.getCategories();
 
     const foundCategoryList = foundCategories.map((category: any) => category.post_category);
 
@@ -64,7 +55,7 @@ const getSearchedPostsByKeywordHandler = async (
 
     if (!user_location) throw new AppError(400, 'user_location를 입력해주세요.');
 
-    const foundPosts = await getSearchedPostsByKeyword(user_location, keyword);
+    const foundPosts = await postService.getSearchedPostsByKeyword(user_location, keyword);
 
     res.status(200).json({ message: '키워드별 게시글 목록 조회 성공', data: foundPosts });
   } catch (error: any) {
@@ -88,7 +79,7 @@ const getAllPostsByLocationHandler = async (req: Request, res: Response, next: N
 
     if (!user_location) throw new AppError(400, 'user_location를 입력해주세요.');
 
-    const foundPosts = await getAllPostsByLocation(user_location, post_category);
+    const foundPosts = await postService.getAllPostsByLocation(user_location, post_category);
 
     res.status(200).json({ message: '카테고리별 게시글 목록 조회 성공', data: foundPosts });
   } catch (error: any) {
@@ -109,7 +100,7 @@ const getPostHandler = async (req: Request, res: Response, next: NextFunction) =
 
     if (isNaN(Number(post_id))) throw new AppError(400, '유효한 post_id를 입력해주세요.');
 
-    const foundpost = await getPost(parseInt(post_id));
+    const foundpost = await postService.getPost(parseInt(post_id));
 
     res.status(200).json({ message: '게시글 조회 성공', data: foundpost });
   } catch (error: any) {
@@ -142,7 +133,7 @@ const addPostHandler = async (req: Request, res: Response, next: NextFunction) =
       post_img,
     };
 
-    const createdPost = await addPost(postData);
+    const createdPost = await postService.addPost(postData);
 
     res.status(201).json({ message: '게시글 등록 성공', data: createdPost });
   } catch (error: any) {
@@ -174,7 +165,7 @@ const editPostHandler = async (req: Request, res: Response, next: NextFunction) 
       post_img,
     };
 
-    const updatedPost = await editPost(parseInt(post_id), postData);
+    const updatedPost = await postService.editPost(parseInt(post_id), postData);
 
     res.status(200).json({ message: '게시글 수정 성공', data: updatedPost });
   } catch (error: any) {
@@ -195,7 +186,7 @@ const removePostHandler = async (req: Request, res: Response, next: NextFunction
 
     if (isNaN(Number(post_id))) throw new AppError(400, '유효한 post_id를 입력해주세요.');
 
-    const deletedPost = await removePost(parseInt(post_id));
+    const deletedPost = await postService.removePost(parseInt(post_id));
 
     res.status(200).json({ message: '게시글 삭제 성공', data: { post_id: deletedPost } });
   } catch (error: any) {

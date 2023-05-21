@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppError } from '../utils/errorHandler';
 import { createCommentInput, updateCommentInput } from '../database/models/comment.entity';
-import { addComment, removeComment } from '../services/commentService';
+import * as commentService from '../services/commentService';
 
 /* 댓글 등록 */
 const addCommentHandler = async (req: Request, res: Response, next: NextFunction) => {
@@ -22,7 +22,7 @@ const addCommentHandler = async (req: Request, res: Response, next: NextFunction
       comment_content,
     };
 
-    const createdComment = await addComment(commentData);
+    const createdComment = await commentService.addComment(commentData);
 
     res.status(201).json({ message: '댓글 등록 성공', data: createdComment });
   } catch (error: any) {
@@ -43,7 +43,7 @@ const removeCommentHandler = async (req: Request, res: Response, next: NextFunct
 
     if (isNaN(Number(comment_id))) throw new AppError(400, '유효한 comment_id를 입력해주세요.');
 
-    const deletedComment = await removeComment(parseInt(comment_id));
+    const deletedComment = await commentService.removeComment(parseInt(comment_id));
 
     res.status(200).json({ message: '댓글 삭제 성공', data: { comment_id: deletedComment } });
   } catch (error: any) {

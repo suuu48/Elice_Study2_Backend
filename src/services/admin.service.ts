@@ -2,11 +2,12 @@ import { User } from '../database/models';
 import * as adminRepo from '../database/daos/admin.repo';
 import * as userRepo from '../database/daos/user.repo';
 import { AppError } from '../utils/errorHandler';
+import { findALlUser } from '../database/daos/admin.repo';
 
 // 관리자가 삭제할 유저 조회
 export const getUsersInfo = async (): Promise<User[]> => {
   try {
-    const foundUsers = await adminRepo.findDeleteUsers();
+    const foundUsers = await adminRepo.findALlUser();
     if (!foundUsers)
       throw new AppError(404, '존재하지 않는 아이디입니다.');
 

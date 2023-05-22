@@ -3,14 +3,24 @@ import { User } from './user.entity';
 import { Post } from './post.entity';
 
 interface CommentProfile {
+  comment_id: number;
   post_id: number;
   user_id: string;
   comment_content: string;
+  created_at: Timestamp;
 }
 
-export type createCommentInput = CommentProfile;
+export type createCommentInput = Omit<CommentProfile, 'comment_id' | 'created_at'>;
 
 export type updateCommentInput = Partial<Pick<CommentProfile, 'comment_content'>>;
+
+export type getCommentsOutput = Omit<CommentProfile, 'post_id' | 'user_id'> & {
+  user_img: string | null;
+  user_nickname: string;
+  comment_content: string;
+  created_at: Timestamp;
+};
+
 @Entity()
 export class Comment {
   @PrimaryGeneratedColumn()

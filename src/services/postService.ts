@@ -66,12 +66,12 @@ const getSearchedPostsByKeyword = async <Posts>(
 };
 
 /* 카테고리별 게시글 목록 조회 */
-const getAllPostsByLocation = async (
+const getAllPostsByLocation = async <Posts>(
   user_location: string,
   post_category: string
-): Promise<Post[]> => {
+): Promise<Posts[]> => {
   try {
-    const foundPosts = await postRepo.findPostsByLocation(user_location, post_category);
+    const foundPosts = await postRepo.findPostsByLocation<Posts>(user_location, post_category);
 
     if (foundPosts.length === 0) throw new AppError(404, '존재하는 게시글이 없습니다.');
 

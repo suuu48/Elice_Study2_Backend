@@ -66,10 +66,10 @@ const findPostsByKeyword = async <Posts>(
 };
 
 /* 카테고리별 게시글 목록 조회 */
-const findPostsByLocation = async (
+const findPostsByLocation = async <Posts>(
   user_location: string,
   post_category: string
-): Promise<Post[]> => {
+): Promise<Posts[]> => {
   try {
     const selectColums =
       'post.post_id, post.user_id, user.user_nickname, post.post_title, post.post_img, COUNT(comment.post_id) AS comment_count, post.created_at';

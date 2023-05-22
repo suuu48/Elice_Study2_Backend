@@ -24,7 +24,7 @@ postRouter.get('/categories', getCategoriesHandler);
 postRouter.get('/search', getSearchedPostsByKeywordHandler<getPostsOutput>);
 
 /* 카테고리별 게시글 목록 조회 */
-postRouter.get('/category/:post_category', getAllPostsByLocationHandler);
+postRouter.get('/category/:post_category', getAllPostsByLocationHandler<getPostsOutput>);
 
 /* 게시글 및 게시글별 댓글 목록 조회 */
 postRouter.get('/:post_id', getPostHandler);

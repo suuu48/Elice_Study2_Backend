@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppError } from '../utils/errorHandler';
-import { createPostInput, updatePostInput, findPostsOutput } from '../database/models/post.entity';
+import { createPostInput, updatePostInput, getPostsOutput } from '../database/models/post.entity';
 import * as postService from '../services/postService';
 
 /* 게시글 목록 조회 */
@@ -42,14 +42,14 @@ const getCategoriesHandler = async (req: Request, res: Response, next: NextFunct
 };
 
 /* 키워드별 게시글 목록 조회 */
-const getSearchedPostsByKeywordHandler = async (
+const getSearchedPostsByKeywordHandler = async <Posts>(
   req: Request<
     {},
-    { message: string; data: findPostsOutput[] },
+    { message: string; data: Posts[] },
     { user_location: string },
     { keyword: string }
   >,
-  res: Response<{ message: string; data: findPostsOutput[] }>,
+  res: Response<{ message: string; data: Posts[] }>,
   next: NextFunction
 ) => {
   try {
@@ -60,10 +60,7 @@ const getSearchedPostsByKeywordHandler = async (
 
     if (!user_location) throw new AppError(400, 'user_location를 입력해주세요.');
 
-    const foundPosts = await postService.getSearchedPostsByKeyword<findPostsOutput>(
-      user_location,
-      keyword
-    );
+    const foundPosts = await postService.getSearchedPostsByKeyword<Posts>(user_location, keyword);
 
     res.status(200).json({ message: '키워드별 게시글 목록 조회 성공', data: foundPosts });
   } catch (error) {
@@ -78,16 +75,28 @@ const getSearchedPostsByKeywordHandler = async (
 };
 
 /* 카테고리별 게시글 목록 조회 */
-const getAllPostsByLocationHandler = async (req: Request, res: Response, next: NextFunction) => {
+const getAllPostsByLocationHandler = async <Posts>(
+  req: Request<
+    { post_category: string },
+    { message: string; data: Posts[] },
+    {
+      jwtDecoded: {
+        user_location: string;
+      };
+    }
+  >,
+  res: Response<{ message: string; data: Posts[] }>,
+  next: NextFunction
+) => {
   try {
     const { post_category } = req.params;
-    const { user_location } = req.body; // Fix : 나중에 jwt로 받기
+    const { user_location } = req.body.jwtDecoded;
 
     if (!post_category) throw new AppError(400, 'post_category를 입력해주세요.');
 
     if (!user_location) throw new AppError(400, 'user_location를 입력해주세요.');
 
-    const foundPosts = await postService.getAllPostsByLocation(user_location, post_category);
+    const foundPosts = await postService.getAllPostsByLocation<Posts>(user_location, post_category);
 
     res.status(200).json({ message: '카테고리별 게시글 목록 조회 성공', data: foundPosts });
   } catch (error: any) {

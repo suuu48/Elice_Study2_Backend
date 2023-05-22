@@ -1,6 +1,44 @@
 import { env } from '../config/envconfig';
 import { Request, RequestHandler } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+
+const refreshTokenValid: RequestHandler = (req, res, next) => {
+  try {
+    const refreshToken =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbjEiLCJwYXNzd29yZCI6InB3ZDQzMjEiLCJ2ZXJpZnkiOiJhZG1pbiIsImxvY2F0aW9uIjoi7Jqp7IKw6rWsIiwiaWF0IjoxNjg0NzU0MjI0LCJleHAiOjE2ODUzNTkwMjR9.WDYK0h2eK2og7dbUEsq77i5Fbj2D77mkrG0D14R0SSY';
+    console.log(refreshToken);
+    // const refreshToken = req.cookies.refreshToken;
+    // const refreshToken = req.headers['refresh-token']?.toString();
+
+    if (!refreshToken) {
+      throw new Error('401, 리프레시 토큰이 필요합니다.');
+    }
+
+    const refreshSecretKey = env.REFRESH_TOKEN_SECRET || 'default-refresh-token-secret';
+    const refreshDecoded = jwt.verify(refreshToken, refreshSecretKey) as JwtPayload; // 명시적으로 JwtPayload 타입으로 지정
+    console.log(refreshDecoded);
+
+    // 리프레시 토큰이 정상적으로 검증되면 액세스 토큰을 재발급
+    const payload = {
+      userId: refreshDecoded.userId,
+      password: refreshDecoded.password,
+      verify: refreshDecoded.verify,
+      location: refreshDecoded.location,
+    };
+    const secretKey = env.ACCESS_TOKEN_SECRET || 'default-access-token-secret';
+    const expiresIn = env.ACCESS_TOKEN_EXPIRES_IN;
+
+    const newAccessToken = jwt.sign(payload, secretKey, { expiresIn });
+
+    req.body = { ...req.body, jwtDecoded: { ...refreshDecoded, newAccessToken } };
+    console.log(req.body);
+    next();
+  } catch (refreshError: any) {
+    const refreshTokenError = new Error('401, 리프레시 토큰이 만료되었거나 유효하지 않습니다.');
+    next(refreshTokenError);
+  }
+};
+
 export const isAccessTokenValid: RequestHandler = (req, res, next) => {
   // request 헤더로부터 authorization bearer 토큰을 받음.
   if (!req.headers.authorization) {
@@ -11,19 +49,18 @@ export const isAccessTokenValid: RequestHandler = (req, res, next) => {
   }
 
   const userToken = req.headers['authorization'].split(' ')[1];
+  console.log(req.headers['authorization']);
   // 해당 token 이 정상적인 token인지 확인
   try {
-    const secretKey = env.JWT_SECRET_KEY || "secret";
-    // const accessTokenSecret = env.ACCESS_TOKEN_SECRET || 'default-access-token-secret';
-    // const refreshTokenSecret = env.REFRESH_TOKEN_SECRET || 'default-refresh-token-secret';
-    const jwtDecoded = jwt.verify(userToken, secretKey);
+    const accessTokenSecret = env.ACCESS_TOKEN_SECRET || 'default-access-token-secret';
+    const jwtDecoded = jwt.verify(userToken, accessTokenSecret);
 
     req.body = { ...req.body, jwtDecoded };
-    console.log(req.body);
+
+    console.log(jwtDecoded);
+
     next();
-  } catch (error:any) {
-    // jwt.verify 함수가 에러를 발생시키는 경우는 토큰이 정상적으로 decode 안되었을 경우임.
-    // 403 코드로 JSON 형태로 프론트에 전달함.
+  } catch (error: any) {
     console.log(error);
 
     switch (error.message) {
@@ -32,8 +69,10 @@ export const isAccessTokenValid: RequestHandler = (req, res, next) => {
         next(notAllow);
         break;
       case 'jwt expired':
+        console.log('start!!!!');
         const expired = new Error('403, 만료된 토큰입니다.');
-        next(expired);
+        refreshTokenValid(req, res, next);
+        console.log('end!!!!');
         break;
       case 'is not access token':
         const notAT = new Error('400, AT로 인증해주시길 바랍니다. ');
@@ -43,5 +82,4 @@ export const isAccessTokenValid: RequestHandler = (req, res, next) => {
         next(new Error('400, 토큰 검증 도중 오류가 발생했습니다.'));
     }
   }
-
 };

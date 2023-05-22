@@ -1,9 +1,10 @@
 import { db } from '../../config/dbconfig';
 import { User } from '../models';
 import { findAllInfo } from './user.repo';
+import { AppError } from '../../utils/errorHandler';
 
 // 관리자가 모든 유저정보 추출
-// 회원 목록 전체 조회 >> Todo: verify도 조회할지
+// 회원 목록 전체 조회
 export const findALlUser = async (): Promise<User[]> => {
   try {
     const [users]: any = await db.query(`
@@ -13,7 +14,7 @@ export const findALlUser = async (): Promise<User[]> => {
     return users;
   } catch (error) {
     console.log(error);
-    return Promise.reject(error); // App Error
+    throw new AppError(500, '[ DB 에러 ] 회원 목록 전체 조회 실패');
   }
 };
 
@@ -27,7 +28,7 @@ export const findDeleteUsers = async (): Promise<User[]> => {
     return users;
   } catch (error) {
     console.log(error);
-    return Promise.reject(error); // App Error
+    throw new AppError(500, '[ DB 에러 ] 회원 탈퇴 목록 조회 실패');
   }
 };
 // 유저 정보 hard delete
@@ -44,7 +45,7 @@ export const deleteUserByAdmin = async (userId: string): Promise<string> => {
     return userId;
   } catch (error) {
     console.log(error);
-    throw error;
+    throw new AppError(500, '[ DB 에러 ] 유저 정보 삭제 실패');
   }
 };
 
@@ -63,6 +64,6 @@ export const restoreUser = async (userId: string): Promise<User> => {
     return restoreUser!;
   } catch (error) {
     console.log(error);
-    return Promise.reject(error); // App Error
+    throw new AppError(500, '[ DB 에러 ] 유저 계정 복구 실패');
   }
 };

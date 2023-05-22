@@ -17,12 +17,11 @@ export const addUserHandler = async (req: Request, res: Response, next: NextFunc
       !user_password ||
       !user_nickname ||
       !user_location ||
-      !user_location
+      !user_img
     )
       throw new Error('[ 요청 에러 ] 사진을 제외한 모든 필드를 입력해야 합니다.');
 
     const isCheckId = await userRepo.findOne(user_id);
-    console.log(isCheckId);
 
     if (isCheckId) {
       throw Error('이 아이디는 현재 사용중입니다. 다른 아이디를 입력해 주세요.');
@@ -72,11 +71,13 @@ export const logIn = async (req: Request, res: Response, next: NextFunction) => 
 
     const correctPasswordHash = checkId.user_password; // db에 저장되어 있는 암호화된 비밀번호
 
-    const isPasswordCorrect = await bcrypt.compare(user_password, correctPasswordHash);
-
-    if (!isPasswordCorrect) {
-      throw new Error('비밀번호가 일치하지 않습니다. 다시 한 번 확인해 주세요.');
+    if(correctPasswordHash !== user_password){
+     const isPasswordCorrect = await bcrypt.compare(user_password, correctPasswordHash);
+      if (!isPasswordCorrect) {
+        throw new Error('비밀번호가 일치하지 않습니다. 다시 한 번 확인해 주세요.');
+      }
     }
+
 
     const userToken = await userService.getUserToken(checkId.user_id);
 

@@ -11,16 +11,28 @@ import { User } from './user.entity';
 import { Comment } from './comment.entity';
 
 interface PostProfile {
+  post_id: number;
   user_id: string;
   post_category: string;
   post_title: string;
   post_content: string;
-  post_img: string;
+  post_img?: string;
+  created_at: Timestamp;
+  comments: Comment[];
 }
 
-export type createPostInput = PostProfile;
+export type createPostInput = Omit<PostProfile, 'post_id' | 'created_at' | 'comments'>;
 
-export type updatePostInput = Partial<Omit<PostProfile, 'user_id'>>;
+export type updatePostInput = Partial<
+  Omit<PostProfile, 'user_id' | 'post_id' | 'created_at' | 'comments'>
+>;
+
+export type findPostsOutput = Array<
+  Omit<PostProfile, 'post_category' | 'post_content' | 'comments'> & {
+    user_nickname: string;
+    comment_count: number;
+  }
+>;
 
 @Entity()
 export class Post {

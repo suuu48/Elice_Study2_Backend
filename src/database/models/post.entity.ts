@@ -16,7 +16,7 @@ interface PostProfile {
   post_category: string;
   post_title: string;
   post_content: string;
-  post_img?: string;
+  post_img: string | null;
   created_at: Timestamp;
   comments: Comment[];
 }
@@ -27,7 +27,15 @@ export type updatePostInput = Partial<
   Omit<PostProfile, 'user_id' | 'post_id' | 'created_at' | 'comments'>
 >;
 
+export type getAllPostOutput = Omit<PostProfile, 'comments'>;
+
 export type getPostsOutput = Omit<PostProfile, 'post_category' | 'post_content' | 'comments'> & {
+  user_nickname: string;
+  comment_count: number;
+};
+
+export type getPostOutput = Omit<PostProfile, 'user_id'> & {
+  user_img: string | null;
   user_nickname: string;
   comment_count: number;
 };

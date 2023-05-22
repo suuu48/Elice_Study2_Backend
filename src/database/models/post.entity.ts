@@ -27,7 +27,7 @@ export type updatePostInput = Partial<
   Omit<PostProfile, 'user_id' | 'post_id' | 'created_at' | 'comments'>
 >;
 
-export type findPostsOutput = Omit<PostProfile, 'post_category' | 'post_content' | 'comments'> & {
+export type getPostsOutput = Omit<PostProfile, 'post_category' | 'post_content' | 'comments'> & {
   user_nickname: string;
   comment_count: number;
 };

@@ -8,7 +8,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { User } from './user.entity';
-import { Comment } from './comment.entity';
+import { Comment, getCommentsOutput } from './comment.entity';
 
 interface PostProfile {
   post_id: number;
@@ -18,7 +18,7 @@ interface PostProfile {
   post_content: string;
   post_img: string | null;
   created_at: Timestamp;
-  comments: Comment[];
+  comments: getCommentsOutput[];
 }
 
 export type createPostInput = Omit<PostProfile, 'post_id' | 'created_at' | 'comments'>;

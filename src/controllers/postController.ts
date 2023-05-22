@@ -46,7 +46,11 @@ const getSearchedPostsByKeywordHandler = async <Posts>(
   req: Request<
     {},
     { message: string; data: Posts[] },
-    { user_location: string },
+    {
+      jwtDecoded: {
+        user_location: string;
+      };
+    },
     { keyword: string }
   >,
   res: Response<{ message: string; data: Posts[] }>,
@@ -54,7 +58,7 @@ const getSearchedPostsByKeywordHandler = async <Posts>(
 ) => {
   try {
     const { keyword } = req.query;
-    const { user_location } = req.body;
+    const { user_location } = req.body.jwtDecoded;
 
     if (!keyword) throw new AppError(400, 'keyword를 입력해주세요.');
 

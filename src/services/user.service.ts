@@ -29,9 +29,8 @@ export const getUserToken = async (
     const user = await userRepo.findInfo(userId);
 
     // 로그인 시작 -> JWT 웹 토큰 생성
-    const secretKey = env.JWT_SECRET_KEY || 'secret-key';
-    // const accessTokenSecret = env.ACCESS_TOKEN_SECRET || 'default-access-token-secret';
-    // const refreshTokenSecret = env.REFRESH_TOKEN_SECRET || 'default-refresh-token-secret';
+    const accessTokenSecret = env.ACCESS_TOKEN_SECRET || 'default-access-token-secret';
+    const refreshTokenSecret = env.REFRESH_TOKEN_SECRET || 'default-refresh-token-secret';
 
     const payload = {
       userId: user.user_id,
@@ -40,11 +39,11 @@ export const getUserToken = async (
       location: user.user_location,
     };
 
-    const accessToken = jwt.sign(payload, secretKey, {
+    const accessToken = jwt.sign(payload, accessTokenSecret, {
       expiresIn: env.ACCESS_TOKEN_EXPIRES_IN,
     });
 
-    const refreshToken = jwt.sign(payload, secretKey, {
+    const refreshToken = jwt.sign(payload, refreshTokenSecret, {
       expiresIn: env.REFRESH_TOKEN_EXPIRES_IN,
     });
     const userInfo = await userRepo.findOne(userId);

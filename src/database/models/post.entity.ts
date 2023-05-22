@@ -29,6 +29,8 @@ export type updatePostInput = Partial<
 
 export type getAllPostOutput = Omit<PostProfile, 'comments'>;
 
+export type getCategoriesOutput = { categories: string[] };
+
 export type getPostsOutput = Omit<PostProfile, 'post_category' | 'post_content' | 'comments'> & {
   user_nickname: string;
   comment_count: number;

@@ -39,7 +39,10 @@ const findCategories = async (): Promise<string[]> => {
 };
 
 /* 키워드별 게시글 목록 조회 */
-const findPostsByKeyword = async (user_location: string, keyword: string): Promise<Post[]> => {
+const findPostsByKeyword = async <Posts>(
+  user_location: string,
+  keyword: string
+): Promise<Posts[]> => {
   try {
     const selectColums =
       'post.post_id, post.user_id, user.user_nickname, post.post_title, post.post_img, COUNT(comment.post_id) AS comment_count, post.created_at';
@@ -54,9 +57,6 @@ const findPostsByKeyword = async (user_location: string, keyword: string): Promi
       `;
 
     const [postRows]: any = await db.query(SQL, [user_location]);
-
-    // const posts: Post[] = postRows; // @@@@@@@@@@@@@@@@@@@@@@ Fix : 타입 이렇게 추가하기
-    // return posts
 
     return postRows;
   } catch (error) {

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppError } from '../utils/errorHandler';
-import { createPostInput, updatePostInput } from '../database/models/post.entity';
+import { createPostInput, updatePostInput, findPostsOutput } from '../database/models/post.entity';
 import * as postService from '../services/postService';
 
 /* 게시글 목록 조회 */
@@ -43,22 +43,30 @@ const getCategoriesHandler = async (req: Request, res: Response, next: NextFunct
 
 /* 키워드별 게시글 목록 조회 */
 const getSearchedPostsByKeywordHandler = async (
-  req: Request,
-  res: Response,
+  req: Request<
+    {},
+    { message: string; data: findPostsOutput[] },
+    { user_location: string },
+    { keyword: string }
+  >,
+  res: Response<{ message: string; data: findPostsOutput[] }>,
   next: NextFunction
 ) => {
   try {
-    const keyword = req.query.keyword as string;
-    const { user_location } = req.body; // Fix : 나중에 jwt로 받기
+    const { keyword } = req.query;
+    const { user_location } = req.body;
 
     if (!keyword) throw new AppError(400, 'keyword를 입력해주세요.');
 
     if (!user_location) throw new AppError(400, 'user_location를 입력해주세요.');
 
-    const foundPosts = await postService.getSearchedPostsByKeyword(user_location, keyword);
+    const foundPosts = await postService.getSearchedPostsByKeyword<findPostsOutput>(
+      user_location,
+      keyword
+    );
 
     res.status(200).json({ message: '키워드별 게시글 목록 조회 성공', data: foundPosts });
-  } catch (error: any) {
+  } catch (error) {
     if (error instanceof AppError) {
       if (error.statusCode === 404 || error.statusCode === 400) console.log(error);
       next(error);

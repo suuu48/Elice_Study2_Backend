@@ -4,10 +4,9 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 
 const refreshTokenValid: RequestHandler = (req, res, next) => {
   try {
-    const refreshToken =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbjEiLCJwYXNzd29yZCI6InB3ZDQzMjEiLCJ2ZXJpZnkiOiJhZG1pbiIsImxvY2F0aW9uIjoi7Jqp7IKw6rWsIiwiaWF0IjoxNjg0NzU0MjI0LCJleHAiOjE2ODUzNTkwMjR9.WDYK0h2eK2og7dbUEsq77i5Fbj2D77mkrG0D14R0SSY';
-    console.log(refreshToken);
-    // const refreshToken = req.cookies.refreshToken;
+    // const refreshToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbjEiLCJwYXNzd29yZCI6InB3ZDQzMjEiLCJ2ZXJpZnkiOiJhZG1pbiIsImxvY2F0aW9uIjoi7Jqp7IKw6rWsIiwiaWF0IjoxNjg0NzU0MjI0LCJleHAiOjE2ODUzNTkwMjR9.WDYK0h2eK2og7dbUEsq77i5Fbj2D77mkrG0D14R0SSY';
+    // console.log(refreshToken);
+    const refreshToken = req.cookies.refreshToken;
     // const refreshToken = req.headers['refresh-token']?.toString();
 
     if (!refreshToken) {
@@ -57,8 +56,7 @@ export const isAccessTokenValid: RequestHandler = (req, res, next) => {
 
     req.body = { ...req.body, jwtDecoded };
 
-    console.log(jwtDecoded);
-
+    console.log(req.body);
     next();
   } catch (error: any) {
     console.log(error);

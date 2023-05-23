@@ -8,19 +8,47 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { User } from './user.entity';
-import { Comment } from './comment.entity';
+import { Comment, foundCommentsOutput } from './comment.entity';
 
 interface PostProfile {
+  post_id: number;
   user_id: string;
   post_category: string;
   post_title: string;
   post_content: string;
-  post_img: string;
+  post_img: string | null;
+  created_at: Timestamp;
+  comments: foundCommentsOutput[];
 }
 
-export type createPostInput = PostProfile;
+export type createPostInput = Omit<PostProfile, 'post_id' | 'created_at' | 'comments'>;
 
-export type updatePostInput = Partial<Omit<PostProfile, 'user_id'>>;
+export type updatePostInput = Partial<
+  Omit<PostProfile, 'user_id' | 'post_id' | 'created_at' | 'comments'>
+>;
+
+export type foundAllPostOutput = Omit<PostProfile, 'comments'>;
+
+export type foundCategoriesOutput = { categories: string[] };
+
+export type foundPostsOutput = Omit<PostProfile, 'post_category' | 'post_content' | 'comments'> & {
+  user_nickname: string;
+  comment_count: number;
+};
+
+export type foundPostOutput = Omit<PostProfile, 'user_id'> & {
+  user_img: string | null;
+  user_nickname: string;
+  comment_count: number;
+};
+
+export type createdPostOutput = Omit<PostProfile, 'user_id' | 'comments'> & {
+  user_img: string | null;
+  user_nickname: string;
+  comment_count: number;
+};
+
+export type updatedPostOutput = createdPostOutput;
 
 @Entity()
 export class Post {

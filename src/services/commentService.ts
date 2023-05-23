@@ -1,16 +1,20 @@
 import { AppError } from '../utils/errorHandler';
-import { createCommentInput, updateCommentInput } from '../database/models/comment.entity';
+import { createCommentInput } from '../database/models/comment.entity';
 import * as commentRepo from '../database/daos/comment.repo';
 
 /* 댓글 등록 */
-const addComment = async (inputData: createCommentInput) => {
+const addComment = async <createCommentOutput>(
+  inputData: createCommentInput
+): Promise<createCommentOutput> => {
   try {
     const createdCommentId = await commentRepo.createComment(inputData);
 
-    const foundCreatedComment = await commentRepo.findCommentById(createdCommentId);
+    const foundCreatedComment = await commentRepo.findCommentById<createCommentOutput>(
+      createdCommentId
+    );
 
     return foundCreatedComment;
-  } catch (error: any) {
+  } catch (error) {
     if (error instanceof AppError) {
       if (error.statusCode === 500) console.log(error);
       throw error;
@@ -31,7 +35,7 @@ const removeComment = async (comment_id: number) => {
     const foundDeletedCommentId = await commentRepo.deleteComment(comment_id);
 
     return foundDeletedCommentId;
-  } catch (error: any) {
+  } catch (error) {
     if (error instanceof AppError) {
       if (error.statusCode === 500) console.log(error);
       throw error;

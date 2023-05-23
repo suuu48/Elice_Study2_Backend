@@ -1,10 +1,9 @@
 import { db } from '../../config/dbconfig';
-import { Comment } from '../models/comment.entity';
 import { AppError } from '../../utils/errorHandler';
 import { createCommentInput, updateCommentInput } from '../models/comment.entity';
 
 /* 댓글 조회 */
-const findCommentById = async (comment_id: number): Promise<Comment> => {
+const findCommentById = async <Comment>(comment_id: number): Promise<Comment> => {
   try {
     const SQL = `
     SELECT * 
@@ -22,7 +21,7 @@ const findCommentById = async (comment_id: number): Promise<Comment> => {
 };
 
 /* 게시글별 댓글 목록 조회 */
-const findCommentsByPost = async (post_id: number): Promise<Comment[]> => {
+const findCommentsByPost = async <Comments>(post_id: number): Promise<Comments[]> => {
   try {
     const selectColums =
       'comment.comment_id, user.user_img, user.user_nickname, comment.comment_content, comment.created_at';

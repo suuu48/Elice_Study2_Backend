@@ -2,21 +2,15 @@ import { Request, Response, NextFunction } from 'express';
 import * as reviewService from '../services/review.service';
 import { AppError } from '../utils/errorHandler';
 import * as Review from '../database/models';
+import { getReview, isVaildReview } from '../services/review.service';
 
 // 리뷰 추가
 export const addReviewHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { user_id } = req.body;
-    const { location_id, location_name, review_content, star_rating, review_img } = req.body;
-
-    if (
-      !user_id ||
-      !location_id ||
-      !location_name ||
-      !review_content ||
-      !star_rating ||
-      !review_img
-    )
+    const { location_id, location_name, review_content, star_rating } = req.body;
+    const imgFileRoot = `http://localhost:3000/api/v1/static/${req.file?.filename}`;
+    if (!user_id || !location_id || !location_name || !review_content || !star_rating)
       throw new Error('[ 요청 에러 ] 모든 필드를 입력해야 합니다.');
 
     const reviewData: Review.createReviewInput = {
@@ -25,7 +19,7 @@ export const addReviewHandler = async (req: Request, res: Response, next: NextFu
       user_id,
       review_content,
       star_rating,
-      review_img,
+      review_img: imgFileRoot,
     };
 
     const createdReview = await reviewService.addReview(reviewData);
@@ -33,9 +27,9 @@ export const addReviewHandler = async (req: Request, res: Response, next: NextFu
   } catch (error: any) {
     if (error instanceof AppError) next(error);
     else {
-    console.log(error);
-    next(new AppError(500, error.message));
-     }
+      console.log(error);
+      next(new AppError(500, error.message));
+    }
   }
 };
 
@@ -76,14 +70,14 @@ export const updateReviewHandler = async (req: Request, res: Response, next: Nex
     if (!review_id) throw new Error('[ 요청 에러 ] review_id가 필요합니다.');
 
     const { review_content, star_rating, review_img } = req.body;
-
+    const imgFileRoot = `http://localhost:3000/api/v1/static/${req.file?.filename}`;
     if (!review_content && !star_rating && !review_img)
       throw new Error('[ 요청 에러 ] 변경된 값이 없습니다!');
 
     const updateReviewData: Review.updateReviewInput = {
       review_content,
       star_rating,
-      review_img,
+      review_img: imgFileRoot,
     };
 
     const updateReview = await reviewService.updateReview(review_id, updateReviewData);
@@ -101,10 +95,14 @@ export const deleteReviewHandler = async (req: Request, res: Response, next: Nex
   try {
     const review_id = parseInt(req.params.review_id);
     if (!review_id) throw new Error('[ 요청 에러 ] review_id가 필요합니다.');
+    const review = await reviewService.getReview(review_id);
 
-    const review = await reviewService.deleteReview(review_id);
+    if (req.body.jwtDecoded.userId !== review.user_id) {
+      throw new Error('[ 리뷰 삭제 에러 ] 본인이 작성한 리뷰가 아닙니다.');
+    }
 
-    res.status(200).json({ message: '리뷰 삭제 성공', data: review });
+    const reviewId = await reviewService.deleteReview(review_id);
+    res.status(200).json({ message: '리뷰 삭제 성공', data: reviewId });
   } catch (error: any) {
     console.log(error);
     if (error instanceof AppError) next(error);

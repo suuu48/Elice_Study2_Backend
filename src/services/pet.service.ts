@@ -2,7 +2,7 @@ import { Pet } from '../database/models/pet.entity';
 import { createPetInput, updatePetInput } from '../database/models';
 import * as petRepo from '../database/daos/pet.repo';
 import { AppError } from '../utils/errorHandler';
-import { createPet, findPetById, findPets } from '../database/daos/pet.repo';
+import fs from 'fs';
 
 // pet 등록
 export const addPet = async (inputData: createPetInput) => {
@@ -16,7 +16,7 @@ export const addPet = async (inputData: createPetInput) => {
   } catch (error: any) {
     if (error instanceof AppError) throw error;
     else {
-    throw new AppError(500, error.message || null);
+      throw new AppError(500, error.message || null);
     }
   }
 };
@@ -37,7 +37,6 @@ export const getALlPet = async (user_id: string): Promise<Pet[]> => {
   }
 };
 
-
 // 특정 pet 조회
 export const getPet = async (pet_id: number): Promise<Pet> => {
   try {
@@ -55,14 +54,13 @@ export const getPet = async (pet_id: number): Promise<Pet> => {
 };
 
 // pet 수정
-export const updatePet = async (
-  pet_id: number,
-  updateData: updatePetInput
-): Promise<Pet> => {
+export const updatePet = async (pet_id: number, updateData: updatePetInput): Promise<Pet> => {
   try {
     const pet = await petRepo.findPetById(pet_id);
 
     if (pet === undefined) throw new Error('[ pet 수정 에러 ] pet이 존재하지 않습니다.');
+
+    await editImage(pet_id, updateData);
 
     const updatePet = await petRepo.updatePet(pet_id, updateData);
     return updatePet;
@@ -81,6 +79,8 @@ export const deletePet = async (pet_id: number): Promise<number> => {
 
     if (pet === undefined) throw new Error('[ pet 삭제 에러 ] pet이 존재하지 않습니다.');
 
+    await removeImage(pet_id);
+
     const petId = await petRepo.deletePet(pet_id);
     return petId;
   } catch (error: any) {
@@ -89,4 +89,38 @@ export const deletePet = async (pet_id: number): Promise<number> => {
       throw new AppError(500, error.message || null);
     }
   }
+};
+
+/* pet 이미지 로컬 수정 */
+const editImage = async (pet_id: number, updateData: updatePetInput) => {
+  const pet = await petRepo.findPetById(pet_id);
+
+  if (pet.pet_img && pet.pet_img !== updateData.pet_img) {
+    const imgFileName = pet.pet_img.split('/')[6];
+
+    const filePath = `/Users/subin/IdeaProjects/peeps_back-end3/public/${imgFileName}`;
+    // const filePath = `서버 실행하는 로컬의 public 파일 절대경로`;
+    // const filePath = `클라우드 인스턴스 로컬의 public 파일 절대경로`;
+
+    fs.unlink(filePath, (error) => {
+      if (error) throw new AppError(400, '게시글 이미지 수정 중 오류가 발생했습니다.');
+    });
+  } else return;
+};
+
+/* pet 이미지 로컬 삭제 */
+const removeImage = async (pet_id: number) => {
+  const pet = await petRepo.findPetById(pet_id);
+
+  if (pet.pet_img) {
+    const imgFileName = pet.pet_img.split('/')[6];
+
+    const filePath = `/Users/subin/IdeaProjects/peeps_back-end3/public/${imgFileName}`;
+    // const filePath = `서버 실행하는 로컬의 public 파일 절대경로`;
+    // const filePath = `클라우드 인스턴스 로컬의 public 파일 절대경로`;
+
+    fs.unlink(filePath, (error) => {
+      if (error) throw new AppError(400, '게시글 이미지 삭제 중 오류가 발생했습니다.');
+    });
+  } else return;
 };

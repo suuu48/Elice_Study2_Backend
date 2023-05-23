@@ -15,6 +15,7 @@ export const findReviewById = async (reviewId: number): Promise<Review> => {
           r.star_rating,
           r.created_at,
           r.review_img,
+          r.user_id,
           u.user_nickname,
           u.user_img
       FROM review r 

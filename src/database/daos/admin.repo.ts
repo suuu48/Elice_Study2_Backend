@@ -3,6 +3,26 @@ import { User } from '../models';
 import { findAllInfo } from './user.repo';
 import { AppError } from '../../utils/errorHandler';
 
+
+// userId 입력시 모든 정보 추출
+// Todo : 이름 변경하기!!!!!!!!
+export const findInfo = async (userId: string): Promise<User> => {
+  try {
+    const [row]: any = await db.query(
+      `
+    SELECT *
+    FROM user
+    WHERE user_id = ?`,
+      [userId]
+    );
+    return row[0];
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+
 // 관리자가 모든 유저정보 추출
 // 회원 목록 전체 조회
 export const findALlUser = async (): Promise<User[]> => {

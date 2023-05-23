@@ -1,5 +1,6 @@
-import { dataSource, db } from '../../config/dbconfig';
+import { db } from '../../config/dbconfig';
 import { createUserInput, updateUserInput, User, UserProfile } from '../models';
+import { AppError } from '../../utils/errorHandler';
 
 // 닉네임 중복 체크
 export const findOneByNickname = async (nickName: string): Promise<UserProfile> => {
@@ -11,23 +12,7 @@ export const findOneByNickname = async (nickName: string): Promise<UserProfile> 
     WHERE user_nickname = ?`,
       [nickName]
     );
-    return row[0];
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
-};
-// userId 입력시 모든 정보 추출
-// Todo : 이름 변경하기!!!!!!!!
-export const findInfo = async (userId: string): Promise<User> => {
-  try {
-    const [row]: any = await db.query(
-      `
-    SELECT *
-    FROM user
-    WHERE user_id = ?`,
-      [userId]
-    );
+
     return row[0];
   } catch (error) {
     console.log(error);
@@ -43,9 +28,10 @@ export const findOne = async (userId: string): Promise<UserProfile> => {
       `
     SELECT ${getColumns}
     FROM user
-    WHERE user_id = ?`,
+    WHERE user_id = ? and delete_flag ='0'`,
       [userId]
     );
+
     return row[0];
   } catch (error) {
     console.log(error);
@@ -54,6 +40,23 @@ export const findOne = async (userId: string): Promise<UserProfile> => {
 };
 // userId 입력시 user 정보 추출
 export const findAllInfo = async (userId: string): Promise<User> => {
+  try {
+    const [row]: any = await db.query(
+      `
+    SELECT *
+    FROM user
+    WHERE user_id = ? and delete_flag ='0'`,
+      [userId]
+    );
+    return row[0];
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+// userId 입력시 user 정보 추출
+export const findForDelete = async (userId: string): Promise<User> => {
   try {
     const [row]: any = await db.query(
       `
@@ -102,7 +105,7 @@ export const updateDataTrans = (input: Record<string, string | number | boolean 
       a[1].push(value);
       return a;
     },
-    [[], []] as [string[], Array<string | number | boolean  | Date>]
+    [[], []] as [string[], Array<string | number | boolean | Date>]
   );
   return data;
 };
@@ -133,19 +136,16 @@ export const updateUser = async (userId: string, updateData: updateUserInput): P
 export const softDeleteUser = async (userId: string): Promise<User> => {
   try {
     const [updateUser]: any = await db.query(
-      `
-          Update user
+      `   Update user
           SET delete_flag ='1', deleted_at=Now()
           WHERE user_id = ?`,
       [userId]
     );
 
-    const user = await findAllInfo(userId);
-    console.log(user);
-    console.log(updateUser);
+    const user = await findForDelete(userId);
     return user!;
   } catch (error) {
     console.log(error);
-    return Promise.reject(error); // App Error
+    throw new AppError(500, '[ DB 에러 ] 유저 소프트 삭제 실패');
   }
 };

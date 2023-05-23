@@ -2,6 +2,8 @@ import jwt from 'jsonwebtoken';
 import * as userRepo from '../database/daos/user.repo';
 import { createUserInput, updateUserInput, User, UserProfile } from '../database/models';
 import { env } from '../config/envconfig';
+import fs from 'fs';
+import { AppError } from '../utils/errorHandler';
 
 // 회원가임
 export const createUser = async (inputData: createUserInput) => {
@@ -13,11 +15,11 @@ export const createUser = async (inputData: createUserInput) => {
 
     return user;
   } catch (error: any) {
-    //if (error instanceof AppError) throw error;
-    // else {
-    console.log(error);
-    // throw new AppError(500, error.message || null);
-    // }
+    if (error instanceof AppError) throw error;
+    else {
+      console.log(error);
+      throw new AppError(500, error.message || null);
+    }
   }
 };
 
@@ -26,7 +28,7 @@ export const getUserToken = async (
   userId: string
 ): Promise<{ userInfo: UserProfile; accessToken: string; refreshToken: string }> => {
   try {
-    const user = await userRepo.findInfo(userId);
+    const user = await userRepo.findAllInfo(userId);
 
     // 로그인 시작 -> JWT 웹 토큰 생성
     const accessTokenSecret = env.ACCESS_TOKEN_SECRET || 'default-access-token-secret';
@@ -58,8 +60,7 @@ export const getUserToken = async (
 export const getUser = async (userId: string): Promise<UserProfile> => {
   try {
     const foundUser = await userRepo.findOne(userId);
-    if (!foundUser) console.log('존재하지 않는 아이디 입니다.');
-    //return next(new AppError(400, '존재하지 않는 아이디입니다.'));
+    if (!foundUser) throw new AppError(404, '존재하지 않는 아이디 입니다.');
 
     return foundUser;
   } catch (error) {
@@ -76,8 +77,9 @@ export const updateUserInfo = async (
 ): Promise<UserProfile> => {
   try {
     const foundUser = await userRepo.findOne(userId);
-    if (!foundUser) console.log('존재하지 않는 아이디 입니다.');
-    //return next(new AppError(400, '존재하지 않는 아이디입니다.'));
+    if (!foundUser) throw new AppError(404, '존재하지 않는 아이디 입니다.');
+
+    await editImage(userId, updateData);
 
     const updateUser = await userRepo.updateUser(userId, updateData);
     const user = await userRepo.findOne(updateUser.user_id);
@@ -85,7 +87,6 @@ export const updateUserInfo = async (
   } catch (error) {
     console.error(error);
     throw new Error('[유저 수정 에러] 유저 정보 수정에 실패했습니다.');
-    //  next(error);
   }
 };
 
@@ -93,14 +94,32 @@ export const updateUserInfo = async (
 export const softDelete = async (userId: string): Promise<User> => {
   try {
     const foundUser = await userRepo.findOne(userId);
-    if (!foundUser) console.log('존재하지 않는 아이디 입니다.');
+    if (!foundUser) throw new AppError(404, '존재하지 않는 아이디 입니다.');
 
     const deleteUser = await userRepo.softDeleteUser(userId);
     return deleteUser;
   } catch (error: any) {
     console.log(error);
-    throw new Error('유저 삭제에 실패했습니다.'); // Todo: if..else 문으로 변경하기
-    // if (error instanceof AppError) throw error;
-    // else throw new AppError(404, error.message);
+    throw new Error('유저 삭제에 실패했습니다.');
+    if (error instanceof AppError) throw error;
+    else throw new AppError(404, error.message);
   }
+};
+
+/* 유저 이미지 로컬 수정 */
+const editImage = async (user_id: string, inputData: updateUserInput) => {
+  const foundUser = await userRepo.findOne(user_id);
+  if (!foundUser) throw new AppError(404, '존재하지 않는 아이디 입니다.');
+
+  if (foundUser.user_img && foundUser.user_img !== inputData.user_img) {
+    const imgFileName = foundUser.user_img.split('/')[6];
+
+    const filePath = `/Users/subin/IdeaProjects/peeps_back-end3/public/${imgFileName}`;
+    // const filePath = `서버 실행하는 로컬의 public 파일 절대경로`;
+    // const filePath = `클라우드 인스턴스 로컬의 public 파일 절대경로`;
+
+    fs.unlink(filePath, (error) => {
+      if (error) throw new AppError(400, '유저 이미지 수정 중 오류가 발생했습니다.');
+    });
+  } else return;
 };

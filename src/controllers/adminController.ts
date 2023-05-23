@@ -2,10 +2,9 @@ import { Request, Response, NextFunction } from 'express';
 import * as adminService from '../services/admin.service';
 import { AppError } from '../utils/errorHandler';
 
-// 삭제할 유저 정보 조회
+// 전체 유저 조회
 export const FindALlHandler = async (req: Request, res: Response, next: NextFunction) => {
-  if(req.body.verify ==='user') throw new AppError(400, '관리자가 아닙니다.');
-
+  if (req.body.jwtDecoded.verify === 'user') throw new AppError(400, '관리자가 아닙니다.');
 
   try {
     const { adminId } = req.params;
@@ -27,7 +26,7 @@ export const FindALlHandler = async (req: Request, res: Response, next: NextFunc
 // 유저 정보 하드 삭제
 // 리뷰 삭제
 export const deleteUserHandler = async (req: Request, res: Response, next: NextFunction) => {
-  if(req.body.verify ==='user') throw new AppError(400, '관리자가 아닙니다.');
+  if (req.body.jwtDecoded.verify === 'user') throw new AppError(400, '관리자가 아닙니다.');
   try {
     const { userId } = req.params;
     if (!userId) throw new Error('[ 요청 에러 ] 아이디를 반드시 입력해야 합니다.');
@@ -44,7 +43,7 @@ export const deleteUserHandler = async (req: Request, res: Response, next: NextF
 
 // 유저 계정 복구
 export const restoreUserHandler = async (req: Request, res: Response, next: NextFunction) => {
-  if(req.body.verify ==='user') throw new AppError(400, '관리자가 아닙니다.');
+  if (req.body.jwtDecoded.verify === 'user') throw new AppError(400, '관리자가 아닙니다.');
   try {
     const { userId } = req.params;
     if (!userId) throw new Error('[ 요청 에러 ] 아이디를 반드시 입력해야 합니다.');

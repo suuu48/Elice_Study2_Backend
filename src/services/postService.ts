@@ -1,19 +1,19 @@
-import { Post } from '../database/models/post.entity';
 import { AppError } from '../utils/errorHandler';
 import { createPostInput, updatePostInput } from '../database/models/post.entity';
+import { foundCommentsOutput } from '../database/models/comment.entity';
 import * as commentRepo from '../database/daos/comment.repo';
 import * as postRepo from '../database/daos/post.repo';
 import fs from 'fs';
 
 /* 게시글 목록 조회 */
-const getAllPosts = async (): Promise<Post[]> => {
+const getAllPosts = async <foundPosts>(): Promise<foundPosts[]> => {
   try {
-    const foundPosts = await postRepo.findPosts();
+    const foundPosts: foundPosts[] = await postRepo.findPosts<foundPosts>();
 
     if (foundPosts.length === 0) throw new AppError(404, '존재하는 게시글이 없습니다.');
 
     return foundPosts;
-  } catch (error: any) {
+  } catch (error) {
     if (error instanceof AppError) {
       if (error.statusCode === 500) console.log(error);
       throw error;
@@ -25,14 +25,14 @@ const getAllPosts = async (): Promise<Post[]> => {
 };
 
 /* 게시글 카테고리 조회 */
-const getCategories = async (): Promise<string[]> => {
+const getCategories = async <categories>(): Promise<categories[]> => {
   try {
-    const foundCategories = await postRepo.findCategories();
+    const foundCategories: categories[] = await postRepo.findCategories<categories>();
 
     if (foundCategories.length === 0) throw new AppError(404, '존재하는 카테고리가 없습니다.');
 
     return foundCategories;
-  } catch (error: any) {
+  } catch (error) {
     if (error instanceof AppError) {
       if (error.statusCode === 500) console.log(error);
       throw error;
@@ -49,7 +49,7 @@ const getSearchedPostsByKeyword = async <Posts>(
   keyword: string
 ): Promise<Posts[]> => {
   try {
-    const foundPosts = await postRepo.findPostsByKeyword<Posts>(user_location, keyword);
+    const foundPosts: Posts[] = await postRepo.findPostsByKeyword<Posts>(user_location, keyword);
 
     if (foundPosts.length === 0) throw new AppError(404, '존재하는 게시글이 없습니다.');
 
@@ -71,12 +71,15 @@ const getAllPostsByLocation = async <Posts>(
   post_category: string
 ): Promise<Posts[]> => {
   try {
-    const foundPosts = await postRepo.findPostsByLocation<Posts>(user_location, post_category);
+    const foundPosts: Posts[] = await postRepo.findPostsByLocation<Posts>(
+      user_location,
+      post_category
+    );
 
     if (foundPosts.length === 0) throw new AppError(404, '존재하는 게시글이 없습니다.');
 
     return foundPosts;
-  } catch (error: any) {
+  } catch (error) {
     if (error instanceof AppError) {
       if (error.statusCode === 500) console.log(error);
       throw error;
@@ -88,20 +91,22 @@ const getAllPostsByLocation = async <Posts>(
 };
 
 /* 게시글 및 게시글별 댓글 목록 조회 */
-const getPost = async (post_id: number): Promise<Post> => {
+const getPost = async <Post>(post_id: number): Promise<Post> => {
   try {
-    const isValid = await postRepo.isPostIdValid(post_id);
+    const isValid: boolean = await postRepo.isPostIdValid(post_id);
 
     if (isValid === false) throw new AppError(404, '관리자에 의해 이미 삭제된 게시글 입니다.');
 
-    const foundPost = await postRepo.findPostById(post_id);
+    const foundPost: Post = await postRepo.findPostById<Post>(post_id);
 
-    const foundComments = await commentRepo.findCommentsByPost(post_id);
+    const foundComments: foundCommentsOutput[] =
+      await commentRepo.findCommentsByPost<foundCommentsOutput>(post_id);
 
-    foundPost.comments = foundComments; // 댓글 없으면 빈 배열 할당됨
+    (foundPost as { comments: foundCommentsOutput[] }).comments =
+      foundComments.length > 0 ? foundComments : []; // 댓글 없으면 빈 배열 할당됨
 
     return foundPost;
-  } catch (error: any) {
+  } catch (error) {
     if (error instanceof AppError) {
       if (error.statusCode === 500) console.log(error);
       throw error;
@@ -113,14 +118,14 @@ const getPost = async (post_id: number): Promise<Post> => {
 };
 
 /* 게시글 등록 */
-const addPost = async (inputData: createPostInput) => {
+const addPost = async <createdPost>(inputData: createPostInput): Promise<createdPost> => {
   try {
-    const createdPostId = await postRepo.createPost(inputData);
+    const createdPostId: number = await postRepo.createPost(inputData);
 
-    const foundCreatedPost = await postRepo.findPostById(createdPostId);
+    const foundCreatedPost: createdPost = await postRepo.findPostById<createdPost>(createdPostId);
 
     return foundCreatedPost;
-  } catch (error: any) {
+  } catch (error) {
     if (error instanceof AppError) {
       if (error.statusCode === 500) console.log(error);
       throw error;
@@ -132,20 +137,23 @@ const addPost = async (inputData: createPostInput) => {
 };
 
 /* 게시글 수정 */
-const editPost = async (post_id: number, inputData: updatePostInput) => {
+const editPost = async <updatedPost>(
+  post_id: number,
+  inputData: updatePostInput
+): Promise<updatedPost> => {
   try {
-    const isValid = await postRepo.isPostIdValid(post_id);
+    const isValid: boolean = await postRepo.isPostIdValid(post_id);
 
     if (isValid === false) throw new AppError(404, '관리자에 의해 이미 삭제된 게시글 입니다.');
 
     editImage(post_id, inputData);
 
-    const updatedPostId = await postRepo.updatePost(post_id, inputData);
+    const updatedPostId: number = await postRepo.updatePost(post_id, inputData);
 
-    const foundUpdatedPost = await postRepo.findPostById(updatedPostId);
+    const foundUpdatedPost: updatedPost = await postRepo.findPostById<updatedPost>(updatedPostId);
 
     return foundUpdatedPost;
-  } catch (error: any) {
+  } catch (error) {
     if (error instanceof AppError) {
       if (error.statusCode === 500) console.log(error);
       throw error;
@@ -157,9 +165,9 @@ const editPost = async (post_id: number, inputData: updatePostInput) => {
 };
 
 /* 게시글 삭제 */
-const removePost = async (post_id: number) => {
+const removePost = async (post_id: number): Promise<number> => {
   try {
-    const isValid = await postRepo.isPostIdValid(post_id);
+    const isValid: boolean = await postRepo.isPostIdValid(post_id);
 
     if (isValid === false) throw new AppError(404, '관리자에 의해 이미 삭제된 게시글 입니다.');
 
@@ -168,7 +176,7 @@ const removePost = async (post_id: number) => {
     const deletedPostId = await postRepo.deletePost(post_id);
 
     return deletedPostId;
-  } catch (error: any) {
+  } catch (error) {
     if (error instanceof AppError) {
       if (error.statusCode === 500) console.log(error);
       throw error;
@@ -180,11 +188,14 @@ const removePost = async (post_id: number) => {
 };
 
 /* 게시글 이미지 로컬 수정 */
-const editImage = async (post_id: number, inputData: updatePostInput) => {
-  const foundPost = await postRepo.findPostById(post_id);
+const editImage = async <Post>(post_id: number, inputData: updatePostInput) => {
+  const foundPost: Post = await postRepo.findPostById<Post>(post_id);
 
-  if (foundPost.post_img && foundPost.post_img !== inputData.post_img) {
-    const imgFileName = foundPost.post_img.split('/')[6];
+  const foundPostImage = (foundPost as { post_img: string }).post_img;
+
+  if (foundPostImage && foundPostImage !== inputData.post_img) {
+    // 이미지가 이미 존재하면서 기존 이미지랑 다른 경우
+    const imgFileName = foundPostImage.split('/')[6];
 
     const filePath = `/Users/지원/Desktop/peeps_back-end/public/${imgFileName}`;
     // const filePath = `서버 실행하는 로컬의 public 파일 절대경로`;
@@ -197,11 +208,14 @@ const editImage = async (post_id: number, inputData: updatePostInput) => {
 };
 
 /* 게시글 이미지 로컬 삭제 */
-const removeImage = async (post_id: number) => {
-  const foundPost = await postRepo.findPostById(post_id);
+const removeImage = async <Post>(post_id: number) => {
+  const foundPost: Post = await postRepo.findPostById<Post>(post_id);
 
-  if (foundPost.post_img) {
-    const imgFileName = foundPost.post_img.split('/')[6];
+  const foundPostImage = (foundPost as { post_img: string }).post_img;
+
+  if (foundPostImage) {
+    // 이미지가 존재하는 경우
+    const imgFileName = foundPostImage.split('/')[6];
 
     const filePath = `/Users/지원/Desktop/peeps_back-end/public/${imgFileName}`;
     // const filePath = `서버 실행하는 로컬의 public 파일 절대경로`;

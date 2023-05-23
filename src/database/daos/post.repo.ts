@@ -1,10 +1,9 @@
 import { db } from '../../config/dbconfig';
-import { Post } from '../models/post.entity';
 import { AppError } from '../../utils/errorHandler';
 import { createPostInput, updatePostInput } from '../models/post.entity';
 
 /* 게시글 목록 조회 */
-const findPosts = async (): Promise<Post[]> => {
+const findPosts = async <Posts>(): Promise<Posts[]> => {
   try {
     const SQL = `
     SELECT * 
@@ -21,7 +20,7 @@ const findPosts = async (): Promise<Post[]> => {
 };
 
 /* 게시글 카테고리 조회 */
-const findCategories = async (): Promise<string[]> => {
+const findCategories = async <categories>(): Promise<categories[]> => {
   try {
     const SQL = `
     SELECT post_category
@@ -93,7 +92,7 @@ const findPostsByLocation = async <Posts>(
 };
 
 /* 게시글 조회 */
-const findPostById = async (post_id: number): Promise<Post> => {
+const findPostById = async <Post>(post_id: number): Promise<Post> => {
   try {
     const selectColums =
       'post.post_id, user.user_img, user.user_nickname, post.post_category, post.post_title, post.post_content, post.post_img, COUNT(comment.post_id) AS comment_count, post.created_at';
@@ -154,12 +153,7 @@ const updatePost = async (post_id: number, inputData: updatePostInput): Promise<
       WHERE post_id = ?
     `;
 
-    const [result, _] = await db.query(SQL, [post_id]);
-
-    // const changedCount = (result as { info: string }).info.split(' ');
-
-    // if (Number(changedCount[5]) === 0)
-    //   throw new AppError(500, '수정하신 내용이 기존과 동일합니다.'); // Fix : 서비스에서 처리
+    await db.query(SQL, [post_id]);
 
     return post_id;
   } catch (error) {

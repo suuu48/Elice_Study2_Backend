@@ -52,7 +52,7 @@ export const getReviewHandler = async (req: Request, res: Response, next: NextFu
 // 장소별 리뷰전체 조회
 export const getAllReviewsHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { location_id } = req.body;
+    const { location_id } = req.params;
     const reviews = await reviewService.getALlReview(location_id);
 
     res.status(200).json({ message: '장소에 따른 전체 리뷰 조회 성공', data: reviews });

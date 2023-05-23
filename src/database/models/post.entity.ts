@@ -8,7 +8,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { User } from './user.entity';
-import { Comment, getCommentsOutput } from './comment.entity';
+import { Comment, foundCommentsOutput } from './comment.entity';
 
 interface PostProfile {
   post_id: number;
@@ -18,7 +18,7 @@ interface PostProfile {
   post_content: string;
   post_img: string | null;
   created_at: Timestamp;
-  comments: getCommentsOutput[];
+  comments: foundCommentsOutput[];
 }
 
 export type createPostInput = Omit<PostProfile, 'post_id' | 'created_at' | 'comments'>;
@@ -27,20 +27,28 @@ export type updatePostInput = Partial<
   Omit<PostProfile, 'user_id' | 'post_id' | 'created_at' | 'comments'>
 >;
 
-export type getAllPostOutput = Omit<PostProfile, 'comments'>;
+export type foundAllPostOutput = Omit<PostProfile, 'comments'>;
 
-export type getCategoriesOutput = { categories: string[] };
+export type foundCategoriesOutput = { categories: string[] };
 
-export type getPostsOutput = Omit<PostProfile, 'post_category' | 'post_content' | 'comments'> & {
+export type foundPostsOutput = Omit<PostProfile, 'post_category' | 'post_content' | 'comments'> & {
   user_nickname: string;
   comment_count: number;
 };
 
-export type getPostOutput = Omit<PostProfile, 'user_id'> & {
+export type foundPostOutput = Omit<PostProfile, 'user_id'> & {
   user_img: string | null;
   user_nickname: string;
   comment_count: number;
 };
+
+export type createdPostOutput = Omit<PostProfile, 'user_id' | 'comments'> & {
+  user_img: string | null;
+  user_nickname: string;
+  comment_count: number;
+};
+
+export type updatedPostOutput = createdPostOutput;
 
 @Entity()
 export class Post {

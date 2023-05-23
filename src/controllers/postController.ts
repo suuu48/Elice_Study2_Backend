@@ -58,7 +58,7 @@ const getSearchedPostsByKeywordHandler = async <foundPosts>(
     {},
     {
       jwtDecoded: {
-        user_location: string;
+        location: string;
       };
     },
     { keyword: string }
@@ -68,7 +68,7 @@ const getSearchedPostsByKeywordHandler = async <foundPosts>(
 ) => {
   try {
     const { keyword } = req.query;
-    const { user_location } = req.body.jwtDecoded;
+    const user_location = req.body.jwtDecoded.location;
 
     if (!keyword) throw new AppError(400, 'keyword를 입력해주세요.');
 
@@ -98,7 +98,7 @@ const getAllPostsByLocationHandler = async <foundPosts>(
     {},
     {
       jwtDecoded: {
-        user_location: string;
+        location: string;
       };
     }
   >,
@@ -107,7 +107,7 @@ const getAllPostsByLocationHandler = async <foundPosts>(
 ) => {
   try {
     const { post_category } = req.params;
-    const { user_location } = req.body.jwtDecoded;
+    const user_location = req.body.jwtDecoded.location;
 
     if (!post_category) throw new AppError(400, 'post_category를 입력해주세요.');
 

@@ -14,12 +14,14 @@ export type createCommentInput = Omit<CommentProfile, 'comment_id' | 'created_at
 
 export type updateCommentInput = Partial<Pick<CommentProfile, 'comment_content'>>;
 
-export type getCommentsOutput = Omit<CommentProfile, 'post_id' | 'user_id'> & {
+export type foundCommentsOutput = Omit<CommentProfile, 'post_id' | 'user_id'> & {
   user_img: string | null;
   user_nickname: string;
   comment_content: string;
   created_at: Timestamp;
 };
+
+export type createCommentOutput = CommentProfile;
 
 @Entity()
 export class Comment {

@@ -132,7 +132,7 @@ const getAllPostsByLocationHandler = async <foundPosts>(
 
 /* 게시글 및 게시글별 댓글 목록 조회 */
 const getPostHandler = async <foundPost>(
-  req: Request<{ post_id: number }>,
+  req: Request<{ post_id: string }>,
   res: Response<{ message: string; data: foundPost }>,
   next: NextFunction
 ) => {
@@ -256,7 +256,7 @@ const editPostHandler = async <updatedPost>(
 
 /* 게시글 삭제 */
 const removePostHandler = async (
-  req: Request<{ post_id: number }>,
+  req: Request<{ post_id: string }>,
   res: Response<{ message: string; data: { post_id: number } }>,
   next: NextFunction
 ) => {

@@ -193,11 +193,13 @@ const editImage = async <Post>(post_id: number, inputData: updatePostInput) => {
 
   const foundPostImage = (foundPost as { post_img: string }).post_img;
 
+  if (foundPostImage === null) return; // 이미지가 존재하지 않는 경우 - test용
+
   if (foundPostImage && foundPostImage !== inputData.post_img) {
     // 이미지 경로가 이미 존재하면서 기존 이미지랑 다른 경우
     const imgFileName = foundPostImage.split('/')[6];
 
-    if (imgFileName === undefined) return; // 이미지가 원래 없던 경우
+    if (imgFileName === undefined) return; // 이미지 경로가 원래 없던 경우
 
     const filePath = `/Users/지원/Desktop/peeps_back-end/public/${imgFileName}`;
     // const filePath = `서버 실행하는 로컬의 public 파일 절대경로`;
@@ -215,11 +217,13 @@ const removeImage = async <Post>(post_id: number) => {
 
   const foundPostImage = (foundPost as { post_img: string }).post_img;
 
+  if (foundPostImage === null) return; // 이미지가 존재하지 않는 경우 - test용
+
   if (foundPostImage) {
     // 이미지 경로가 존재하는 경우
     const imgFileName = foundPostImage.split('/')[6];
 
-    if (imgFileName === undefined) return; // 이미지가 원래 없던 경우
+    if (imgFileName === undefined) return; // 이미지 경로가 원래 없던 경우
 
     const filePath = `/Users/지원/Desktop/peeps_back-end/public/${imgFileName}`;
     // const filePath = `서버 실행하는 로컬의 public 파일 절대경로`;

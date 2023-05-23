@@ -1,10 +1,21 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppError } from '../utils/errorHandler';
-import { createCommentInput, updateCommentInput } from '../database/models/comment.entity';
+import { createCommentInput } from '../database/models/comment.entity';
 import * as commentService from '../services/commentService';
 
 /* 댓글 등록 */
-const addCommentHandler = async (req: Request, res: Response, next: NextFunction) => {
+const addCommentHandler = async <createCommentOutput>(
+  req: Request<
+    { user_id: string },
+    {},
+    {
+      post_id: number;
+      comment_content: string;
+    }
+  >,
+  res: Response<{ message: string; data: createCommentOutput }>,
+  next: NextFunction
+) => {
   try {
     const { user_id } = req.params;
     const { post_id, comment_content } = req.body;
@@ -17,15 +28,15 @@ const addCommentHandler = async (req: Request, res: Response, next: NextFunction
     if (isNaN(Number(post_id))) throw new AppError(400, '유효한 post_id를 입력해주세요.');
 
     const commentData: createCommentInput = {
-      post_id: parseInt(post_id),
+      post_id: Number(post_id),
       user_id,
       comment_content,
     };
 
-    const createdComment = await commentService.addComment(commentData);
+    const createdComment = await commentService.addComment<createCommentOutput>(commentData);
 
     res.status(201).json({ message: '댓글 등록 성공', data: createdComment });
-  } catch (error: any) {
+  } catch (error) {
     if (error instanceof AppError) {
       if (error.statusCode === 400) console.log(error);
       next(error);
@@ -43,10 +54,10 @@ const removeCommentHandler = async (req: Request, res: Response, next: NextFunct
 
     if (isNaN(Number(comment_id))) throw new AppError(400, '유효한 comment_id를 입력해주세요.');
 
-    const deletedComment = await commentService.removeComment(parseInt(comment_id));
+    const deletedComment = await commentService.removeComment(Number(comment_id));
 
     res.status(200).json({ message: '댓글 삭제 성공', data: { comment_id: deletedComment } });
-  } catch (error: any) {
+  } catch (error) {
     if (error instanceof AppError) {
       if (error.statusCode === 404 || error.statusCode === 400) console.log(error);
       next(error);

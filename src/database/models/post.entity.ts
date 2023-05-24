@@ -67,7 +67,7 @@ export class Post {
   @Column({ length: 250, nullable: false })
   post_content!: string;
 
-  @Column({ length: 100, nullable: true, default: null })
+  @Column({ length: 250, nullable: true, default: null })
   post_img!: string;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

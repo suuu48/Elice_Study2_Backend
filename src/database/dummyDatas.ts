@@ -50,35 +50,35 @@ const postQuery = `INSERT INTO post (post_id, user_id, post_category, post_title
 (DEFAULT, 'user9', '정보공유', '반려견을 위한 건강한 야외생활', '반려견이 건강하게 야외생활을 즐길 수 있도록 주의할 점을 알아봅시다.', DEFAULT, DEFAULT),
 (DEFAULT, 'user10', '정보공유', '강아지와 함께하는 여름 레저 활동', '강아지와 함께하는 여름 레저 활동을 즐길 수 있는 방법을 알아봅시다.', DEFAULT, DEFAULT),
 (DEFAULT, 'user11', '정보공유', '강아지가 좋아하는 스낵 추천', '강아지가 좋아하는 스낵을 소개합니다.', DEFAULT, DEFAULT),
-(DEFAULT, 'user12', '정보공유', '강아지의 스트레스 해소법', '강아지의 스트레스를 해소할 수 있는 방법을 알아봅시다.', DEFAULT, DEFAULT);`;
+(DEFAULT, 'user12', '내 새꾸 자랑', '강아지의 스트레스 해소법', '강아지의 스트레스를 해소할 수 있는 방법을 알아봅시다.', DEFAULT, DEFAULT);`;
 
 const petQuery = `INSERT INTO pet (pet_id, pet_name, pet_gender, pet_species, pet_birth, pet_info, pet_img, user_id) VALUES
-(DEFAULT, '초코', '1', '2023-05-25', 'test', DEFAULT, 'user1'),
-(DEFAULT, '감자', 'user2'),
-(DEFAULT, '쿠키', 'user3'),
-(DEFAULT, '해피', 'user4'),
-(DEFAULT, '체리', 'user5'),
-(DEFAULT, '루나', 'user6'),
-(DEFAULT, '블루', 'user7'),
-(DEFAULT, '베리', 'user8'),
-(DEFAULT, '코코', 'user9'),
-(DEFAULT, '무지', 'user10'),
-(DEFAULT, '프로도', 'user11'),
-(DEFAULT, '피치', 'user12');`;
+(DEFAULT, '초코', '1', '시츄', '2023-05-25', '산책을 좋아해요', DEFAULT, 'user1'),
+(DEFAULT, '감자', '2', '시츄', '2023-05-25', '산책을 좋아해요', DEFAULT, 'user2'),
+(DEFAULT, '쿠키', '1', '말티즈', '2023-05-25', '산책을 좋아해요', DEFAULT, 'user3'),
+(DEFAULT, '해피', '2', '말티즈', '2023-05-25', '산책을 좋아해요', DEFAULT, 'user4'),
+(DEFAULT, '체리', '1', '시바', '2023-05-25', '산책을 좋아해요', DEFAULT, 'user5'),
+(DEFAULT, '루나', '2', '시바', '2023-05-25', '산책을 좋아해요', DEFAULT, 'user6'),
+(DEFAULT, '블루', '1', '치와와', '2023-05-25', '산책을 좋아해요', DEFAULT, 'user7'),
+(DEFAULT, '베리', '2', '치와와', '2023-05-25', '산책을 좋아해요', DEFAULT, 'user8'),
+(DEFAULT, '코코', '1', '불독', '2023-05-25', '산책을 좋아해요', DEFAULT, 'user9'),
+(DEFAULT, '무지', '2', '불독', '2023-05-25', '산책을 좋아해요', DEFAULT, 'user10'),
+(DEFAULT, '만두', '1', '휘핏', '2023-05-25', '산책을 좋아해요', DEFAULT, 'user11'),
+(DEFAULT, '피치', '2', '휘핏', '2023-05-25', '산책을 좋아해요', DEFAULT, 'user12');`;
 
-const commentQuery = `INSERT INTO comment (comment_id, user_id, comment_content, created_at) VALUES 
-(DEFAULT, 'user1', '좋은 정보 감사합니다.', DEFAULT),
-(DEFAULT, 'user2', '강아지와 함께하는 일상이 너무 좋아요!', DEFAULT),
-(DEFAULT, 'user3', '강아지 교육에 대한 내용도 알차게 쓰셨네요.', DEFAULT),
-(DEFAULT, 'user4', '강아지 용품 사용법에 대해 자세히 알려주셔서 감사합니다.', DEFAULT),
-(DEFAULT, 'user5', '강아지와 함께하는 가을 나들이 추천 감사합니다!', DEFAULT),
-(DEFAULT, 'user6', '강아지 건강에 대한 정보 공유 감사합니다.', DEFAULT),
-(DEFAULT, 'user7', '강아지 스트레스 해소 방법에 대해 알려주셔서 감사합니다.', DEFAULT),
-(DEFAULT, 'user8', '강아지를 키우면서 도움이 되는 꿀팁 감사합니다.', DEFAULT),
-(DEFAULT, 'user9', '강아지와 함께하는 달콤한 일상이 너무 좋아요!', DEFAULT),
-(DEFAULT, 'user10', '강아지의 건강을 지켜주는 예방접종에 대한 정보 감사합니다.', DEFAULT),
-(DEFAULT, 'user11', '강아지와 함께하는 여름 레저 활동 추천 감사합니다!', DEFAULT),
-(DEFAULT, 'user12', '강아지가 좋아하는 스낵 추천 감사합니다.', DEFAULT);`;
+const commentQuery = `INSERT INTO comment (comment_id, post_id, user_id, comment_content, created_at) VALUES 
+(DEFAULT, '10', 'user1', '좋은 정보 감사합니다.', DEFAULT),
+(DEFAULT, '10', 'user2', '강아지와 함께하는 일상이 너무 좋아요!', DEFAULT),
+(DEFAULT, '10', 'user3', '강아지 교육에 대한 내용도 알차게 쓰셨네요.', DEFAULT),
+(DEFAULT, '10', 'user4', '강아지 용품 사용법에 대해 자세히 알려주셔서 감사합니다.', DEFAULT),
+(DEFAULT, '11', 'user5', '강아지와 함께하는 가을 나들이 추천 감사합니다!', DEFAULT),
+(DEFAULT, '11', 'user6', '강아지 건강에 대한 정보 공유 감사합니다.', DEFAULT),
+(DEFAULT, '11', 'user7', '강아지 스트레스 해소 방법에 대해 알려주셔서 감사합니다.', DEFAULT),
+(DEFAULT, '11', 'user8', '강아지를 키우면서 도움이 되는 꿀팁 감사합니다.', DEFAULT),
+(DEFAULT, '12', 'user9', '강아지와 함께하는 달콤한 일상이 너무 좋아요!', DEFAULT),
+(DEFAULT, '12', 'user10', '강아지의 건강을 지켜주는 예방접종에 대한 정보 감사합니다.', DEFAULT),
+(DEFAULT, '12', 'user11', '강아지와 함께하는 여름 레저 활동 추천 감사합니다!', DEFAULT),
+(DEFAULT, '12', 'user12', '강아지가 좋아하는 스낵 추천 감사합니다.', DEFAULT);`;
 
 // const insertDummyUsers = async () => {
 //   try {

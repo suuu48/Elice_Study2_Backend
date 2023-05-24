@@ -8,14 +8,13 @@ import { getReview, isVaildReview } from '../services/review.service';
 export const addReviewHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { user_id } = req.body;
-    const { location_id, location_name, review_content, star_rating } = req.body;
+    const { location_id, review_content, star_rating } = req.body;
     const imgFileRoot = `http://localhost:3000/api/v1/static/${req.file?.filename}`;
-    if (!user_id || !location_id || !location_name || !review_content || !star_rating)
+    if (!user_id || !location_id || !review_content || !star_rating)
       throw new Error('[ 요청 에러 ] 모든 필드를 입력해야 합니다.');
 
     const reviewData: Review.createReviewInput = {
       location_id,
-      location_name,
       user_id,
       review_content,
       star_rating,

@@ -10,7 +10,7 @@ export const addReview = async (inputData: createReviewInput): Promise<Review> =
     const createdReview = await reviewRepo.createReview(inputData);
 
     const newReview = await reviewRepo.findReviewById(createdReview.review_id);
-    if (!newReview) throw new Error('[ 게시글 등록 에러 ] 등록된 게시글이 없습니다.');
+    if (!newReview) throw new Error('[ 리뷰 등록 에러 ] 등록된 리뷰가 없습니다.');
 
     return newReview;
   } catch (error: any) {
@@ -26,7 +26,7 @@ export const getReview = async (review_id: number): Promise<Review> => {
   try {
     const review = await reviewRepo.findReviewById(review_id);
 
-    if (review === undefined) throw new Error('[ 리뷰 조회 에러 ] 리뷰가 존재하지 않습니다.111');
+    if (review === undefined) throw new Error('[ 리뷰 조회 에러 ] 리뷰가 존재하지 않습니다.');
 
     return review;
   } catch (error: any) {

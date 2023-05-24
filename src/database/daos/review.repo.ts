@@ -1,5 +1,5 @@
 import { dataSource, db } from '../../config/dbconfig';
-import { createReviewInput, Review,  updateReviewInput, User } from '../models';
+import { createReviewInput, Review, updateReviewInput, User } from '../models';
 import { updateDataTrans } from './user.repo';
 
 //  reviewId 입력시 리뷰 상세 조회
@@ -10,7 +10,6 @@ export const findReviewById = async (reviewId: number): Promise<Review> => {
       SELECT 
           r.review_id,
           r.location_id,
-          r.location_name,
           r.review_content,
           r.star_rating,
           r.created_at,
@@ -33,16 +32,13 @@ export const findReviewById = async (reviewId: number): Promise<Review> => {
 };
 
 // location_id 입력시 리뷰 전체 조회
-export const findReviewByLocation = async (
-  locationId: string
-): Promise<Review[]> => {
+export const findReviewByLocation = async (locationId: string): Promise<Review[]> => {
   try {
     const [reviews]: any = await db.query(
       `
           SELECT
               r.review_id,
               r.location_id,
-              r.location_name,
               r.review_content,
               r.star_rating,
               r.created_at,
@@ -64,11 +60,9 @@ export const findReviewByLocation = async (
 };
 
 // 리뷰 추가
-export const createReview = async (
-  inputData: createReviewInput): Promise<Review> => {
+export const createReview = async (inputData: createReviewInput): Promise<Review> => {
   try {
-    const newColumns =
-      'location_id, location_name, user_id, review_content, star_rating, review_img';
+    const newColumns = 'location_id, user_id, review_content, star_rating, review_img';
     const newValues = Object.values(inputData)
       .map((value) => (typeof value === 'string' ? `'${value}'` : value))
       .join(', ');
@@ -93,7 +87,8 @@ export const createReview = async (
 // 리뷰 정보 수정
 export const updateReview = async (
   reviewId: number,
-  updateData: updateReviewInput): Promise<Review> => {
+  updateData: updateReviewInput
+): Promise<Review> => {
   try {
     const [keys, values] = updateDataTrans(updateData);
     const [update] = await db.query(

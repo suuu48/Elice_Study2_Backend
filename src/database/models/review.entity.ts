@@ -1,9 +1,8 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from './user.entity';
 
-export type createReviewInput  = {
+export type createReviewInput = {
   location_id: string;
-  location_name: string;
   user_id: string;
   review_content: string;
   star_rating: number;
@@ -20,9 +19,6 @@ export class Review {
   location_id!: string;
 
   @Column({ type: 'varchar' })
-  location_name!: string;
-
-  @Column({ type: 'varchar' })
   user_id!: string;
 
   @Column({ type: 'varchar', nullable: true, default: null })
@@ -34,7 +30,7 @@ export class Review {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at!: Date;
 
-  @Column({  type: 'varchar', length: 100, default: null })
+  @Column({ type: 'varchar', length: 100, default: null })
   review_img!: string;
 
   @ManyToOne(() => User)

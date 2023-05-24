@@ -9,7 +9,11 @@ export const addReviewHandler = async (req: Request, res: Response, next: NextFu
   try {
     const { user_id } = req.body;
     const { location_id, review_content, star_rating } = req.body;
-    const imgFileRoot = `http://localhost:5500/api/v1/static/${req.file?.filename}`;
+    const { filename } = req.file || {};
+
+    const imgFileRoot =
+      filename === undefined ? null : `http://localhost:5500/api/v1/static/${filename}`;
+
     if (!user_id || !location_id || !review_content || !star_rating)
       throw new Error('[ 요청 에러 ] 모든 필드를 입력해야 합니다.');
 
@@ -69,7 +73,12 @@ export const updateReviewHandler = async (req: Request, res: Response, next: Nex
     if (!review_id) throw new Error('[ 요청 에러 ] review_id가 필요합니다.');
 
     const { review_content, star_rating, review_img } = req.body;
-    const imgFileRoot = `http://localhost:5500/api/v1/static/${req.file?.filename}`;
+    console.log(req.file);
+    const { filename } = req.file || {};
+
+    const imgFileRoot =
+      filename === undefined ? undefined : `http://localhost:5500/api/v1/static/${filename}`;
+
     if (!review_content && !star_rating && !review_img)
       throw new Error('[ 요청 에러 ] 변경된 값이 없습니다!');
 

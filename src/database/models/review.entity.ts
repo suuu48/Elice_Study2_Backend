@@ -6,7 +6,7 @@ export type createReviewInput = {
   user_id: string;
   review_content: string;
   star_rating: number;
-  review_img: string;
+  review_img: string | null;
 };
 export type updateReviewInput = Partial<Omit<createReviewInput, 'user_id'>>;
 
@@ -31,7 +31,7 @@ export class Review {
   created_at!: Date;
 
   @Column({ type: 'varchar', length: 100, default: null })
-  review_img!: string;
+  review_img!: string | null;
 
   @ManyToOne(() => User)
   @JoinColumn({ referencedColumnName: 'user_id' })

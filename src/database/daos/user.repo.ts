@@ -98,15 +98,18 @@ export const createUser = async (inputData: createUserInput): Promise<User> => {
 };
 
 // update의 경우 key값과 value값을 매칭 시켜줌
-export const updateDataTrans = (input: Record<string, string | number | boolean | Date>) => {
-  const data = Object.entries(input).reduce(
-    (a, [key, value]) => {
-      a[0].push(`${key} = ?`);
-      a[1].push(value);
-      return a;
-    },
-    [[], []] as [string[], Array<string | number | boolean | Date>]
-  );
+export const updateDataTrans = (input: Record<string, string | number | boolean | Date | null>) => {
+  const data = Object.entries(input)
+    .filter(([_, value]) => value !== undefined)
+    .reduce(
+      (a, [key, value]) => {
+        a[0].push(`${key} = ?`);
+        a[1].push(value);
+        return a;
+      },
+      [[], []] as [string[], Array<string | number | boolean | Date | null>]
+    );
+
   return data;
 };
 

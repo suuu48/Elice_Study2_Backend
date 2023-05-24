@@ -64,7 +64,11 @@ export const createReview = async (inputData: createReviewInput): Promise<Review
   try {
     const newColumns = 'location_id, user_id, review_content, star_rating, review_img';
     const newValues = Object.values(inputData)
-      .map((value) => (typeof value === 'string' ? `'${value}'` : value))
+      .map((value) => {
+        if (value === null) return 'DEFAULT';
+        else if (typeof value === 'string') return `'${value}'`;
+        else return value;
+      })
       .join(', ');
 
     const [newReview] = await db.query(

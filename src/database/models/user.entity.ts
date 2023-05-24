@@ -46,7 +46,7 @@ export class User {
   @Column({ type: 'tinyint', width: 1, default: 0 })
   delete_flag!: boolean;
 
-  @Column({ type: 'varchar', nullable: true, default: null })
+  @Column({ type: 'varchar', default: 'http://localhost:5500/api/v1/static/ecm.png' })
   user_img!: string;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

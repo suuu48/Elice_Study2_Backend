@@ -15,7 +15,7 @@ petRoute.get('/:pet_id', isAccessTokenValid, petController.getPetHandler);
 petRoute.post('/:user_id', isAccessTokenValid, processImage, petController.addPetHandler);
 
 // pet 수정
-petRoute.post('/up/:pet_id', isAccessTokenValid, processImage, petController.updatePetHandler);
+petRoute.patch('/:pet_id', isAccessTokenValid, processImage, petController.updatePetHandler);
 
 // pet 삭제
 petRoute.delete('/:pet_id', isAccessTokenValid, petController.deletePetHandler);

@@ -119,7 +119,10 @@ const createPost = async (inputData: createPostInput): Promise<number> => {
   try {
     const createColums = 'user_id, post_category, post_title, post_content, post_img';
     const createValues = Object.values(inputData)
-      .map((value) => `'${value}'`)
+      .map((value) => {
+        if (value === null) return 'DEFAULT';
+        else return `'${value}'`;
+      })
       .join(', ');
 
     const SQL = `

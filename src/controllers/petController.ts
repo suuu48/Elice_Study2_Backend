@@ -14,7 +14,7 @@ export const addPetHandler = async (req: Request, res: Response, next: NextFunct
     }
 
     const { pet_name, pet_gender, pet_species, pet_birth, pet_info } = req.body;
-    const imgFileRoot = `http://localhost:3000/api/v1/static/${req.file?.filename}`;
+    const imgFileRoot = `http://localhost:5500/api/v1/static/${req.file?.filename}`;
     if (
       !user_id ||
       !pet_name ||
@@ -93,7 +93,7 @@ export const updatePetHandler = async (req: Request, res: Response, next: NextFu
 
     const { pet_name, pet_gender, pet_species, pet_birth, pet_info, user_id } = req.body;
 
-    const imgFileRoot = `http://localhost:3000/api/v1/static/${req.file?.filename}`;
+    const imgFileRoot = `http://localhost:5500/api/v1/static/${req.file?.filename}`;
 
     if (
       !user_id ||

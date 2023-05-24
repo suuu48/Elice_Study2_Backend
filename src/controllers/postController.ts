@@ -175,7 +175,7 @@ const addPostHandler = async <createdPost>(
     const { post_category, post_title, post_content } = req.body;
     const { filename } = req.file || {};
 
-    const imgFileRoot = `http://localhost:3000/api/v1/static/${filename}`;
+    const imgFileRoot = `http://localhost:5500/api/v1/static/${filename}`;
 
     if (!user_id) throw new AppError(400, 'user_id를 입력해주세요.');
 
@@ -223,7 +223,7 @@ const editPostHandler = async <updatedPost>(
     const { post_id } = req.params;
     const { post_category, post_title, post_content } = req.body;
     const { filename } = req.file || {};
-    const imgFileRoot = `http://localhost:3000/api/v1/static/${filename}`;
+    const imgFileRoot = `http://localhost:5500/api/v1/static/${filename}`;
 
     if (isNaN(Number(post_id))) throw new AppError(400, '유효한 post_id를 입력해주세요.');
 

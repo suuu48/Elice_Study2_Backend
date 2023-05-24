@@ -9,7 +9,7 @@ import { AppError } from '../utils/errorHandler';
 export const addUserHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { user_id, user_name, user_password, user_nickname, user_location } = req.body;
-    const imgFileRoot = `http://localhost:3000/api/v1/static/${req.file?.filename}`;
+    const imgFileRoot = `http://localhost:5500/api/v1/static/${req.file?.filename}`;
     if (!user_id || !user_name || !user_password || !user_nickname || !user_location)
       throw new Error('[ 요청 에러 ] 사진을 제외한 모든 필드를 입력해야 합니다.');
 
@@ -114,7 +114,7 @@ export const getUserInfo = async (req: Request, res: Response, next: NextFunctio
 export const updateUserHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { userId } = req.params;
-    const imgFileRoot = `http://localhost:3000/api/v1/static/${req.file?.filename}`;
+    const imgFileRoot = `http://localhost:5500/api/v1/static/${req.file?.filename}`;
 
     if (!userId) throw new Error('[ 요청 에러 ] 아이디를 반드시 입력해야 합니다.');
 

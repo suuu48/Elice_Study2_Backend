@@ -189,26 +189,30 @@ const removePost = async (post_id: number): Promise<number> => {
 
 /* 게시글 이미지 로컬 수정 */
 const editImage = async <Post>(post_id: number, inputData: updatePostInput) => {
+  if (inputData.post_img === undefined) return; // 수정할 이미지가 없는 경우 로컬 삭제 안함
+
   const foundPost: Post = await postRepo.findPostById<Post>(post_id);
 
   const foundPostImage = (foundPost as { post_img: string }).post_img;
 
-  if (foundPostImage === null) return; // 이미지가 존재하지 않는 경우 - test용
+  if (foundPostImage === null) return; // 이미지가 원래 없는 게시글일 경우 로컬 삭제 안함
 
-  if (foundPostImage && foundPostImage !== inputData.post_img) {
-    // 이미지 경로가 이미 존재하면서 기존 이미지랑 다른 경우
-    const imgFileName = foundPostImage.split('/')[6];
+  // 이미지가 있는 게시글일 경우
+  if (foundPostImage) {
+    if (foundPostImage === inputData.post_img) return; // 수정할 이미지가 동일한 경우 로컬 삭제 안함
+    else if (foundPostImage !== inputData.post_img) {
+      // 수정할 이미지가 기존과 다른 경우 로컬 삭제
+      const imgFileName = foundPostImage.split('/')[6];
 
-    if (imgFileName === undefined) return; // 이미지 경로가 원래 없던 경우
+      const filePath = `/Users/지원/Desktop/peepsProject/peeps_back-end/public/${imgFileName}`;
+      // const filePath = `서버 실행하는 로컬의 public 파일 절대경로`;
+      // const filePath = `클라우드 인스턴스 로컬의 public 파일 절대경로`;
 
-    const filePath = `/Users/지원/Desktop/peeps_back-end/public/${imgFileName}`;
-    // const filePath = `서버 실행하는 로컬의 public 파일 절대경로`;
-    // const filePath = `클라우드 인스턴스 로컬의 public 파일 절대경로`;
-
-    fs.unlink(filePath, (error) => {
-      if (error) throw new AppError(400, '게시글 이미지 수정 중 오류가 발생했습니다.');
-    });
-  } else return;
+      fs.unlink(filePath, (error) => {
+        if (error) throw new AppError(400, '게시글 이미지 수정 중 오류가 발생했습니다.');
+      });
+    }
+  } else return; // 그 외의 경우 로컬 삭제 안함
 };
 
 /* 게시글 이미지 로컬 삭제 */
@@ -217,13 +221,11 @@ const removeImage = async <Post>(post_id: number) => {
 
   const foundPostImage = (foundPost as { post_img: string }).post_img;
 
-  if (foundPostImage === null) return; // 이미지가 존재하지 않는 경우 - test용
+  if (foundPostImage === null) return; // 이미지가 원래 없는 게시글일 경우 로컬 삭제 안함
 
+  // 이미지가 있는 게시글일 경우
   if (foundPostImage) {
-    // 이미지 경로가 존재하는 경우
     const imgFileName = foundPostImage.split('/')[6];
-
-    if (imgFileName === undefined) return; // 이미지 경로가 원래 없던 경우
 
     const filePath = `/Users/지원/Desktop/peeps_back-end/public/${imgFileName}`;
     // const filePath = `서버 실행하는 로컬의 public 파일 절대경로`;

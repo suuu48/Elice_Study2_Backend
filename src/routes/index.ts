@@ -1,10 +1,10 @@
 import express from 'express';
 
 import rootRouter from './rootRouter';
-import { userRoute } from './user.router';
-import { reviewRoute } from './review.router';
-import { adminRoute } from './admin.router';
-import { petRoute } from './pet.router';
+import { userRoute } from './userRouter';
+import { reviewRoute } from './reviewRouter';
+import { adminRoute } from './adminRouter';
+import { petRoute } from './petRouter';
 import postRouter from './postRouter';
 import commentRouter from './commentRouter';
 

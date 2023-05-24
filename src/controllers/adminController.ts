@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import * as adminService from '../services/admin.service';
+import * as adminService from '../services/adminService';
 import { AppError } from '../utils/errorHandler';
 
 // 전체 유저 조회

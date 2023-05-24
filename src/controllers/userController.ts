@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import * as userService from '../services/user.service';
+import * as userService from '../services/userService';
 import * as User from '../database/models';
 import bcrypt from 'bcrypt';
 import * as userRepo from '../database/daos/user.repo';

@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import * as reviewService from '../services/review.service';
+import * as reviewService from '../services/reviewService';
 import { AppError } from '../utils/errorHandler';
 import * as Review from '../database/models';
-import { getReview, isVaildReview } from '../services/review.service';
+import { getReview, isVaildReview } from '../services/reviewService';
 
 // 리뷰 추가
 export const addReviewHandler = async (req: Request, res: Response, next: NextFunction) => {

@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import * as petService from '../services/pet.service';
+import * as petService from '../services/petService';
 import { AppError } from '../utils/errorHandler';
 import * as Pet from '../database/models';
-import { addPet, deletePet, getALlPet, getPet } from '../services/pet.service';
+import { addPet, deletePet, getALlPet, getPet } from '../services/petService';
 
 // 펫 추가
 export const addPetHandler = async (req: Request, res: Response, next: NextFunction) => {

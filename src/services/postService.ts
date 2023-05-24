@@ -227,7 +227,7 @@ const removeImage = async <Post>(post_id: number) => {
   if (foundPostImage) {
     const imgFileName = foundPostImage.split('/')[6];
 
-    const filePath = `/Users/지원/Desktop/peeps_back-end/public/${imgFileName}`;
+    const filePath = `/Users/지원/Desktop/peepsProject/peeps_back-end/public/${imgFileName}`;
     // const filePath = `서버 실행하는 로컬의 public 파일 절대경로`;
     // const filePath = `클라우드 인스턴스 로컬의 public 파일 절대경로`;
 

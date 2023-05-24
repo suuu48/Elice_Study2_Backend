@@ -70,10 +70,10 @@ export const getPetHandler = async (req: Request, res: Response, next: NextFunct
 // pet 전체 조회
 export const getAllPetHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    if (req.body.jwtDecoded.userId !== req.body.user_id) {
-      throw new Error('[ 요청 에러 ] 본인의 펫만 조회 가능합니다.');
-    }
-    const { user_id } = req.body;
+    // if (req.body.jwtDecoded.userId !== req.params.user_id) {
+    //   throw new Error('[ 요청 에러 ] 본인의 펫만 조회 가능합니다.');
+    // }
+    const { user_id } = req.params;
     const pets = await petService.getALlPet(user_id);
 
     res.status(200).json({ message: '전체 pets 조회 성공', data: pets });

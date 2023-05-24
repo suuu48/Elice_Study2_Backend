@@ -5,8 +5,8 @@ import processImage from '../middlewares/multer';
 
 export const petRoute = express();
 
-// pet 전체 조회
-petRoute.get('/', isAccessTokenValid, petController.getAllPetHandler);
+// 내가 가진 pet 전체 조회
+petRoute.get('/me/:user_id', isAccessTokenValid, petController.getAllPetHandler);
 
 // pet 상세 조회
 petRoute.get('/:pet_id', isAccessTokenValid, petController.getPetHandler);

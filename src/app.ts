@@ -5,6 +5,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { errorHandlerMiddleware } from './utils/errorHandler';
 import { v1Router } from './routes';
+import * as DATA from './database/dummyDatas';
 
 const port = Number(env.PORT || 3000);
 const app = express();
@@ -26,11 +27,12 @@ db.getConnection()
     console.log('✅ mysql2 로 DB 접속!');
 
     /*
-    dummyData 초기화가 꼭! 필요할때만 사용해야함
-    await insertDummyReviews();
-    await insertDummyPosts();
-    await insertDummyComments();
-    await insertDummyPets();
+    // dummyData 초기화가 꼭! 필요할때만 사용해야함
+    // await DATA.insertDummyUsers();
+    // await DATA.insertDummyReviews();
+    // await DATA.insertDummyPosts();
+    // await DATA.insertDummyComments();
+    // await DATA.insertDummyPets();
     */
 
     app.listen(port, () => {

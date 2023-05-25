@@ -18,7 +18,7 @@ export type createUserInput = {
   user_password: string;
   user_nickname: string;
   user_location: string;
-  user_img: string;
+  user_img: string | null;
 };
 
 export type updateUserInput = Partial<Omit<createUserInput, 'user_id'>>;

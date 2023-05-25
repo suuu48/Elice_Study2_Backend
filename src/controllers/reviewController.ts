@@ -72,15 +72,14 @@ export const updateReviewHandler = async (req: Request, res: Response, next: Nex
     const review_id = parseInt(req.params.review_id);
     if (!review_id) throw new Error('[ 요청 에러 ] review_id가 필요합니다.');
 
-    const { review_content, star_rating, review_img } = req.body;
+    const { review_content, star_rating } = req.body;
     console.log(req.file);
     const { filename } = req.file || {};
 
     const imgFileRoot =
       filename === undefined ? undefined : `http://localhost:5500/api/v1/static/${filename}`;
 
-    if (!review_content && !star_rating && !review_img)
-      throw new Error('[ 요청 에러 ] 변경된 값이 없습니다!');
+    if (!review_content && !star_rating) throw new Error('[ 요청 에러 ] 변경된 값이 없습니다!');
 
     const updateReviewData: Review.updateReviewInput = {
       review_content,

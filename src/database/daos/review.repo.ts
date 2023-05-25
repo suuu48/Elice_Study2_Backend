@@ -1,4 +1,5 @@
-import { dataSource, db } from '../../config/dbconfig';
+import { db } from '../../config/dbconfig';
+import { AppError } from '../../utils/errorHandler';
 import { createReviewInput, Review, updateReviewInput, User } from '../models';
 import { updateDataTrans } from './user.repo';
 
@@ -27,7 +28,7 @@ export const findReviewById = async (reviewId: number): Promise<Review> => {
     return review[0];
   } catch (error) {
     console.log(error);
-    throw error;
+    throw new AppError(500, '[ DB 에러 ] 리뷰 상세 조회 실패');
   }
 };
 
@@ -55,14 +56,15 @@ export const findReviewByLocation = async (locationId: string): Promise<Review[]
     return reviews;
   } catch (error) {
     console.log(error);
-    throw error;
+    throw new AppError(500, '[ DB 에러 ] 리뷰 전체 조회 실패');
   }
 };
 
-// 리뷰 추가
+// 리뷰 등록
 export const createReview = async (inputData: createReviewInput): Promise<Review> => {
   try {
     const newColumns = 'location_id, user_id, review_content, star_rating, review_img';
+
     const newValues = Object.values(inputData)
       .map((value) => {
         if (value === null) return 'DEFAULT';
@@ -79,12 +81,13 @@ export const createReview = async (inputData: createReviewInput): Promise<Review
     );
 
     const createdReviewId = (newReview as { insertId: number }).insertId;
+
     const createdReview = await findReviewById(createdReviewId);
 
     return createdReview!; // null일 가능성이 없음을 !로 명시적 선언함
   } catch (error) {
     console.log(error);
-    return Promise.reject(error);
+    throw new AppError(500, '[ DB 에러 ] 리뷰 등록 실패');
   }
 };
 
@@ -95,6 +98,7 @@ export const updateReview = async (
 ): Promise<Review> => {
   try {
     const [keys, values] = updateDataTrans(updateData);
+
     const [update] = await db.query(
       `
           UPDATE review
@@ -105,10 +109,11 @@ export const updateReview = async (
     );
 
     const updateReview = await findReviewById(reviewId);
+
     return updateReview!;
   } catch (error) {
     console.log(error);
-    return Promise.reject(error); // App Error
+    throw new AppError(500, '[ DB 에러 ] 리뷰 수정 실패');
   }
 };
 
@@ -126,6 +131,6 @@ export const deleteReview = async (reviewId: number): Promise<number> => {
     return reviewId;
   } catch (error) {
     console.log(error);
-    return Promise.reject(error); // App Error
+    throw new AppError(500, '[ DB 에러 ] 리뷰 삭제 실패');
   }
 };

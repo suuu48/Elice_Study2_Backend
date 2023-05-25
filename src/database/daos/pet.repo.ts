@@ -39,13 +39,15 @@ export const findPetById = async (petId: number): Promise<Pet> => {
 };
 
 // Pet 추가
-export const createPet = async (
-  inputData: createPetInput
-): Promise<Pet> => {
+export const createPet = async (inputData: createPetInput): Promise<Pet> => {
   try {
     const newColumns = 'user_id,pet_name,pet_gender,pet_species,pet_birth, pet_info,pet_img';
     const newValues = Object.values(inputData)
-      .map((value) => (typeof value === 'string' ? `'${value}'` : value))
+      .map((value) => {
+        if (value === null) return 'DEFAULT';
+        else if (typeof value === 'string') return `'${value}'`;
+        else return value;
+      })
       .join(', ');
 
     const [newPet] = await db.query(
@@ -66,9 +68,7 @@ export const createPet = async (
 };
 
 // Pet 정보 수정
-export const updatePet = async (
-  petId: number,
-  updateData: updatePetInput): Promise<Pet> => {
+export const updatePet = async (petId: number, updateData: updatePetInput): Promise<Pet> => {
   try {
     const [keys, values] = updateDataTrans(updateData);
     const [update] = await db.query(
@@ -98,7 +98,6 @@ export const deletePet = async (petId: number): Promise<number> => {
           WHERE pet_id = ?`,
       [petId]
     );
-
 
     return petId;
   } catch (error) {

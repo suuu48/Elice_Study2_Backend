@@ -10,7 +10,7 @@ export type createPetInput = {
   pet_img: string | null;
   user_id: string;
 };
-export type updatePetInput = createPetInput;
+export type updatePetInput = Partial<createPetInput>;
 // export type updatePetInput = Partial<Omit<createPetInput, 'user_id'>>;
 @Entity()
 export class Pet {

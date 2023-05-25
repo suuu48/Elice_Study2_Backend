@@ -1,8 +1,7 @@
 import { db } from '../../config/dbconfig';
+import { AppError } from '../../utils/errorHandler';
 import { User } from '../models';
 import { findAllInfo } from './user.repo';
-import { AppError } from '../../utils/errorHandler';
-
 
 // userId 입력시 모든 정보 추출
 // Todo : 이름 변경하기!!!!!!!!
@@ -15,13 +14,13 @@ export const findInfo = async (userId: string): Promise<User> => {
     WHERE user_id = ?`,
       [userId]
     );
+
     return row[0];
   } catch (error) {
     console.log(error);
-    throw error;
+    throw new AppError(500, '[ DB 에러 ] 유저 정보 조회 실패');
   }
 };
-
 
 // 관리자가 모든 유저정보 추출
 // 회원 목록 전체 조회
@@ -31,6 +30,7 @@ export const findALlUser = async (): Promise<User[]> => {
       SELECT *
       FROM user
       WHERE verify = 'user'`);
+
     return users;
   } catch (error) {
     console.log(error);
@@ -45,6 +45,7 @@ export const findDeleteUsers = async (): Promise<User[]> => {
     SELECT *
     FROM user
     WHERE delete_flag = '1'`);
+
     return users;
   } catch (error) {
     console.log(error);
@@ -81,6 +82,7 @@ export const restoreUser = async (userId: string): Promise<User> => {
     );
 
     const restoreUser = await findAllInfo(userId);
+
     return restoreUser!;
   } catch (error) {
     console.log(error);

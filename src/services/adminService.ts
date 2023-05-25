@@ -6,11 +6,12 @@ import fs from 'fs';
 // 관리자가 삭제할 유저 조회
 export const getUsersInfo = async (): Promise<User[]> => {
   try {
-    const foundUsers = await adminRepo.findALlUser();
+    const foundUsers = await adminRepo.findAllUser();
+
     if (!foundUsers) throw new AppError(404, '존재하지 않는 아이디입니다.');
 
     return foundUsers;
-  } catch (error: any) {
+  } catch (error) {
     if (error instanceof AppError) {
       if (error.statusCode === 500) console.log(error);
       throw error;
@@ -30,8 +31,9 @@ export const deleteUser = async (userId: string): Promise<string> => {
     await removeImage(userId);
 
     const user_id = await adminRepo.deleteUserByAdmin(userId);
+
     return user_id;
-  } catch (error: any) {
+  } catch (error) {
     if (error instanceof AppError) {
       if (error.statusCode === 500) console.log(error);
       throw error;
@@ -50,8 +52,9 @@ export const restoreUser = async (userId: string): Promise<User> => {
     if (!foundUser) throw new AppError(404, '존재하지 않는 아이디입니다.');
 
     const user = await adminRepo.restoreUser(userId);
+
     return user;
-  } catch (error: any) {
+  } catch (error) {
     if (error instanceof AppError) {
       if (error.statusCode === 500) console.log(error);
       throw error;
@@ -61,23 +64,6 @@ export const restoreUser = async (userId: string): Promise<User> => {
     }
   }
 };
-
-// /* 게시글 이미지 로컬 삭제 */
-// const removeImage = async (user_id: string) => {
-//   const foundUser = await adminRepo.findInfo(user_id);
-
-//   if (foundUser.user_id) {
-//     const imgFileName = foundUser.user_img.split('/')[6];
-
-//     const filePath = `/Users/subin/IdeaProjects/peeps_back-end3/public/${imgFileName}`;
-//     // const filePath = `서버 실행하는 로컬의 public 파일 절대경로`;
-//     // const filePath = `클라우드 인스턴스 로컬의 public 파일 절대경로`;
-
-//     fs.unlink(filePath, (error) => {
-//       if (error) throw new AppError(400, '유저 이미지 삭제 중 오류가 발생했습니다.');
-//     });
-//   } else return;
-// };
 
 /* 유저 이미지 로컬 삭제 */
 const removeImage = async (user_id: string) => {
@@ -100,3 +86,20 @@ const removeImage = async (user_id: string) => {
     });
   } else return;
 };
+
+// /* 게시글 이미지 로컬 삭제 */
+// const removeImage = async (user_id: string) => {
+//   const foundUser = await adminRepo.findInfo(user_id);
+
+//   if (foundUser.user_id) {
+//     const imgFileName = foundUser.user_img.split('/')[6];
+
+//     const filePath = `/Users/subin/IdeaProjects/peeps_back-end3/public/${imgFileName}`;
+//     // const filePath = `서버 실행하는 로컬의 public 파일 절대경로`;
+//     // const filePath = `클라우드 인스턴스 로컬의 public 파일 절대경로`;
+
+//     fs.unlink(filePath, (error) => {
+//       if (error) throw new AppError(400, '유저 이미지 삭제 중 오류가 발생했습니다.');
+//     });
+//   } else return;
+// };

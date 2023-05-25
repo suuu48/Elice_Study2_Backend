@@ -24,7 +24,7 @@ export const findInfo = async (userId: string): Promise<User> => {
 
 // 관리자가 모든 유저정보 추출
 // 회원 목록 전체 조회
-export const findALlUser = async (): Promise<User[]> => {
+export const findAllUser = async (): Promise<User[]> => {
   try {
     const [users]: any = await db.query(`
       SELECT *

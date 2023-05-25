@@ -7,10 +7,10 @@ export type createPetInput = {
   pet_species: string;
   pet_birth: Date;
   pet_info: string;
-  pet_img: string;
+  pet_img: string | null;
   user_id: string;
 };
-export type updatePetInput = createPetInput
+export type updatePetInput = createPetInput;
 // export type updatePetInput = Partial<Omit<createPetInput, 'user_id'>>;
 @Entity()
 export class Pet {
@@ -26,14 +26,14 @@ export class Pet {
   @Column({ type: 'varchar' })
   pet_species!: string;
 
-  @Column({type: "datetime"})
+  @Column({ type: 'datetime' })
   pet_birth!: Date;
 
   @Column({ type: 'varchar' })
   pet_info!: string;
 
   @Column({ type: 'varchar' })
-  pet_img!: string;
+  pet_img!: string | null;
 
   @Column({ type: 'varchar' })
   user_id!: string;

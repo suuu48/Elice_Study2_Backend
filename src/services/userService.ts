@@ -106,20 +106,49 @@ export const softDelete = async (userId: string): Promise<User> => {
   }
 };
 
+// /* 유저 이미지 로컬 수정 */
+// const editImage = async (user_id: string, inputData: updateUserInput) => {
+//   const foundUser = await userRepo.findOne(user_id);
+//   if (!foundUser) throw new AppError(404, '존재하지 않는 아이디 입니다.');
+
+//   if (foundUser.user_img && foundUser.user_img !== inputData.user_img) {
+//     const imgFileName = foundUser.user_img.split('/')[6];
+
+//     const filePath = `/Users/subin/IdeaProjects/peeps_back-end3/public/${imgFileName}`;
+//     // const filePath = `서버 실행하는 로컬의 public 파일 절대경로`;
+//     // const filePath = `클라우드 인스턴스 로컬의 public 파일 절대경로`;
+
+//     fs.unlink(filePath, (error) => {
+//       if (error) throw new AppError(400, '유저 이미지 수정 중 오류가 발생했습니다.');
+//     });
+//   } else return;
+// };
+
 /* 유저 이미지 로컬 수정 */
-const editImage = async (user_id: string, inputData: updateUserInput) => {
-  const foundUser = await userRepo.findOne(user_id);
-  if (!foundUser) throw new AppError(404, '존재하지 않는 아이디 입니다.');
+const editImage = async (user_id: string, updateData: updateUserInput) => {
+  if (updateData.user_img === undefined) return; // 수정할 이미지가 없는 경우 로컬 삭제 안함
 
-  if (foundUser.user_img && foundUser.user_img !== inputData.user_img) {
-    const imgFileName = foundUser.user_img.split('/')[6];
+  const user = await userRepo.findOne(user_id);
 
-    const filePath = `/Users/subin/IdeaProjects/peeps_back-end3/public/${imgFileName}`;
-    // const filePath = `서버 실행하는 로컬의 public 파일 절대경로`;
-    // const filePath = `클라우드 인스턴스 로컬의 public 파일 절대경로`;
+  const foundUserImage = (user as { user_img: string }).user_img;
 
-    fs.unlink(filePath, (error) => {
-      if (error) throw new AppError(400, '유저 이미지 수정 중 오류가 발생했습니다.');
-    });
-  } else return;
+  if (foundUserImage === null) return; // 이미지가 원래 없는 유저일 경우 로컬 삭제 안함
+
+  // 이미지가 있는 유저일 경우
+  if (foundUserImage) {
+    if (foundUserImage === updateData.user_img)
+      return; // 수정할 이미지가 동일한 경우 로컬 삭제 안함
+    else if (foundUserImage !== updateData.user_img) {
+      // 수정할 이미지가 기존과 다른 경우 로컬 삭제
+      const imgFileName = foundUserImage.split('/')[6];
+
+      const filePath = `/Users/지원/Desktop/peepsProject/peeps_back-end/public/${imgFileName}`;
+      // const filePath = `서버 실행하는 로컬의 public 파일 절대경로`;
+      // const filePath = `클라우드 인스턴스 로컬의 public 파일 절대경로`;
+
+      fs.unlink(filePath, (error) => {
+        if (error) throw new AppError(400, '유저 이미지 수정 중 오류가 발생했습니다.');
+      });
+    }
+  } else return; // 그 외의 경우 로컬 삭제 안함
 };

@@ -50,7 +50,7 @@ export const restoreUserHandler = async (req: Request, res: Response, next: Next
 
     const user = await adminService.restoreUser(userId);
 
-    res.status(200).json({ message: '유저 계정 복구 성고', data: user });
+    res.status(200).json({ message: '유저 계정 복구 성공', data: user });
   } catch (error: any) {
     console.log(error);
     // if (error instanceof AppError) next(error);

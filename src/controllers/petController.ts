@@ -88,18 +88,12 @@ export const updatePetHandler = async (req: Request, res: Response, next: NextFu
     if (!pet_id) throw new Error('[ 요청 에러 ] pet_id가 필요합니다.');
 
     const { pet_name, pet_gender, pet_species, pet_birth, pet_info, user_id } = req.body;
+    const { filename } = req.file || {};
 
-    const imgFileRoot = `http://localhost:5500/api/v1/static/${req.file?.filename}`;
+    const imgFileRoot =
+      filename === undefined ? undefined : `http://localhost:5500/api/v1/static/${filename}`;
 
-    if (
-      !user_id ||
-      !pet_name ||
-      !pet_gender ||
-      !pet_species ||
-      !pet_birth ||
-      !pet_info ||
-      !imgFileRoot
-    )
+    if (!user_id || !pet_name || !pet_gender || !pet_species || !pet_birth || !pet_info)
       throw new Error('[ 요청 에러 ] 변경된 값이 없습니다!');
 
     const updatePetData: Pet.updatePetInput = {

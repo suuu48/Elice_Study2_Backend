@@ -10,45 +10,55 @@ export const addPet = async (inputData: createPetInput) => {
     const createdPet = await petRepo.createPet(inputData);
 
     const newPet = await petRepo.findPetById(createdPet.pet_id);
-    if (!newPet) throw new Error('[ 펫 등록 에러 ] 등록된 펫이 없습니다.');
+
+    if (!newPet) throw new AppError(404, '등록된 펫이 없습니다.');
 
     return newPet;
-  } catch (error: any) {
-    if (error instanceof AppError) throw error;
-    else {
-      throw new AppError(500, error.message || null);
+  } catch (error) {
+    if (error instanceof AppError) {
+      if (error.statusCode === 500) console.log(error);
+      throw error;
+    } else {
+      console.log(error);
+      throw new AppError(500, '[ 서버 에러 ] 펫 등록 실패');
     }
   }
 };
 
-// 특정 pet 조회
-export const getALlPet = async (user_id: string): Promise<Pet[]> => {
+// 유저 Pet 목록 조회
+export const getAllPet = async (user_id: string): Promise<Pet[]> => {
   try {
     const pets = await petRepo.findPets(user_id);
 
-    if (pets === undefined) throw new Error('[ pet 조회 에러 ] pet이 존재하지 않습니다.');
+    if (pets === undefined) throw new AppError(404, '펫이 존재하지 않습니다.');
 
     return pets;
-  } catch (error: any) {
-    if (error instanceof AppError) throw error;
-    else {
-      throw new AppError(500, error.message || null);
+  } catch (error) {
+    if (error instanceof AppError) {
+      if (error.statusCode === 500) console.log(error);
+      throw error;
+    } else {
+      console.log(error);
+      throw new AppError(500, '[ 서버 에러 ] 유저 펫 목록 조회 실패');
     }
   }
 };
 
-// 특정 pet 조회
+// 특정 Pet 정보 조회
 export const getPet = async (pet_id: number): Promise<Pet> => {
   try {
     const pet = await petRepo.findPetById(pet_id);
 
-    if (pet === undefined) throw new Error('[ pet 조회 에러 ] pet이 존재하지 않습니다.');
+    if (pet === undefined) throw new AppError(404, '펫이 존재하지 않습니다.');
 
     return pet;
-  } catch (error: any) {
-    if (error instanceof AppError) throw error;
-    else {
-      throw new AppError(500, error.message || null);
+  } catch (error) {
+    if (error instanceof AppError) {
+      if (error.statusCode === 500) console.log(error);
+      throw error;
+    } else {
+      console.log(error);
+      throw new AppError(500, '[ 서버 에러 ] 펫 정보 조회 실패');
     }
   }
 };
@@ -58,16 +68,19 @@ export const updatePet = async (pet_id: number, updateData: updatePetInput): Pro
   try {
     const pet = await petRepo.findPetById(pet_id);
 
-    if (pet === undefined) throw new Error('[ pet 수정 에러 ] pet이 존재하지 않습니다.');
+    if (pet === undefined) throw new AppError(404, '펫이 존재하지 않습니다.');
 
     await editImage(pet_id, updateData);
 
     const updatePet = await petRepo.updatePet(pet_id, updateData);
     return updatePet;
-  } catch (error: any) {
-    if (error instanceof AppError) throw error;
-    else {
-      throw new AppError(500, error.message || null);
+  } catch (error) {
+    if (error instanceof AppError) {
+      if (error.statusCode === 500) console.log(error);
+      throw error;
+    } else {
+      console.log(error);
+      throw new AppError(500, '[ 서버 에러 ] 펫 정보 수정 실패');
     }
   }
 };
@@ -77,16 +90,19 @@ export const deletePet = async (pet_id: number): Promise<number> => {
   try {
     const pet = await petRepo.findPetById(pet_id);
 
-    if (pet === undefined) throw new Error('[ pet 삭제 에러 ] pet이 존재하지 않습니다.');
+    if (pet === undefined) throw new AppError(404, '펫이 존재하지 않습니다.');
 
     await removeImage(pet_id);
 
     const petId = await petRepo.deletePet(pet_id);
     return petId;
-  } catch (error: any) {
-    if (error instanceof AppError) throw error;
-    else {
-      throw new AppError(500, error.message || null);
+  } catch (error) {
+    if (error instanceof AppError) {
+      if (error.statusCode === 500) console.log(error);
+      throw error;
+    } else {
+      console.log(error);
+      throw new AppError(500, '[ 서버 에러 ] 펫 삭제 실패');
     }
   }
 };

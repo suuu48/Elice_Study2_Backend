@@ -1,8 +1,9 @@
-import { dataSource, db } from '../../config/dbconfig';
+import { db } from '../../config/dbconfig';
+import { AppError } from '../../utils/errorHandler';
 import { createPetInput, Pet, updatePetInput } from '../models';
 import { updateDataTrans } from './user.repo';
 
-// petId 입력시 Pet 복수 조회
+// petId 입력시 Pet 목록 조회
 export const findPets = async (user_id: string): Promise<Pet[]> => {
   try {
     const [pets]: any = await db.query(
@@ -16,11 +17,11 @@ export const findPets = async (user_id: string): Promise<Pet[]> => {
     return pets;
   } catch (error) {
     console.log(error);
-    throw error;
+    throw new AppError(500, '[ DB 에러 ] 유저 펫 목록 조회 실패');
   }
 };
 
-// petId 입력시 Pet 전체 조회
+// petId 입력시 Pet 정보 조회
 export const findPetById = async (petId: number): Promise<Pet> => {
   try {
     const [pet]: any = await db.query(
@@ -34,14 +35,15 @@ export const findPetById = async (petId: number): Promise<Pet> => {
     return pet[0];
   } catch (error) {
     console.log(error);
-    throw error;
+    throw new AppError(500, '[ DB 에러 ] 펫 정보 조회 실패');
   }
 };
 
-// Pet 추가
+// Pet 등록
 export const createPet = async (inputData: createPetInput): Promise<Pet> => {
   try {
     const newColumns = 'user_id,pet_name,pet_gender,pet_species,pet_birth, pet_info,pet_img';
+
     const newValues = Object.values(inputData)
       .map((value) => {
         if (value === null) return 'DEFAULT';
@@ -58,12 +60,13 @@ export const createPet = async (inputData: createPetInput): Promise<Pet> => {
     );
 
     const createdPetId = (newPet as { insertId: number }).insertId;
+
     const createPet = await findPetById(createdPetId);
 
     return createPet!; // null일 가능성이 없음을 !로 명시적 선언함
   } catch (error) {
     console.log(error);
-    return Promise.reject(error);
+    throw new AppError(500, '[ DB 에러 ] 펫 등록 실패');
   }
 };
 
@@ -71,6 +74,7 @@ export const createPet = async (inputData: createPetInput): Promise<Pet> => {
 export const updatePet = async (petId: number, updateData: updatePetInput): Promise<Pet> => {
   try {
     const [keys, values] = updateDataTrans(updateData);
+
     const [update] = await db.query(
       `
           UPDATE pet
@@ -81,14 +85,15 @@ export const updatePet = async (petId: number, updateData: updatePetInput): Prom
     );
 
     const pet = await findPetById(petId);
+
     return pet!;
   } catch (error) {
     console.log(error);
-    return Promise.reject(error); // App Error
+    throw new AppError(500, '[ DB 에러 ] 펫 정보 수정 실패');
   }
 };
 
-// Pet delete
+// Pet 삭제
 export const deletePet = async (petId: number): Promise<number> => {
   try {
     const [deletePet] = await db.query(
@@ -102,6 +107,6 @@ export const deletePet = async (petId: number): Promise<number> => {
     return petId;
   } catch (error) {
     console.log(error);
-    return Promise.reject(error); // App Error
+    throw new AppError(500, '[ DB 에러 ] 펫 삭제 실패');
   }
 };

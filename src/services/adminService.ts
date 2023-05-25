@@ -62,14 +62,36 @@ export const restoreUser = async (userId: string): Promise<User> => {
   }
 };
 
-/* 게시글 이미지 로컬 삭제 */
+// /* 게시글 이미지 로컬 삭제 */
+// const removeImage = async (user_id: string) => {
+//   const foundUser = await adminRepo.findInfo(user_id);
+
+//   if (foundUser.user_id) {
+//     const imgFileName = foundUser.user_img.split('/')[6];
+
+//     const filePath = `/Users/subin/IdeaProjects/peeps_back-end3/public/${imgFileName}`;
+//     // const filePath = `서버 실행하는 로컬의 public 파일 절대경로`;
+//     // const filePath = `클라우드 인스턴스 로컬의 public 파일 절대경로`;
+
+//     fs.unlink(filePath, (error) => {
+//       if (error) throw new AppError(400, '유저 이미지 삭제 중 오류가 발생했습니다.');
+//     });
+//   } else return;
+// };
+
+/* 유저 이미지 로컬 삭제 */
 const removeImage = async (user_id: string) => {
-  const foundUser = await adminRepo.findInfo(user_id);
+  const user = await adminRepo.findInfo(user_id);
 
-  if (foundUser.user_id) {
-    const imgFileName = foundUser.user_img.split('/')[6];
+  const foundUserImage = (user as { user_img: string }).user_img;
 
-    const filePath = `/Users/subin/IdeaProjects/peeps_back-end3/public/${imgFileName}`;
+  if (foundUserImage === null) return; // 이미지가 원래 없는 pet일 경우 로컬 삭제 안함
+
+  if (user.user_img) {
+    const imgFileName = user.user_img.split('/')[6];
+
+    const filePath = `/Users/지원/Desktop/peepsProject/peeps_back-end/public/${imgFileName}`;
+    // const filePath = `/Users/subin/IdeaProjects/peeps_back-end3/public/${imgFileName}`;
     // const filePath = `서버 실행하는 로컬의 public 파일 절대경로`;
     // const filePath = `클라우드 인스턴스 로컬의 public 파일 절대경로`;
 

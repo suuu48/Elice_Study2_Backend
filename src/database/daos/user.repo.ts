@@ -16,7 +16,7 @@ export const findOneByNickname = async (nickName: string): Promise<UserProfile> 
     return row[0];
   } catch (error) {
     console.log(error);
-    throw error;
+    throw new AppError(500, '[ DB 에러 ] 닉네임 중복 체크 실패');
   }
 };
 
@@ -24,6 +24,7 @@ export const findOneByNickname = async (nickName: string): Promise<UserProfile> 
 export const findOne = async (userId: string): Promise<UserProfile> => {
   try {
     const getColumns = 'user_id, user_name, user_nickname, user_location, user_img';
+
     const [row]: any = await db.query(
       `
     SELECT ${getColumns}
@@ -35,7 +36,7 @@ export const findOne = async (userId: string): Promise<UserProfile> => {
     return row[0];
   } catch (error) {
     console.log(error);
-    throw error;
+    throw new AppError(500, '[ DB 에러 ] 유저 프로필 정보 조회 실패');
   }
 };
 // userId 입력시 user 정보 추출
@@ -48,10 +49,11 @@ export const findAllInfo = async (userId: string): Promise<User> => {
     WHERE user_id = ? and delete_flag ='0'`,
       [userId]
     );
+
     return row[0];
   } catch (error) {
     console.log(error);
-    throw error;
+    throw new AppError(500, '[ DB 에러 ] 유저 전체 정보 조회 실패');
   }
 };
 
@@ -65,17 +67,19 @@ export const findForDelete = async (userId: string): Promise<User> => {
     WHERE user_id = ?`,
       [userId]
     );
+
     return row[0];
   } catch (error) {
     console.log(error);
-    throw error;
+    throw new AppError(500, '[ DB 에러 ] 유저(탈퇴 유저 포함) 전체 정보 조회 실패');
   }
 };
 
-// 유저 추가
+// 회원가입
 export const createUser = async (inputData: createUserInput): Promise<User> => {
   try {
     const newColumns = 'user_id, user_name, user_password, user_nickname, user_location, user_img';
+
     const newValues = Object.values(inputData)
       .map((value) => {
         if (value === null) return 'DEFAULT';
@@ -83,6 +87,7 @@ export const createUser = async (inputData: createUserInput): Promise<User> => {
         else return value;
       })
       .join(', ');
+
     const [newUser]: any = await db.query(
       `
           INSERT INTO user (${newColumns})
@@ -97,7 +102,7 @@ export const createUser = async (inputData: createUserInput): Promise<User> => {
     return createuser!;
   } catch (error) {
     console.log(error);
-    return Promise.reject(error);
+    throw new AppError(500, '[ DB 에러 ] 회원 가입 실패');
   }
 };
 
@@ -121,6 +126,7 @@ export const updateDataTrans = (input: Record<string, string | number | boolean 
 export const updateUser = async (userId: string, updateData: updateUserInput): Promise<User> => {
   try {
     const [keys, values] = updateDataTrans(updateData);
+
     const [updateUser, _]: any = await db.query(
       `
           UPDATE user
@@ -135,7 +141,7 @@ export const updateUser = async (userId: string, updateData: updateUserInput): P
     return updateuser!;
   } catch (error) {
     console.log(error);
-    return Promise.reject(error); // App Error
+    throw new AppError(500, '[ DB 에러 ] 유저 정보 수정 실패');
   }
 };
 
@@ -150,6 +156,7 @@ export const softDeleteUser = async (userId: string): Promise<User> => {
     );
 
     const user = await findForDelete(userId);
+
     return user!;
   } catch (error) {
     console.log(error);

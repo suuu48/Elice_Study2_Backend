@@ -2,7 +2,6 @@ import express from 'express';
 import * as userController from '../controllers/userController';
 import { isAccessTokenValid } from '../middlewares';
 import processImage from '../middlewares/multer';
-//import * as user from "../services/user.service";
 export const userRoute = express();
 
 // 회원가입

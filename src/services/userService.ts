@@ -11,14 +11,17 @@ export const createUser = async (inputData: createUserInput) => {
     const newUser = await userRepo.createUser(inputData);
 
     const user = await userRepo.findOne(newUser.user_id);
-    if (!user) throw new Error('[ 유저 가입 에러 ] 가입된 유저를 찾을 수 없습니다.');
+
+    if (!user) throw new AppError(404, '가입된 유저를 찾을 수 없습니다.');
 
     return user;
-  } catch (error: any) {
-    if (error instanceof AppError) throw error;
-    else {
+  } catch (error) {
+    if (error instanceof AppError) {
+      if (error.statusCode === 500) console.log(error);
+      throw error;
+    } else {
       console.log(error);
-      throw new AppError(500, error.message || null);
+      throw new AppError(500, '[ 서버 에러 ] 회원 가입 실패');
     }
   }
 };
@@ -48,11 +51,18 @@ export const getUserToken = async (
     const refreshToken = jwt.sign(payload, refreshTokenSecret, {
       expiresIn: env.REFRESH_TOKEN_EXPIRES_IN,
     });
+
     const userInfo = await userRepo.findOne(userId);
+
     return { userInfo, accessToken, refreshToken };
   } catch (error) {
-    console.error(error);
-    throw new Error('[JWT 토큰 에러] 토큰 발급에 실패했습니다.');
+    if (error instanceof AppError) {
+      if (error.statusCode === 500) console.log(error);
+      throw error;
+    } else {
+      console.log(error);
+      throw new AppError(500, '[ 서버 에러 ] 로그인 실패');
+    }
   }
 };
 
@@ -64,9 +74,13 @@ export const getUser = async (userId: string): Promise<UserProfile> => {
 
     return foundUser;
   } catch (error) {
-    console.error(error);
-    throw new Error('[유저 정보 조회 에러] 정보 조회에 실패했습니다.');
-    //  next(error);
+    if (error instanceof AppError) {
+      if (error.statusCode === 500) console.log(error);
+      throw error;
+    } else {
+      console.log(error);
+      throw new AppError(500, '[ 서버 에러 ] 유저 프로필 정보 조회 실패');
+    }
   }
 };
 
@@ -77,16 +91,24 @@ export const updateUserInfo = async (
 ): Promise<UserProfile> => {
   try {
     const foundUser = await userRepo.findOne(userId);
+
     if (!foundUser) throw new AppError(404, '존재하지 않는 아이디 입니다.');
 
     await editImage(userId, updateData);
 
     const updateUser = await userRepo.updateUser(userId, updateData);
+
     const user = await userRepo.findOne(updateUser.user_id);
+
     return user;
   } catch (error) {
-    console.error(error);
-    throw new Error('[유저 수정 에러] 유저 정보 수정에 실패했습니다.');
+    if (error instanceof AppError) {
+      if (error.statusCode === 500) console.log(error);
+      throw error;
+    } else {
+      console.log(error);
+      throw new AppError(500, '[ 서버 에러 ] 유저 정보 수정 실패');
+    }
   }
 };
 
@@ -94,35 +116,22 @@ export const updateUserInfo = async (
 export const softDelete = async (userId: string): Promise<User> => {
   try {
     const foundUser = await userRepo.findOne(userId);
+
     if (!foundUser) throw new AppError(404, '존재하지 않는 아이디 입니다.');
 
     const deleteUser = await userRepo.softDeleteUser(userId);
+
     return deleteUser;
-  } catch (error: any) {
-    console.log(error);
-    throw new Error('유저 삭제에 실패했습니다.');
-    if (error instanceof AppError) throw error;
-    else throw new AppError(404, error.message);
+  } catch (error) {
+    if (error instanceof AppError) {
+      if (error.statusCode === 500) console.log(error);
+      throw error;
+    } else {
+      console.log(error);
+      throw new AppError(500, '[ 서버 에러 ] 유저 소프트 삭제 실패');
+    }
   }
 };
-
-// /* 유저 이미지 로컬 수정 */
-// const editImage = async (user_id: string, inputData: updateUserInput) => {
-//   const foundUser = await userRepo.findOne(user_id);
-//   if (!foundUser) throw new AppError(404, '존재하지 않는 아이디 입니다.');
-
-//   if (foundUser.user_img && foundUser.user_img !== inputData.user_img) {
-//     const imgFileName = foundUser.user_img.split('/')[6];
-
-//     const filePath = `/Users/subin/IdeaProjects/peeps_back-end3/public/${imgFileName}`;
-//     // const filePath = `서버 실행하는 로컬의 public 파일 절대경로`;
-//     // const filePath = `클라우드 인스턴스 로컬의 public 파일 절대경로`;
-
-//     fs.unlink(filePath, (error) => {
-//       if (error) throw new AppError(400, '유저 이미지 수정 중 오류가 발생했습니다.');
-//     });
-//   } else return;
-// };
 
 /* 유저 이미지 로컬 수정 */
 const editImage = async (user_id: string, updateData: updateUserInput) => {
@@ -152,3 +161,21 @@ const editImage = async (user_id: string, updateData: updateUserInput) => {
     }
   } else return; // 그 외의 경우 로컬 삭제 안함
 };
+
+// /* 유저 이미지 로컬 수정 */
+// const editImage = async (user_id: string, inputData: updateUserInput) => {
+//   const foundUser = await userRepo.findOne(user_id);
+//   if (!foundUser) throw new AppError(404, '존재하지 않는 아이디 입니다.');
+
+//   if (foundUser.user_img && foundUser.user_img !== inputData.user_img) {
+//     const imgFileName = foundUser.user_img.split('/')[6];
+
+//     const filePath = `/Users/subin/IdeaProjects/peeps_back-end3/public/${imgFileName}`;
+//     // const filePath = `서버 실행하는 로컬의 public 파일 절대경로`;
+//     // const filePath = `클라우드 인스턴스 로컬의 public 파일 절대경로`;
+
+//     fs.unlink(filePath, (error) => {
+//       if (error) throw new AppError(400, '유저 이미지 수정 중 오류가 발생했습니다.');
+//     });
+//   } else return;
+// };

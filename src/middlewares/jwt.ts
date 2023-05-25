@@ -47,8 +47,10 @@ export const isAccessTokenValid: RequestHandler = (req, res, next) => {
   }
 
   const userToken = req.headers['authorization'].split(' ')[1];
-  console.log(req.headers['authorization']);
+
+  // console.log(req.headers['authorization']);
   // 해당 token 이 정상적인 token인지 확인
+
   try {
     const accessTokenSecret = env.ACCESS_TOKEN_SECRET || 'default-access-token-secret';
     const jwtDecoded = jwt.verify(userToken, accessTokenSecret);

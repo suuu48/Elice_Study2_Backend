@@ -33,7 +33,7 @@ export class Pet {
   pet_info!: string;
 
   @Column({ type: 'varchar' })
-  pet_img!: string | null;
+  pet_img!: string;
 
   @Column({ type: 'varchar' })
   user_id!: string;

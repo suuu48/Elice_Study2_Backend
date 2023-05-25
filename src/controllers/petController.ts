@@ -15,15 +15,7 @@ export const addPetHandler = async (req: Request, res: Response, next: NextFunct
 
     const { pet_name, pet_gender, pet_species, pet_birth, pet_info } = req.body;
     const imgFileRoot = `http://localhost:5500/api/v1/static/${req.file?.filename}`;
-    if (
-      !user_id ||
-      !pet_name ||
-      !pet_gender ||
-      !pet_species ||
-      !pet_birth ||
-      !pet_info ||
-      !imgFileRoot
-    )
+    if (!user_id || !pet_name || !pet_gender || !pet_species || !pet_birth || !pet_info)
       throw new Error('[ 요청 에러 ] 모든 필드를 입력해야 합니다.');
 
     const petData: Pet.createPetInput = {

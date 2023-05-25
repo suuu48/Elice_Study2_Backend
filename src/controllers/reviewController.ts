@@ -67,7 +67,7 @@ export const getAllReviewsHandler = async (req: Request, res: Response, next: Ne
 
     const reviews = await reviewService.getAllReview(location_id);
 
-    res.status(200).json({ message: '장소에 따른 전체 리뷰 조회 성공', data: reviews });
+    res.status(200).json({ message: '리뷰 전체 조회 성공', data: reviews });
   } catch (error) {
     if (error instanceof AppError) {
       if (error.statusCode === 404) console.log(error);

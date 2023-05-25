@@ -144,7 +144,7 @@ export const updateUserHandler = async (req: Request, res: Response, next: NextF
 
     const userInfo = await userService.updateUserInfo(userId, updateUserData);
 
-    res.status(201).json({ message: '유저 수정 성공', data: userInfo });
+    res.status(200).json({ message: '유저 수정 성공', data: userInfo });
   } catch (error) {
     if (error instanceof AppError) {
       if (error.statusCode === 404 || error.statusCode === 400) console.log(error);

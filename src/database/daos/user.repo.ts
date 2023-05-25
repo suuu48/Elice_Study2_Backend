@@ -77,7 +77,11 @@ export const createUser = async (inputData: createUserInput): Promise<User> => {
   try {
     const newColumns = 'user_id, user_name, user_password, user_nickname, user_location, user_img';
     const newValues = Object.values(inputData)
-      .map((value) => (typeof value === 'string' ? `'${value}'` : value))
+      .map((value) => {
+        if (value === null) return 'DEFAULT';
+        else if (typeof value === 'string') return `'${value}'`;
+        else return value;
+      })
       .join(', ');
     const [newUser]: any = await db.query(
       `
@@ -125,9 +129,9 @@ export const updateUser = async (userId: string, updateData: updateUserInput): P
       `,
       [...values, userId]
     );
-    console.log(updateUser);
+
     const updateuser = await findAllInfo(userId);
-    console.log(updateuser);
+
     return updateuser!;
   } catch (error) {
     console.log(error);

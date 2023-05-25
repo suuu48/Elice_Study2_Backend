@@ -15,7 +15,6 @@ const refreshTokenValid: RequestHandler = (req, res, next) => {
 
     const refreshSecretKey = env.REFRESH_TOKEN_SECRET || 'default-refresh-token-secret';
     const refreshDecoded = jwt.verify(refreshToken, refreshSecretKey) as JwtPayload; // 명시적으로 JwtPayload 타입으로 지정
-    console.log(refreshDecoded);
 
     // 리프레시 토큰이 정상적으로 검증되면 액세스 토큰을 재발급
     const payload = {

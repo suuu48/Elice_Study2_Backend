@@ -10,4 +10,4 @@ adminRoute.get('/:adminId', isAccessTokenValid, adminController.FindALlHandler);
 adminRoute.delete('/:userId', isAccessTokenValid, adminController.deleteUserHandler);
 
 // 유저정보 복구
-adminRoute.post('/:userId', isAccessTokenValid, adminController.restoreUserHandler);
+adminRoute.get('/rollback/:userId', isAccessTokenValid, adminController.restoreUserHandler);

@@ -8,10 +8,10 @@ import { addPet, deletePet, getALlPet, getPet } from '../services/petService';
 export const addPetHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { user_id } = req.params;
-
-    if (req.body.jwtDecoded.userId !== req.params.user_id) {
-      throw new Error('[ 요청 에러 ] 본인이 아닙니다.');
-    }
+    // console.log(req.body.jwtDecoded);
+    // if (req.body.jwtDecoded.userId !== user_id) {
+    //   throw new Error('[ 요청 에러 ] 본인이 아닙니다.');
+    // }
 
     const { pet_name, pet_gender, pet_species, pet_birth, pet_info } = req.body;
     const { filename } = req.file || {};
@@ -81,6 +81,7 @@ export const getAllPetHandler = async (req: Request, res: Response, next: NextFu
 };
 
 // pet 수정 >> Todo: req.body.jwtDecoded 값이 출력이 안되는거 수정하기
+// 5/25 >> 요청 body 타입이 formData 타입인데, jwtDecoded는 json이라서 jwtDecoded만 출력 안됩니다.
 export const updatePetHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const pet_id = parseInt(req.params.pet_id);
